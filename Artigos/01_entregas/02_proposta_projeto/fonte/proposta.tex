@@ -1,0 +1,193 @@
+\documentclass[12pt,a4paper]{article}
+
+% -------------------------------------------------
+% PACOTES
+% -------------------------------------------------
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[brazilian]{babel}
+\usepackage{lmodern}
+\usepackage{geometry}
+\usepackage{setspace}
+\usepackage{enumitem}
+\usepackage{titlesec}
+\usepackage{parskip}
+\usepackage{hyperref}
+\usepackage{csquotes}
+
+% -------------------------------------------------
+% REFERÊNCIAS
+% -------------------------------------------------
+\usepackage[
+    backend=biber,
+    style=abnt,
+    sorting=nyt
+]{biblatex}
+
+\addbibresource{referencias.bib}
+
+% -------------------------------------------------
+% CONFIGURAÇÕES DA PÁGINA
+% -------------------------------------------------
+\geometry{
+    top=2cm,
+    bottom=2cm,
+    left=2.5cm,
+    right=2.5cm
+}
+
+\setstretch{1.0}
+
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{4pt}
+
+% Seções mais compactas
+\titleformat{\section}
+    {\large\bfseries}
+    {\thesection.}
+    {0.5em}
+    {}
+
+\titlespacing*{\section}
+    {0pt}
+    {8pt}
+    {3pt}
+
+% -------------------------------------------------
+% CONFIGURAÇÃO DOS LINKS
+% -------------------------------------------------
+\hypersetup{
+    colorlinks=true,
+    urlcolor=blue,
+    linkcolor=black,
+    citecolor=black
+}
+
+% -------------------------------------------------
+% DOCUMENTO
+% -------------------------------------------------
+\begin{document}
+
+\begin{center}
+
+{\Large \textbf{Proposta de Projeto}}\\[0.3cm]
+
+Engenharia de Computação -- PUCPR\\[0.15cm]
+
+\textbf{Detecção de Vulnerabilidades em Código-Fonte com Machine Learning}\\[0.15cm]
+
+André Fabricio Wozniack -- Ricardo Hespanhol Pamplona\\[0.15cm]
+
+Orientador: Prof. Julio Cezar Nievola
+
+\end{center}
+
+\vspace{0.3cm}
+
+% -------------------------------------------------
+\section{Motivação para o desenvolvimento do projeto}
+
+Com o aumento do uso de Inteligência Artificial para gerar código,
+trechos produzidos automaticamente vêm sendo incorporados a projetos
+sem análise adequada de segurança, o que pode introduzir
+vulnerabilidades como injeção de comandos, vazamento de dados e falhas
+de gerenciamento de memória.
+
+Estudos recentes indicam que código assistido por IA apresenta, em
+média, 4,4 vezes mais vulnerabilidades que código escrito apenas por
+humanos, com certos tipos de falha aparecendo com maior frequência e
+templates inseguros se repetindo em diferentes repositórios, sugerindo
+padrões induzidos pelos próprios modelos
+\parencite{stateofcyber2026,wu2025}.
+
+Embora ferramentas de análise estática ajudem a identificar esses
+problemas, elas frequentemente geram falsos positivos e possuem
+dificuldade para compreender o contexto do código, como a intenção do
+desenvolvedor e chamadas entre funções
+\parencite{yang2025,techscience2025}.
+
+Por isso, há demanda por abordagens mais contextuais, baseadas em
+Machine Learning e Large Language Models, que vêm sendo aplicadas à
+detecção de vulnerabilidades e à priorização de alertas em código
+gerado automaticamente
+\parencite{wang2025,mdpi2026}.
+
+% -------------------------------------------------
+\section{Objetivo}
+
+O objetivo do projeto é desenvolver um software capaz de analisar novos
+trechos de código-fonte antes de sua integração ao sistema, identificando
+padrões e erros comuns que possam resultar em vulnerabilidades de
+segurança conhecidas.
+
+A solução deverá utilizar técnicas de Machine Learning para auxiliar
+na identificação e classificação dessas vulnerabilidades, buscando
+complementar ferramentas tradicionais de análise estática de código.
+
+% -------------------------------------------------
+\section{Descrição sucinta das teorias e técnicas utilizadas}
+
+O desenvolvimento do projeto envolverá conceitos de segurança de
+software, análise estática de código e Machine Learning.
+
+Serão estudadas técnicas de classificação de vulnerabilidades,
+processamento e representação de código-fonte e modelos capazes de
+identificar padrões associados a falhas de segurança.
+
+Também poderão ser utilizados Large Language Models como apoio à
+análise contextual do código. A avaliação da solução será realizada
+por meio de métricas de classificação, como precisão, recall,
+F1-score e taxa de falsos positivos, comparando os resultados obtidos
+com ferramentas tradicionais de análise estática.
+
+% -------------------------------------------------
+\section{Descrição do hardware e/ou software necessários para o desenvolvimento}
+
+\textbf{Software:}
+Python, Java, Git, Docker, bancos de dados, bibliotecas de Machine
+Learning e ferramentas de análise de código, como SonarQube,
+linters e Dependabot.
+
+Também serão utilizados conjuntos de dados contendo exemplos de
+vulnerabilidades conhecidas para treinamento e avaliação dos modelos.
+
+\textbf{Hardware:}
+computadores pessoais dos integrantes e, caso necessário,
+infraestrutura computacional local ou em nuvem para treinamento e
+execução dos modelos de Machine Learning.
+
+% -------------------------------------------------
+\section{Contexto do Projeto}
+
+O projeto será desenvolvido como Trabalho de Conclusão de Curso de
+Engenharia de Computação da PUCPR.
+
+Os integrantes serão responsáveis pelo levantamento bibliográfico,
+preparação dos dados, desenvolvimento da solução, implementação dos
+modelos, realização dos experimentos e avaliação dos resultados.
+
+A solução tem como público-alvo desenvolvedores e equipes de
+desenvolvimento de software que utilizam Inteligência Artificial
+Generativa para auxiliar na produção de código-fonte.
+
+% -------------------------------------------------
+% REFERÊNCIAS
+% -------------------------------------------------
+
+\printbibliography[
+    heading=bibintoc,
+    title={Referências bibliográficas básicas}
+]
+
+% -------------------------------------------------
+% ASSINATURA
+% -------------------------------------------------
+
+\vspace{1.5cm}
+
+\begin{center}
+    \rule{8cm}{0.4pt}\\
+    Assinatura do orientador
+\end{center}
+
+\end{document}

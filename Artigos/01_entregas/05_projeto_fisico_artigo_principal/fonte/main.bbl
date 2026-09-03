@@ -1,0 +1,27 @@
+\providecommand{\abntreprintinfo}[1]{%
+ \citeonline{#1}}
+\setlength{\labelsep}{0pt}\begin{thebibliography}{}
+\providecommand{\abntrefinfo}[3]{}
+\providecommand{\abntbstabout}[1]{}
+\abntbstabout{v-1.9.7 }
+
+\bibitem[{ABNT} 2021]{nbr6028}
+\abntrefinfo{{ABNT}}{{ABNT}}{2021}
+{{ABNT}. \textbf{ABNT NBR 6028}: Informação e documentação: resumo, resenha e recensão: apresentação.
+Rio de Janeiro, 2021. Dispon{\'\i}vel em: \url{https://www.exemplo1.com.br}. Acesso em: 01 dez. 2025.}
+
+\bibitem[{ABNT} 2024]{nbr14724}
+\abntrefinfo{{ABNT}}{{ABNT}}{2024}
+{{ABNT}. \textbf{ABNT NBR 14724}: Informação e documentação: trabalhos acadêmicos: apresentação.
+Rio de Janeiro, 2024. Dispon{\'\i}vel em: \url{https://www.exemplo2.com.br}. Acesso em: 02 dez. 2025.}
+
+\bibitem[Ciclano 2025]{ciclano}
+\abntrefinfo{Ciclano}{CICLANO}{2025}
+{CICLANO, B. Exemplo de título.
+\textbf{Exemplo de periódico}, Exemplo de cidade, v.~1, n.~2, p. 99--99, 2025.}
+
+\bibitem[Gil 2008]{gil2008metodos}
+\abntrefinfo{Gil}{GIL}{2008}
+{GIL, A.~C. \textbf{Métodos e Técnicas de Pesquisa Social}. São Paulo: Atlas, 2008.}
+
+\end{thebibliography}

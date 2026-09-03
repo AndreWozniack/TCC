@@ -1,0 +1,55 @@
+\changetocdepth {4}
+\babel@toc {brazil}{}\relax 
+\setlength {\cftchapterindent }{\cftlastnumwidth } \setlength {\cftchapternumwidth }{2em}
+\setlength {\cftchapterindent }{\cftlastnumwidth } \setlength {\cftchapternumwidth }{2em}
+\setlength {\cftchapterindent }{\cftlastnumwidth } \setlength {\cftchapternumwidth }{2em}
+\setlength {\cftchapterindent }{\cftlastnumwidth } \setlength {\cftchapternumwidth }{2em}
+\setlength {\cftchapterindent }{\cftlastnumwidth } \setlength {\cftchapternumwidth }{2em}
+\setlength {\cftchapterindent }{\cftlastnumwidth } \setlength {\cftchapternumwidth }{2em}
+\setlength {\cftchapterindent }{\cftlastnumwidth } \setlength {\cftchapternumwidth }{2em}
+\setlength {\cftchapterindent }{\cftlastnumwidth } \setlength {\cftchapternumwidth }{2em}
+\setlength {\cftchapterindent }{0em} \setlength {\cftchapternumwidth }{\cftlastnumwidth }
+\contentsline {chapter}{\chapternumberline {1}\MakeTextUppercase []{Introdução}}{17}{chapter.1}%
+\contentsline {section}{\numberline {1.1}Problematização}{17}{section.1.1}%
+\contentsline {section}{\numberline {1.2}Objetivos}{18}{section.1.2}%
+\contentsline {subsection}{\numberline {1.2.1}Objetivo Geral}{18}{subsection.1.2.1}%
+\contentsline {subsection}{\numberline {1.2.2}Objetivos Específicos}{18}{subsection.1.2.2}%
+\contentsline {section}{\numberline {1.3}Procedimentos Metodológicos}{18}{section.1.3}%
+\setlength {\cftchapterindent }{0em} \setlength {\cftchapternumwidth }{\cftlastnumwidth }
+\contentsline {chapter}{\chapternumberline {2}\MakeTextUppercase []{Título da Seção Primária}}{20}{chapter.2}%
+\contentsline {section}{\numberline {2.1}Título da Seção Secundária}{20}{section.2.1}%
+\contentsline {section}{\numberline {2.2}Título da Seção Secundária}{20}{section.2.2}%
+\contentsline {subsection}{\numberline {2.2.1}Título da seção terciária}{21}{subsection.2.2.1}%
+\contentsline {subsection}{\numberline {2.2.2}Título da seção terciária}{21}{subsection.2.2.2}%
+\contentsline {subsubsection}{\numberline {2.2.2.1}Título da seção quaternária}{21}{subsubsection.2.2.2.1}%
+\setlength {\cftchapterindent }{0em} \setlength {\cftchapternumwidth }{\cftlastnumwidth }
+\contentsline {chapter}{\chapternumberline {3}\MakeTextUppercase []{Análise dos Resultados}}{22}{chapter.3}%
+\setlength {\cftchapterindent }{0em} \setlength {\cftchapternumwidth }{\cftlastnumwidth }
+\contentsline {chapter}{\chapternumberline {4}\MakeTextUppercase []{Considerações Finais ou Conclusão}}{23}{chapter.4}%
+\setlength {\cftchapterindent }{0em} \setlength {\cftchapternumwidth }{\cftlastnumwidth }
+\contentsline {chapter}{\chapternumberline {5}\MakeTextUppercase []{Dicas Gerais Relacionadas ao LaTeX}}{24}{chapter.5}%
+\contentsline {section}{\numberline {5.1}Citações}{24}{section.5.1}%
+\contentsline {section}{\numberline {5.2}Listas}{25}{section.5.2}%
+\contentsline {subsection}{\numberline {5.2.1}Exemplo}{25}{subsection.5.2.1}%
+\contentsline {section}{\numberline {5.3}Notas de Rodapé}{25}{section.5.3}%
+\contentsline {subsection}{\numberline {5.3.1}Exemplo}{26}{subsection.5.3.1}%
+\contentsline {subsection}{\numberline {5.3.2}Boas práticas}{26}{subsection.5.3.2}%
+\contentsline {section}{\numberline {5.4}Figuras}{26}{section.5.4}%
+\contentsline {subsection}{\numberline {5.4.1}Exemplo}{26}{subsection.5.4.1}%
+\contentsline {subsection}{\numberline {5.4.2}Boas práticas}{27}{subsection.5.4.2}%
+\contentsline {section}{\numberline {5.5}Gráficos}{27}{section.5.5}%
+\contentsline {subsection}{\numberline {5.5.1}Exemplo}{27}{subsection.5.5.1}%
+\contentsline {section}{\numberline {5.6}Tabelas}{28}{section.5.6}%
+\contentsline {subsection}{\numberline {5.6.1}Exemplo com \texttt {\textbackslash hline}}{28}{subsection.5.6.1}%
+\contentsline {subsection}{\numberline {5.6.2}Exemplo com o pacote \texttt {booktabs}}{29}{subsection.5.6.2}%
+\contentsline {subsection}{\numberline {5.6.3}Boas práticas}{30}{subsection.5.6.3}%
+\contentsline {section}{\numberline {5.7}Quadros}{31}{section.5.7}%
+\contentsline {section}{\numberline {5.8}Referências Cruzadas}{31}{section.5.8}%
+\vspace {\cftbeforechapterskip }
+\setlength {\cftchapterindent }{\cftlastnumwidth } \setlength {\cftchapternumwidth }{2em}
+\contentsline {chapter}{\MakeTextUppercase []{Refer\^encias}}{33}{section*.27}%
+\renewcommand *{\cftappendixname }{AP\^ENDICE \space }
+\setlength {\cftchapterindent }{0em} \setlength {\cftchapternumwidth }{\cftlastnumwidth }
+\setlength {\cftchapterindent }{\cftlastnumwidth } \setlength {\cftchapternumwidth }{2em}
+\cftinsert {A}
+\contentsline {appendix}{\chapternumberline {A}\MakeTextUppercase []{Tutorial de uso do modelo LaTeX de monografia/dissertação/tese PUCPR}}{34}{appendix.A}%
