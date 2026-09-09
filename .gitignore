@@ -1,2 +1,31 @@
 .DS_Store
-.vscode
+.vscode/
+
+# Pastas de build e temporários
+_build/
+build/
+tmp/
+
+# Arquivos auxiliares do LaTeX
+*.aux
+*.bbl
+*.bcf
+*.blg
+*.fdb_latexmk
+*.fls
+*.idx
+*.ilg
+*.ind
+*.lof
+*.log
+*.lop
+*.loq
+*.lot
+*.out
+*.run.xml
+*.synctex.gz
+*.toc
+*.xdv
+*.nav
+*.snm
+*.vrb

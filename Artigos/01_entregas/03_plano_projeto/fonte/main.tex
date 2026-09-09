@@ -1,0 +1,51 @@
+%---------------------------------------------------------------%
+%--------------- PLANO DE PROJETO - PPGIA / PUCPR --------------%
+%---------------------------------------------------------------%
+\documentclass[
+  12pt,                 % Tamanho da fonte
+  openright,            % Capítulo começa em pág ímpar
+  oneside,              % Impressão em uma face
+  a4paper,              % Tamanho do papel 
+  chapter=TITLE,        % Títulos de capítulos em letras maiúsculas
+  english,              % Idioma adicional
+  brazil,               % Idioma principal
+  hyphens
+]{abntex2}
+
+% Customizações para adequação do modelo às normas ABNT e PUCPR
+\input{customizacoes}
+
+\usepackage{fontspec}
+\setmainfont{Arial}
+
+% Dados acadêmicos do projeto
+\input{dados_academicos}
+
+\begin{document}
+\DeclareGraphicsExtensions{.jpg,.pdf,.eps,.png}
+\frenchspacing
+
+%-------------------- ELEMENTOS PRÉ-TEXTUAIS -------------------%
+\input{pretextual}
+
+%---------------------- ELEMENTOS TEXTUAIS ---------------------%
+\textual
+\pagestyle{simple}
+
+\input{capitulos/cap_01_introducao}
+\input{capitulos/cap_02_problema}
+\input{capitulos/cap_03_estado_da_arte}
+\input{capitulos/cap_04_trabalho_desenvolvido}
+\input{capitulos/cap_05_tecnologias}
+\input{capitulos/cap_06_testes_validacao}
+\input{capitulos/cap_07_analise_riscos}
+\input{capitulos/cap_08_cronograma}
+\input{capitulos/cap_09_conclusao}
+
+%-------------------- ELEMENTOS PÓS-TEXTUAIS -------------------%
+\postextual
+
+% Referências bibliográficas (Item 12 do Manual)
+\bibliography{referencias}
+
+\end{document}
