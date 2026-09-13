@@ -8,15 +8,79 @@
 % O final da introdução deve incluir uma descrição de como o documento está estruturado (um parágrafo indicando o conteúdo de cada uma das seções seguintes).
 
 \section{Motivação e Relevância}
-
-
+Com o aumento do uso de Inteligência Artificial para gerar código,
+trechos produzidos automaticamente vêm sendo incorporados a projetos
+sem análise adequada de segurança, o que pode introduzir
+vulnerabilidades como injeção de comandos, vazamento de dados e falhas
+de gerenciamento de memória. Estudos recentes indicam que código
+assistido por IA apresenta, em média, 4,4 vezes mais vulnerabilidades
+que código escrito apenas por humanos, com certos tipos de falha
+aparecendo com maior frequência e templates inseguros se repetindo em
+diferentes repositórios, sugerindo padrões induzidos pelos próprios
+modelos \parencite{stateofcyber2026,wu2025}. Esse cenário torna o
+problema tratado por este projeto relevante: à medida que a geração de
+código por IA se populariza, cresce também a necessidade de mecanismos
+que identifiquem essas vulnerabilidades antes que o código chegue à
+produção.
+ 
+Ferramentas de análise estática ajudam a identificar parte desses
+problemas, porém frequentemente geram falsos positivos e possuem
+dificuldade para compreender o contexto do código, como a intenção do
+desenvolvedor e as chamadas entre funções
+\parencite{yang2025,techscience2025}. Essa limitação é o que torna o
+problema relevante do ponto de vista técnico: não basta detectar
+vulnerabilidades já catalogadas por regras fixas, é preciso compreender
+o contexto do código para reduzir os falsos positivos e priorizar
+corretamente os alertas mais críticos.
+ 
 \section{Objetivos}
-
+ 
 \subsection{Objetivo Geral}
-
-
+ 
+Desenvolver um software capaz de analisar novos trechos de
+código-fonte antes de sua integração a um sistema, identificando
+padrões e erros comuns que possam resultar em vulnerabilidades de
+segurança conhecidas, utilizando técnicas de Machine Learning --
+complementarmente apoiadas por Large Language Models -- para tornar
+essa análise mais contextual do que a oferecida pelas ferramentas
+tradicionais de análise estática \parencite{wang2025,mdpi2026}.
+ 
 \subsection{Objetivos Específicos}
-
-
+ 
+Para alcançar o objetivo geral, foram definidos os seguintes objetivos
+específicos:
+ 
+\begin{itemize}
+    \item Levantar e analisar criticamente o estado da arte de
+    ferramentas e trabalhos correlatos em análise estática e detecção
+    de vulnerabilidades apoiada por Machine Learning e LLMs;
+    \item Levantar e preparar conjuntos de dados contendo exemplos de
+    vulnerabilidades conhecidas para treinamento e avaliação dos
+    modelos;
+    \item Implementar um módulo de análise estática integrado a
+    ferramentas tradicionais (SonarQube, linters, Dependabot);
+    \item Implementar um módulo de extração de características a
+    partir do código-fonte e dos alertas de análise estática;
+    \item Implementar e treinar um modelo de classificação baseado em
+    Machine Learning, com apoio complementar de Large Language Models,
+    capaz de identificar e priorizar vulnerabilidades;
+    \item Integrar os módulos desenvolvidos em um relatório único e
+    compreensível para o desenvolvedor;
+    \item Avaliar a solução por meio de métricas de classificação
+    (precisão, \textit{recall}, F1-score e taxa de falsos positivos),
+    comparando os resultados obtidos com os de ferramentas tradicionais
+    de análise estática.
+\end{itemize}
+ 
 \section{Estrutura do Documento}
-
+ 
+Este documento está estruturado da seguinte forma: a
+Seção~\ref{sec:problema} detalha o problema a ser resolvido; a
+Seção~\ref{sec:estadoarte} apresenta o estado da arte das soluções
+existentes; a Seção~\ref{sec:trabalho} descreve o trabalho a ser
+desenvolvido, incluindo a decomposição em módulos e o diagrama em
+blocos do sistema; a Seção~\ref{sec:tecnologias} apresenta as
+tecnologias que serão utilizadas; a Seção~\ref{sec:testes} descreve os
+procedimentos de teste e validação; a Seção~\ref{sec:riscos} traz a
+análise dos riscos do projeto; a Seção~\ref{sec:cronograma} apresenta o
+cronograma; e a Seção~\ref{sec:conclusao} conclui o documento.

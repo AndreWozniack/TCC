@@ -1,5 +1,44 @@
-\chapter{Análise dos Riscos}
-\label{cap:riscos}
-
 % Esta seção deve conter uma análise dos problemas potenciais do projeto e do impacto desses problemas no sucesso ou fracasso do projeto (seguir a metodologia de engenharia de software).
 
+\section{Análise dos Riscos}
+\label{sec:riscos}
+ 
+\small
+\begin{longtable}{@{}p{4cm}p{1.9cm}p{1.9cm}p{6.9cm}@{}}
+\toprule
+\textbf{Risco} & \textbf{Probab.} & \textbf{Impacto} & \textbf{Mitigação} \\
+\midrule
+\endhead
+Escassez ou desbalanceamento de dados rotulados de vulnerabilidades &
+Média & Alto &
+Utilizar conjuntos de dados públicos já consolidados e técnicas de
+balanceamento de classes; complementar com dados sintéticos se
+necessário \\
+Baixo desempenho do modelo de Machine Learning  &
+Média & Alto &
+Validação cruzada, separação clara entre treino/teste e ajuste
+incremental dos modelos \\
+Complexidade na integração de Large Language Models ao \textit{pipeline}
+de análise &
+Média & Médio &
+Tratar o uso de LLMs como módulo complementar e opcional, priorizando
+primeiro um classificador de ML mais simples e funcional \\
+Restrição de tempo do cronograma acadêmico &
+Alta & Alto &
+Priorizar entregas incrementais, com um MVP funcional antes de
+adicionar funcionalidades complementares \\
+Limitações de poder computacional dos integrantes para treinamento de
+modelos &
+Baixa & Médio &
+Uso de infraestrutura em nuvem gratuita/educacional caso necessário \\
+Falsos positivos/negativos elevados prejudicando a confiança na
+ferramenta &
+Média & Alto &
+Comparação contínua com ferramentas de análise estática tradicionais e
+ajuste dos limiares de classificação \\
+\bottomrule
+\end{longtable}
+ 
+\aconfirmar{Revisar esta análise de riscos com a metodologia de
+engenharia de software adotada na disciplina (por exemplo, matriz de
+probabilidade x impacto específica indicada pelo orientador).}
