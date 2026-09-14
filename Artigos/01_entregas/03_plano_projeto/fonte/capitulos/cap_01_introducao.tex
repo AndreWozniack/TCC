@@ -17,17 +17,14 @@ assistido por IA apresenta, em média, 4,4 vezes mais vulnerabilidades
 que código escrito apenas por humanos, com certos tipos de falha
 aparecendo com maior frequência e templates inseguros se repetindo em
 diferentes repositórios, sugerindo padrões induzidos pelos próprios
-modelos \parencite{stateofcyber2026,wu2025}. Esse cenário torna o
-problema tratado por este projeto relevante: à medida que a geração de
-código por IA se populariza, cresce também a necessidade de mecanismos
-que identifiquem essas vulnerabilidades antes que o código chegue à
-produção.
- 
-Ferramentas de análise estática ajudam a identificar parte desses
-problemas, porém frequentemente geram falsos positivos e possuem
+modelos. Com isso surge uma necessidade de se tomar uma medida proativa para identificar vulnerabilidades
+em código-fonte antes de sua integração a um sistema, de forma a reduzir o risco de exploração de
+falhas de segurança e proteger dados sensíveis de usuários e empresas. 
+
+Nota-se tambem que embora existam ferramentas de análise estática ajudam a identificar parte desses
+problemas elas frequentemente geram falsos positivos e possuem
 dificuldade para compreender o contexto do código, como a intenção do
-desenvolvedor e as chamadas entre funções
-\parencite{yang2025,techscience2025}. Essa limitação é o que torna o
+desenvolvedor e as chamadas entre funções. Essa limitação é o que torna o
 problema relevante do ponto de vista técnico: não basta detectar
 vulnerabilidades já catalogadas por regras fixas, é preciso compreender
 o contexto do código para reduzir os falsos positivos e priorizar
@@ -40,37 +37,15 @@ corretamente os alertas mais críticos.
 Desenvolver um software capaz de analisar novos trechos de
 código-fonte antes de sua integração a um sistema, identificando
 padrões e erros comuns que possam resultar em vulnerabilidades de
-segurança conhecidas, utilizando técnicas de Machine Learning --
-complementarmente apoiadas por Large Language Models -- para tornar
+segurança conhecidas, utilizando técnicas de Machine Learning e Large Language Models para tornar
 essa análise mais contextual do que a oferecida pelas ferramentas
-tradicionais de análise estática \parencite{wang2025,mdpi2026}.
+tradicionais de análise estática.
  
 \subsection{Objetivos Específicos}
  
 Para alcançar o objetivo geral, foram definidos os seguintes objetivos
 específicos:
  
-\begin{itemize}
-    \item Levantar e analisar criticamente o estado da arte de
-    ferramentas e trabalhos correlatos em análise estática e detecção
-    de vulnerabilidades apoiada por Machine Learning e LLMs;
-    \item Levantar e preparar conjuntos de dados contendo exemplos de
-    vulnerabilidades conhecidas para treinamento e avaliação dos
-    modelos;
-    \item Implementar um módulo de análise estática integrado a
-    ferramentas tradicionais (SonarQube, linters, Dependabot);
-    \item Implementar um módulo de extração de características a
-    partir do código-fonte e dos alertas de análise estática;
-    \item Implementar e treinar um modelo de classificação baseado em
-    Machine Learning, com apoio complementar de Large Language Models,
-    capaz de identificar e priorizar vulnerabilidades;
-    \item Integrar os módulos desenvolvidos em um relatório único e
-    compreensível para o desenvolvedor;
-    \item Avaliar a solução por meio de métricas de classificação
-    (precisão, \textit{recall}, F1-score e taxa de falsos positivos),
-    comparando os resultados obtidos com os de ferramentas tradicionais
-    de análise estática.
-\end{itemize}
  
 \section{Estrutura do Documento}
  
