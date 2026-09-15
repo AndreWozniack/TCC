@@ -1,6 +1,247 @@
 \chapter{Estado da Arte}
 \label{cap:estado_arte}
 
-% Esta seção deverá conter um levantamento das soluções existentes para o problema.
-% Uma análise crítica destas soluções deverá ser feita, indicando quais as melhores e porque são melhores.
+A detecção de vulnerabilidades em código-fonte é um problema relevante
+para a segurança de software, pois falhas introduzidas durante o
+desenvolvimento podem resultar em acessos indevidos, vazamento de
+informações, execução remota de código, negação de serviço e
+comprometimento de sistemas. Tradicionalmente, esse problema é tratado
+por revisão manual de código, testes de segurança e ferramentas de
+análise estática. Entretanto, tais abordagens podem demandar tempo,
+depender da experiência dos analistas e produzir uma quantidade elevada
+de alertas, incluindo falsos positivos.
 
+Com o crescimento da complexidade dos sistemas e do volume de código
+produzido, diferentes abordagens baseadas em \textit{Machine Learning}
+(ML), \textit{Deep Learning} (DL) e modelos de linguagem passaram a ser
+propostas para automatizar e ampliar a identificação de vulnerabilidades.
+Essas soluções procuram aprender padrões associados a falhas de segurança
+a partir de exemplos de código vulnerável e não vulnerável
+\cite{chakraborty2021survey,li2022mlvulnerability}.
+
+\section{Ferramentas de análise estática}
+\label{sec:analise_estatica}
+
+Antes da ampla aplicação de técnicas de \textit{Machine Learning}, a
+principal estratégia para a identificação automática de vulnerabilidades
+era a análise estática. Essa abordagem inspeciona o código-fonte sem a sua
+execução, buscando padrões, regras ou fluxos de dados associados a falhas
+de segurança.
+
+Ferramentas como SonarQube, Semgrep, CodeQL, Checkmarx e Fortify são
+utilizadas para identificar padrões relacionados a vulnerabilidades
+conhecidas, tais como o uso de funções inseguras, validação inadequada de
+entradas, injeção de comandos, injeção SQL, \textit{buffer overflow} e
+problemas de gerenciamento de memória. Algumas dessas ferramentas também
+permitem a criação de regras personalizadas, adequadas às convenções e aos
+requisitos de segurança de uma organização.
+
+A principal vantagem das ferramentas de análise estática está na
+explicabilidade dos resultados. Em geral, elas indicam o trecho de código
+associado ao alerta, descrevem a regra violada e podem fornecer orientações
+para a correção. Dessa forma, são adequadas para revisão de código e para
+integração em pipelines de integração contínua e entrega contínua.
+
+Entretanto, muitas dessas soluções dependem de regras manualmente
+definidas. Consequentemente, sua capacidade de detectar vulnerabilidades
+novas ou padrões que não foram previamente modelados pode ser limitada.
+Além disso, ferramentas estáticas podem gerar falsos positivos, isto é,
+alertas sobre trechos que aparentam ser vulneráveis, mas que não representam
+um risco real no contexto da aplicação. Essas limitações motivaram o uso de
+técnicas de \textit{Machine Learning}, capazes de aprender padrões a partir
+de exemplos de código.
+
+\section{Modelos tradicionais de \textit{Machine Learning}}
+\label{sec:ml_tradicional}
+
+As primeiras pesquisas que aplicaram \textit{Machine Learning} à detecção
+de vulnerabilidades utilizaram características extraídas manualmente do
+código-fonte. Essas características podem incluir quantidade de linhas de
+código, complexidade ciclomática, frequência de funções consideradas
+inseguras, operadores utilizados, chamadas de APIs, tokens e elementos da
+estrutura sintática do programa.
+
+A partir dessas informações, algoritmos como \textit{Random Forest},
+\textit{Support Vector Machine} (SVM), árvores de decisão, regressão
+logística e \textit{Naive Bayes} podem ser treinados para classificar
+funções, arquivos ou módulos como vulneráveis ou não vulneráveis. Essas
+abordagens possuem, em geral, menor custo computacional quando comparadas
+a redes neurais profundas e podem ser mais simples de implementar e
+interpretar.
+
+Entretanto, a eficácia desses modelos está diretamente relacionada à
+qualidade dos atributos selecionados. Como vulnerabilidades podem depender
+do fluxo de dados, das relações entre variáveis, das chamadas de funções e
+do contexto de execução, características superficiais nem sempre representam
+adequadamente o comportamento do programa. Portanto, modelos tradicionais
+podem apresentar dificuldade para detectar falhas complexas, especialmente
+quando o padrão vulnerável não está restrito a uma única linha ou função
+\cite{chakraborty2021survey}.
+
+\section{\textit{Deep Learning} para análise de código}
+\label{sec:deep_learning}
+
+Com o avanço das técnicas de \textit{Deep Learning}, surgiram modelos
+capazes de aprender representações diretamente do código-fonte, reduzindo
+a necessidade de definir atributos manualmente. Entre as arquiteturas
+aplicadas ao problema estão redes neurais convolucionais, redes neurais
+recorrentes, LSTM, GRU, \textit{transformers} e \textit{Graph Neural
+Networks} (GNNs).
+
+Uma solução conhecida é o Devign, proposto por Zhou et al.
+\cite{zhou2019devign}. O método representa o código por meio de grafos e
+aplica redes neurais para identificar funções vulneráveis. Sua proposta
+considera não apenas tokens presentes no código, mas também relações
+estruturais e semânticas entre instruções. Essa estratégia é relevante
+porque uma vulnerabilidade pode decorrer da interação entre diferentes
+partes de uma função, e não apenas de uma instrução isolada.
+
+Outra abordagem relevante consiste no uso de grafos de código, como
+\textit{Abstract Syntax Trees} (ASTs), \textit{Control Flow Graphs} (CFGs),
+\textit{Data Flow Graphs} (DFGs) e \textit{Code Property Graphs} (CPGs).
+Essas estruturas permitem representar, respectivamente, a sintaxe do
+programa, os possíveis caminhos de execução e o fluxo de informações entre
+variáveis. Modelos baseados em grafos podem explorar essas relações e são
+especialmente adequados para vulnerabilidades relacionadas à manipulação de
+memória, validação de entradas e uso incorreto de variáveis
+\cite{chakraborty2021survey}.
+
+Apesar dos resultados positivos, essas abordagens apresentam desafios. A
+construção dos grafos exige ferramentas adicionais para análise do código,
+e o custo computacional pode aumentar de acordo com o tamanho e a
+complexidade do projeto. Além disso, diversos estudos avaliam os modelos no
+nível de função, enquanto vulnerabilidades reais podem depender da interação
+entre arquivos, classes, módulos ou chamadas interprocedurais.
+
+\section{Modelos pré-treinados para código}
+\label{sec:modelos_pre_treinados}
+
+Uma linha mais recente utiliza modelos de linguagem pré-treinados
+especificamente em código-fonte. Esses modelos aprendem padrões a partir
+de grandes coleções de programas e podem ser adaptados para tarefas como
+classificação de código vulnerável, identificação de categorias da
+\textit{Common Weakness Enumeration} (CWE) e sugestão de correções.
+
+O CodeBERT, proposto por Feng et al. \cite{feng2020codebert}, é um modelo
+baseado em \textit{transformers} que aprende representações conjuntas de
+código-fonte e linguagem natural. Após o ajuste fino
+(\textit{fine-tuning}) com exemplos de funções vulneráveis e não
+vulneráveis, o modelo pode ser utilizado em tarefas de classificação de
+vulnerabilidades.
+
+O GraphCodeBERT, proposto por Guo et al. \cite{guo2021graphcodebert},
+amplia essa ideia ao incorporar informações de fluxo de dados. Dessa forma,
+o modelo busca preservar relações relevantes entre variáveis e operações,
+que podem não ser adequadamente representadas quando o código é tratado
+somente como uma sequência de tokens.
+
+Essas soluções são promissoras porque conseguem lidar com dependências
+contextuais de longo alcance. Por exemplo, uma variável pode receber um
+valor em determinada parte do código e ser utilizada de forma insegura
+várias linhas depois. Um modelo baseado em \textit{transformers} pode
+aprender relações desse tipo com maior eficiência do que métodos baseados
+apenas em frequência de palavras ou tokens.
+
+No entanto, modelos baseados exclusivamente em sequências ainda podem
+perder informações estruturais relevantes. Por esse motivo, pesquisas
+recentes combinam \textit{transformers} com representações em grafo, a fim
+de unir a compreensão contextual dos modelos de linguagem à representação
+estrutural oferecida pelos grafos de código
+\cite{guo2021graphcodebert,chakraborty2021survey}.
+
+\section{\textit{Large Language Models} e soluções híbridas}
+\label{sec:llms_hibridos}
+
+Atualmente, os \textit{Large Language Models} (LLMs) voltados à
+programação vêm sendo explorados para detectar vulnerabilidades, explicar
+os riscos encontrados e sugerir possíveis correções. Diferentemente de
+classificadores tradicionais, esses modelos podem analisar um trecho de
+código e gerar descrições em linguagem natural, indicando uma possível
+vulnerabilidade, sua categoria CWE e uma recomendação de mitigação.
+
+Uma tendência recente é a integração de LLMs com \textit{Code Property
+Graphs}. Nessa combinação, o grafo fornece informações estruturais, como
+fluxo de dados e fluxo de controle, enquanto o modelo de linguagem contribui
+com a interpretação contextual do código. Abordagens híbridas dessa natureza
+buscam melhorar a capacidade de detectar vulnerabilidades que não são
+facilmente identificadas apenas pela análise de tokens ou por regras
+estáticas \cite{svgen2026,llmxcpg2025}.
+
+Apesar de seu potencial, os LLMs possuem limitações importantes. Eles podem
+gerar falsos positivos, deixar de identificar vulnerabilidades reais ou
+fornecer justificativas aparentemente plausíveis, mas incorretas. Também
+existem questões relacionadas ao custo computacional, à privacidade de
+código-fonte enviado a serviços externos e à dificuldade de reproduzir
+resultados quando modelos proprietários são utilizados.
+
+Além disso, a capacidade de generalização ainda representa um desafio.
+Um modelo pode apresentar bons resultados em um conjunto de dados
+específico, mas obter desempenho inferior quando aplicado a projetos,
+linguagens ou distribuições de dados diferentes. Assim, a avaliação dessas
+soluções deve considerar não apenas métricas de classificação, mas também a
+taxa de falsos positivos, o tempo de processamento, a explicabilidade e a
+capacidade de generalização para código real
+\cite{li2022mlvulnerability,chakraborty2021survey}.
+
+\section{Análise crítica das soluções existentes}
+\label{sec:analise_critica}
+
+A análise das soluções existentes mostra que não há uma abordagem única
+capaz de resolver completamente o problema de detecção de vulnerabilidades
+em código-fonte. As ferramentas de análise estática permanecem relevantes
+por sua maturidade, explicabilidade, rapidez e facilidade de integração aos
+processos de desenvolvimento. Entretanto, sua dependência de regras
+predefinidas limita a identificação de padrões novos ou complexos.
+
+Os métodos tradicionais de \textit{Machine Learning} representam uma
+alternativa às regras fixas, pois aprendem padrões a partir de dados.
+Contudo, sua eficácia depende da seleção de atributos e eles podem ter
+dificuldade para representar o contexto semântico e as relações de fluxo
+de dados presentes no programa.
+
+As abordagens baseadas em \textit{Deep Learning}, \textit{transformers} e
+grafos de código apresentam maior potencial para modelar características
+sintáticas, semânticas e estruturais. Em particular, soluções híbridas que
+combinam modelos de linguagem e grafos de código são promissoras, pois
+integram a capacidade de compreensão contextual dos modelos de linguagem à
+representação explícita do fluxo de controle e do fluxo de dados
+\cite{svgen2026,llmxcpg2025}.
+
+Entretanto, uma solução não deve ser considerada superior apenas por
+apresentar maior acurácia em um único conjunto de dados. A comparação entre
+abordagens deve considerar métricas como precisão, \textit{recall},
+\textit{F1-score}, taxa de falsos positivos, custo computacional, tempo de
+inferência, explicabilidade e generalização para projetos não utilizados no
+treinamento. Também é necessário considerar a qualidade dos rótulos e o
+nível de análise adotado, pois muitos datasets avaliam apenas funções
+isoladas, enquanto vulnerabilidades reais podem depender de contexto
+interprocedural.
+
+Dessa forma, as abordagens híbridas baseadas em modelos pré-treinados e
+grafos de código podem ser consideradas as mais promissoras para pesquisas
+atuais. No entanto, ferramentas estáticas continuam necessárias como apoio,
+principalmente em cenários nos quais a rastreabilidade do alerta, a
+privacidade do código e a execução rápida em pipelines de desenvolvimento
+são requisitos fundamentais.
+
+\section{Síntese do capítulo}
+\label{sec:sintese_estado_arte}
+
+Este capítulo apresentou as principais soluções utilizadas para a detecção
+de vulnerabilidades em código-fonte. Inicialmente, foram discutidas as
+ferramentas de análise estática, caracterizadas pela aplicação de regras e
+padrões predefinidos. Em seguida, foram apresentados os modelos
+tradicionais de \textit{Machine Learning}, as abordagens de \textit{Deep
+Learning}, os modelos de linguagem pré-treinados para código e os LLMs
+integrados a grafos de código.
+
+Observou-se que as soluções mais recentes buscam combinar diferentes
+representações do código, principalmente informações textuais, sintáticas e
+semânticas. Embora modelos de linguagem e grafos apresentem potencial para
+detectar padrões complexos, desafios relacionados à qualidade dos dados,
+generalização, interpretabilidade e falsos positivos ainda permanecem.
+
+Portanto, a proposta deste trabalho deve ser avaliada não apenas pelo
+desempenho em métricas tradicionais de classificação, mas também por sua
+capacidade de identificar vulnerabilidades em cenários realistas e por sua
+viabilidade de integração ao processo de desenvolvimento de software.
