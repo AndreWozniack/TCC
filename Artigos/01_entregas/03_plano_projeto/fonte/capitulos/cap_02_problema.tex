@@ -1,8 +1,43 @@
 % !TeX root = ../main.tex
 \chapter{Detalhamento do Problema}
 \label{cap:problema}
-Primeiramente para entender os problemas de segurança em código, precisamos definir a produção de código antes das ferramentas de Inteligência Artificial. O código é produzido por desenvolvedores humanos, que escrevem manualmente cada linha de código, utilizando suas habilidades e conhecimentos para criar software funcional. Esse processo envolve a compreensão dos requisitos do sistema, a implementação de algoritmos e estruturas de dados, e a realização de testes para garantir que o código funcione corretamente. No entanto, mesmo com desenvolvedores experientes, erros podem ocorrer, resultando em vulnerabilidades de segurança.
 
-No entanto, estamos vivendo uma verdadeira revolução na produção de código com o advento de ferramentas de Inteligência Artificial, como Claude Code, Codex, Antigravity, Curso e o GitHub Copilot, que utilizam modelos de linguagem avançados para auxiliar os desenvolvedores na escrita de código. Essas ferramentas podem gerar tcódigo automaticamente, sejam por trechos ou até mesmo abordagens como o uso de agentes para criar tudo através com base em descrições em linguagem natural. Embora essas ferramentas possam aumentar a produtividade e reduzir o tempo de desenvolvimento, elas também introduzem desafios de segurança.
+Historicamente, o código-fonte é produzido por desenvolvedores humanos,
+que escrevem manualmente cada linha, aplicando suas habilidades e
+conhecimentos para construir software funcional. Esse processo envolve
+a compreensão dos requisitos do sistema, a implementação de algoritmos e
+estruturas de dados e a realização de testes para garantir o
+funcionamento correto do software. Mesmo com desenvolvedores experientes,
+entretanto, erros podem ocorrer e resultar em vulnerabilidades de
+segurança.
 
-Com esse advento, surgem preocupações sobre a qualidade e segurança do código gerado automaticamente. Estudos recentes indicam que código assistido por IA apresenta, em média, 4,4 vezes mais vulnerabilidades que código escrito apenas por humanos, com certos tipos de falha aparecendo com maior frequência e templates inseguros se repetindo em diferentes repositórios, sugerindo padrões induzidos pelos próprios modelos \cite{stateofcyber2026,wu2025}. Embora ferramentas de análise estática ajudem a identificar esses problemas, elas frequentemente geram falsos positivos e possuem dificuldade para compreender o contexto do código, como a intenção do desenvolvedor e chamadas entre funções \cite{yang2025,techscience2025}. Por isso, há demanda por abordagens mais contextuais, baseadas em Machine Learning e Large Language Models, que vêm sendo aplicadas à detecção de vulnerabilidades e à priorização de alertas em código gerado automaticamente \cite{wang2025,mdpi2026}.
+Nos últimos anos, esse cenário tem sido transformado pelo advento de
+ferramentas de Inteligência Artificial voltadas ao desenvolvimento, como
+GitHub Copilot, Claude Code, Codex e Cursor, que utilizam modelos de
+linguagem avançados para auxiliar os desenvolvedores na escrita de
+código. Essas ferramentas podem gerar código automaticamente — desde
+pequenos trechos até projetos inteiros construídos por agentes a partir
+de descrições em linguagem natural. Embora aumentem a produtividade e
+reduzam o tempo de desenvolvimento, também introduzem novos desafios de
+segurança.
+
+Estudos recentes indicam que o código assistido por IA apresenta, em
+média, 4,4 vezes mais vulnerabilidades do que o código escrito apenas
+por humanos, com determinados tipos de falha aparecendo com maior
+frequência e \textit{templates} inseguros se repetindo em diferentes
+repositórios, o que sugere padrões induzidos pelos próprios modelos
+\cite{stateofcyber2026,wu2025}. As ferramentas de análise estática
+tradicionalmente utilizadas para identificar esses problemas apresentam
+duas limitações centrais: elevada taxa de falsos positivos e
+dificuldade em compreender o contexto do código, como a intenção do
+desenvolvedor e as chamadas entre funções \cite{yang2025,techscience2025}.
+Diante disso, há demanda por abordagens mais contextuais, baseadas em
+\textit{Machine Learning} e \textit{Large Language Models}, capazes de
+detectar vulnerabilidades e priorizar alertas em código gerado
+automaticamente \cite{wang2025,mdpi2026}.
+
+Esse é o problema tratado neste trabalho: analisar trechos de
+código-fonte — em especial aqueles produzidos por assistentes de IA —
+antes de sua integração a um sistema, identificando padrões associados a
+vulnerabilidades conhecidas com maior sensibilidade ao contexto do que
+as ferramentas de análise estática tradicionais.

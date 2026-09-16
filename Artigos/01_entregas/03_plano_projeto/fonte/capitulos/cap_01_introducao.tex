@@ -8,69 +8,73 @@
 % O final da introdução deve incluir uma descrição de como o documento está estruturado (um parágrafo indicando o conteúdo de cada uma das seções seguintes).
 
 \section{Motivação e Relevância}
-Com o aumento do uso de Inteligência Artificial para gerar código,
-trechos produzidos automaticamente vêm sendo incorporados a projetos
-sem análise adequada de segurança, o que pode introduzir
-vulnerabilidades como injeção de comandos, vazamento de dados e falhas
-de gerenciamento de memória. Estudos recentes indicam que código
-assistido por IA apresenta, em média, 4,4 vezes mais vulnerabilidades
-que código escrito apenas por humanos, com certos tipos de falha
-aparecendo com maior frequência e templates inseguros se repetindo em
-diferentes repositórios, sugerindo padrões induzidos pelos próprios
-modelos. Com isso surge uma necessidade de se tomar uma medida proativa para identificar vulnerabilidades
-em código-fonte antes de sua integração a um sistema, de forma a reduzir o risco de exploração de
-falhas de segurança e proteger dados sensíveis de usuários e empresas. 
 
-Nota-se tambem que embora existam ferramentas de análise estática ajudam a identificar parte desses
-problemas elas frequentemente geram falsos positivos e possuem
-dificuldade para compreender o contexto do código, como a intenção do
-desenvolvedor e as chamadas entre funções. Essa limitação é o que torna o
-problema relevante do ponto de vista técnico: não basta detectar
-vulnerabilidades já catalogadas por regras fixas, é preciso compreender
-o contexto do código para reduzir os falsos positivos e priorizar
-corretamente os alertas mais críticos.
- 
+Com o crescente uso de Inteligência Artificial para gerar código, trechos
+produzidos automaticamente vêm sendo incorporados a projetos sem análise
+adequada de segurança, o que pode introduzir vulnerabilidades como
+injeção de comandos, vazamento de dados e falhas de gerenciamento de
+memória. Estudos recentes indicam que o código assistido por IA
+apresenta, em média, 4,4 vezes mais vulnerabilidades do que o código
+escrito apenas por humanos, com determinados tipos de falha aparecendo
+com maior frequência e \textit{templates} inseguros se repetindo em
+diferentes repositórios, sugerindo padrões induzidos pelos próprios
+modelos \cite{stateofcyber2026,wu2025,veracode2025}. Diante desse
+cenário, torna-se necessário adotar uma medida proativa para identificar
+vulnerabilidades em código-fonte antes de sua integração a um sistema,
+reduzindo o risco de exploração de falhas de segurança e protegendo
+dados sensíveis de usuários e empresas.
+
+Embora existam ferramentas de análise estática que auxiliam na
+identificação de parte desses problemas, elas frequentemente geram
+falsos positivos e apresentam dificuldade para compreender o contexto do
+código, como a intenção do desenvolvedor e as chamadas entre funções
+\cite{techscience2025,yang2025}. Essa limitação torna o problema
+relevante do ponto de vista técnico: não basta detectar vulnerabilidades
+já catalogadas por regras fixas, é preciso compreender o contexto do
+código para reduzir os falsos positivos e priorizar corretamente os
+alertas mais críticos.
+
 \section{Objetivos}
- 
+
 \subsection{Objetivo Geral}
- 
-Desenvolver um software capaz de analisar novos trechos de
-código-fonte antes de sua integração a um sistema, identificando
-padrões e erros comuns que possam resultar em vulnerabilidades de
-segurança conhecidas, utilizando técnicas de Machine Learning e Large Language Models para tornar
-essa análise mais contextual do que a oferecida pelas ferramentas
-tradicionais de análise estática.
- 
+
+Desenvolver um software capaz de analisar trechos de código-fonte antes
+de sua integração a um sistema, identificando padrões e erros comuns que
+possam resultar em vulnerabilidades de segurança conhecidas, utilizando
+técnicas de \textit{Machine Learning} e \textit{Large Language Models}
+para tornar essa análise mais contextual do que a oferecida pelas
+ferramentas tradicionais de análise estática.
+
 \subsection{Objetivos Específicos}
- 
-Para alcançar o objetivo geral, foram definidos os seguintes objetivos\\
+
+Para alcançar o objetivo geral, foram definidos os seguintes objetivos
 específicos:
 
 \begin{itemize}
   \item Realizar uma revisão bibliográfica sobre vulnerabilidades de
-  segurança em código-fonte, ferramentas de análise estática e
-  técnicas de Machine Learning e Large Language Models aplicadas à
-  detecção de vulnerabilidades;
+  segurança em código-fonte, ferramentas de análise estática e técnicas
+  de \textit{Machine Learning} e \textit{Large Language Models}
+  aplicadas à detecção de vulnerabilidades;
   \item Definir a arquitetura do sistema, incluindo a decomposição em
   módulos e o diagrama em blocos do software;
   \item Selecionar as tecnologias que serão utilizadas para o
   desenvolvimento do software, justificando suas escolhas;
   \item Implementar o software, integrando os módulos e garantindo sua
   funcionalidade;
-  \item Realizar testes e validação do software, avaliando sua
-  eficácia na detecção de vulnerabilidades em código-fonte.
+  \item Validar o software por meio de testes, avaliando sua eficácia
+  na detecção de vulnerabilidades em código-fonte.
 \end{itemize}
- 
 
 \section{Estrutura do Documento}
- 
-Este documento está estruturado da seguinte forma: a
-Seção~\ref{cap:problema} detalha o problema a ser resolvido; a
-Seção~\ref{cap:estado_arte} apresenta o estado da arte das soluções
-existentes; a Seção~\ref{cap:trabalho} descreve o trabalho a ser
-desenvolvido, incluindo a decomposição em módulos e o diagrama em
-blocos do sistema; a Seção~\ref{cap:tecnologias} apresenta as
-tecnologias que serão utilizadas; a Seção~\ref{cap:testes} descreve os
-procedimentos de teste e validação; a Seção~\ref{sec:riscos} traz a
-análise dos riscos do projeto; a Seção~\ref{cap:cronograma} apresenta o
-cronograma; e a Seção~\ref{cap:conclusao} conclui o documento.
+
+Este documento está estruturado da seguinte forma: o
+Capítulo~\ref{cap:problema} detalha o problema a ser resolvido; o
+Capítulo~\ref{cap:estado_arte} apresenta o estado da arte das soluções
+existentes; o Capítulo~\ref{cap:trabalho} descreve o trabalho a ser
+desenvolvido, incluindo a decomposição em módulos e o diagrama em blocos
+do sistema; o Capítulo~\ref{cap:tecnologias} apresenta as tecnologias
+que serão utilizadas; o Capítulo~\ref{cap:testes} descreve os
+procedimentos de teste e validação; o Capítulo~\ref{cap:riscos} traz a
+análise dos riscos do projeto; o Capítulo~\ref{cap:cronograma}
+apresenta o cronograma; e o Capítulo~\ref{cap:conclusao} conclui o
+documento.
