@@ -52,6 +52,16 @@
   basicstyle=\ttfamily\small
 }
 
+\usepackage{graphicx} 
+\usepackage{pgfgantt}  
+\usepackage{graphicx} 
+
+\makeatletter
+\renewcommand{\pgfcalendarmonthshortname}[1]{%
+  \ifcase#1\or Jan\or Fev\or Mar\or Abr\or Mai\or Jun\or Jul\or Ago\or Set\or Out\or Nov\or Dez\fi
+}
+\makeatother
+
 % Troca "Listing" por "Listagem"
 \renewcommand{\lstlistingname}{Listagem}
 
