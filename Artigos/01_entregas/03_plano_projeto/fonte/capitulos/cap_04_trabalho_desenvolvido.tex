@@ -1,6 +1,6 @@
 \chapter{Trabalho a Ser Desenvolvido}
 \label{cap:trabalho}
-Objetivo : DESENVOLVER um software qeu analise...
+
 % Nesta seção, uma descrição funcional da solução proposta deverá ser feita:
 % - O projeto deverá ser decomposto em módulos funcionais (incluindo software e hardware).
 % - Deverá ser apresentado um diagrama em blocos mostrando uma visão geral do sistema a ser desenvolvido, isto é, como os módulos funcionais se relacionam.
@@ -9,6 +9,193 @@ Objetivo : DESENVOLVER um software qeu analise...
 
 \section{Descrição Funcional e Diagrama em Blocos}
 
+O objetivo do trabalho é desenvolver um software capaz de analisar
+trechos de código-fonte antes de sua integração a um sistema,
+identificando padrões associados a vulnerabilidades de segurança
+conhecidas e classificando-os de forma contextual, de modo a
+complementar as ferramentas tradicionais de análise estática e a
+reduzir a taxa de falsos positivos por elas produzida.
+
+Funcionalmente, a solução recebe como entrada um conjunto de trechos
+de código-fonte -- tipicamente os arquivos modificados em um
+\textit{pull request} ou em um \textit{commit} -- e devolve ao
+desenvolvedor um relatório contendo os trechos considerados
+potencialmente vulneráveis, o tipo de vulnerabilidade associado a cada
+um e um nível de confiança da classificação, permitindo que os alertas
+mais críticos sejam priorizados durante a revisão de código.
+
+Para alcançar esse comportamento, o sistema foi decomposto em cinco
+módulos funcionais, todos de \textit{software}, organizados como um
+\textit{pipeline}: o módulo de entrada e pré-processamento (M1)
+prepara o código recebido; o módulo de análise estática (M2) executa
+as ferramentas tradicionais sobre esse código, gerando alertas brutos;
+o módulo de extração de características (M3) converte o código
+normalizado e os alertas em representações numéricas; o módulo de
+classificação (M4) decide, a partir dessas representações, quais
+trechos são de fato vulneráveis e qual a criticidade de cada alerta; e
+o módulo de relatório e interface (M5) consolida e apresenta os
+resultados ao desenvolvedor. O projeto não contempla módulos de
+\textit{hardware} dedicados: a execução ocorre integralmente em
+computadores de propósito geral, conforme detalhado na
+Seção~\ref{sec:hardware}.
+
+A Figura~\ref{fig:blocos} apresenta a visão geral do sistema e o
+relacionamento entre esses módulos. As caixas em traço contínuo
+correspondem aos módulos a serem desenvolvidos, as caixas em traço
+tracejado representam recursos externos consumidos pelo sistema
+(ferramentas de análise estática de terceiros e o modelo treinado
+junto ao conjunto de dados de vulnerabilidades), e as caixas em
+destaque representam as fronteiras do sistema, isto é, a origem do
+código analisado e o usuário final da solução.
+
+\begin{figure}[htbp]
+\centering
+\begin{tikzpicture}[
+    node distance=1.4cm and 1.9cm,
+    mod/.style={draw, rounded corners, minimum width=3.2cm, minimum height=1.25cm, align=center, font=\small, fill=blue!12},
+    ext/.style={draw, dashed, rounded corners, minimum width=3.1cm, minimum height=1.05cm, align=center, font=\footnotesize, fill=black!6},
+    io/.style={draw, rounded corners=2pt, minimum width=2.9cm, minimum height=1.25cm, align=center, font=\small, fill=green!12},
+    arr/.style={-{Latex[length=2.2mm]}, thick},
+    lbl/.style={font=\scriptsize, midway, align=center}
+]
+    % ---------- Linha 1 ----------
+    \node[io] (src) {Código-Fonte\\\footnotesize(repositório / PR)};
+    \node[mod, right=of src] (m1) {\textbf{M1}\\Entrada e\\Pré-processamento};
+    \node[mod, right=of m1] (m2) {\textbf{M2}\\Análise Estática};
+    \node[ext, above=0.8cm of m2] (tools) {SonarQube, linters,\\Dependabot};
+
+    % ---------- Linha 2 ----------
+    \node[mod, below=1.9cm of m2] (m3) {\textbf{M3}\\Extração de\\Características};
+    \node[mod, left=of m3] (m4) {\textbf{M4}\\Classificação\\(ML / LLM)};
+    \node[mod, left=of m4] (m5) {\textbf{M5}\\Relatório e\\Interface};
+    \node[ext, below=0.9cm of m4] (model) {Modelo treinado\\+ dataset CWE/CVE};
+    \node[io, below=0.9cm of m5] (dev) {Desenvolvedor};
+
+    % ---------- Fluxo principal ----------
+    \draw[arr] (src) -- (m1);
+    \draw[arr] (m1) -- node[lbl, above]{código\\normalizado} (m2);
+    \draw[arr] (m2) -- node[lbl, right, xshift=1mm]{alertas\\brutos} (m3);
+    \draw[arr] (m3) -- node[lbl, above]{\textit{features}} (m4);
+    \draw[arr] (m4) -- node[lbl, above]{alertas\\classificados} (m5);
+    \draw[arr] (m5) -- (dev);
+
+    % ---------- Entradas auxiliares ----------
+    \draw[arr, dashed] (tools) -- (m2);
+    \draw[arr, dashed] (model) -- (m4);
+
+    % ---------- Código normalizado também alimenta M3 ----------
+    \draw[arr] (m1.south) -- ++(0,-0.95) -| node[lbl, below, pos=0.25]{código normalizado} (m3.north);
+\end{tikzpicture}
+\caption{Diagrama em blocos do sistema.}
+\label{fig:blocos}
+\end{figure}
+
+O fluxo de dados entre os módulos ocorre da seguinte forma. O código
+recebido é normalizado por M1, que o entrega tanto a M2 quanto a M3 --
+este último precisa do código em si, e não apenas dos alertas, para
+extrair características estruturais. M2 executa as ferramentas de
+análise estática e repassa a M3 os alertas brutos resultantes. M3
+combina as duas fontes em um vetor de características por trecho de
+código, que é consumido por M4. Este, apoiado no modelo previamente
+treinado, produz para cada trecho uma classificação e um grau de
+confiança, os quais são finalmente formatados por M5 e apresentados ao
+desenvolvedor.
 
 \section{Detalhamento dos Módulos Funcionais}
+
+\subsection{M1 -- Entrada e Pré-processamento}
+
+Responsável por receber o código-fonte a ser analisado e prepará-lo
+para as etapas seguintes. O módulo obtém os arquivos a partir de um
+repositório Git (ou dos arquivos alterados em um \textit{pull
+request}), identifica a linguagem de cada arquivo, normaliza aspectos
+superficiais do texto -- codificação, quebras de linha e indentação --
+e realiza o \textit{parsing} do código, produzindo uma representação
+estruturada que permite localizar funções, chamadas, variáveis e
+dependências. Cabe também a este módulo delimitar o escopo da análise,
+selecionando apenas os trechos novos ou modificados, já que o objetivo
+da solução é avaliar o código antes de sua integração.
+
+\textit{Implementação:} Python, utilizando bibliotecas de manipulação
+de repositórios Git e de \textit{parsing} de código-fonte para a
+construção das árvores sintáticas. A saída é entregue aos módulos
+seguintes em formato estruturado (JSON).
+
+\subsection{M2 -- Análise Estática}
+
+O módulo orquestra a execução de ferramentas de Análise estática, coleta os alertas por elas produzidos e os converte para um formato unificado, de modo que alertas de
+ferramentas distintas possam ser tratados de maneira homogênea pelos
+módulos seguintes. Cada alerta preserva a localização no código
+(arquivo, linha e função), a categoria da vulnerabilidade e a
+severidade atribuída pela ferramenta de origem.
+
+\textit{Implementação:} Python para a orquestração e a normalização
+dos resultados, integrando-se às ferramentas SonarQube, a
+\textit{linters} específicos de cada linguagem e ao Dependabot. As
+ferramentas externas são executadas em contêineres Docker, o que
+garante a reprodutibilidade do ambiente de análise.
+
+\subsection{M3 -- Extração de Características}
+
+Responsável por converter as entradas textuais e estruturais em
+representações numéricas processáveis por algoritmos de aprendizado de
+máquina. O módulo combina duas fontes: o código normalizado vindo de
+M1, do qual são extraídas características estruturais e semânticas do
+trecho analisado, e os alertas vindos de M2, dos quais são derivadas
+características relativas ao tipo, à severidade e à quantidade de
+alertas incidentes sobre aquele trecho. O resultado é um vetor de
+características por trecho de código, no qual cada alerta candidato
+está associado ao seu respectivo contexto.
+
+\textit{Implementação:} Python, com bibliotecas de Machine Learning
+para vetorização e, alternativamente, representações baseadas em
+\textit{embeddings} de modelos pré-treinados de código, conforme
+avaliação experimental a ser realizada.
+
+\subsection{M4 -- Módulo de Classificação (ML / LLM)}
+
+Núcleo da solução, responsável por decidir quais trechos apresentam de
+fato risco de vulnerabilidade e qual a criticidade de cada alerta. A
+partir dos vetores de características recebidos de M3, o modelo de
+classificação supervisionada, treinado sobre um conjunto
+de dados de vulnerabilidades conhecidas; Complementarmente, Large Language Models
+poderão ser empregados como apoio à análise contextual dos casos de
+maior ambiguidade, avaliando a intenção do trecho de código e as
+relações entre funções que escapam às regras sintáticas das
+ferramentas tradicionais. Trata-se, portanto, do módulo que efetiva o
+diferencial do projeto em relação à análise estática convencional.
+
+\textit{Implementação:} Python, com bibliotecas de Machine Learning
+para o treinamento e a inferência dos modelos de classificação; o
+apoio de Large Language Models será realizado por meio de consultas a
+modelos de linguagem, tratado como componente complementar e opcional
+do \textit{pipeline}.
+
+\subsection{M5 -- Relatório e Interface}
+
+Responsável por consolidar os resultados da análise e apresentá-los ao
+desenvolvedor de forma compreensível e acionável. O módulo agrega os
+alertas classificados por M4, ordena-os por criticidade e gera um
+relatório indicando, para cada ocorrência, o arquivo e a linha
+correspondentes, o trecho de código envolvido, o tipo de
+vulnerabilidade sugerido e o nível de confiança atribuído pelo modelo.
+A interface é o ponto de contato entre a solução e seu público-alvo,
+razão pela qual se prioriza a clareza da informação sobre a
+exaustividade dos dados exibidos.
+
+\textit{Implementação:} Python, com geração de relatório, de modo
+a permitir a execução tanto manual quanto integrada a um
+\textit{pipeline} de integração contínua.
+
+\subsection{Considerações sobre \textit{Hardware}}
+\label{sec:hardware}
+
+O projeto não prevê o desenvolvimento de módulos de \textit{hardware}.
+A execução da solução ocorre em computadores de propósito geral: os
+computadores pessoais dos integrantes serão utilizados para o
+desenvolvimento e para os testes do \textit{pipeline}, e
+infraestrutura computacional local ou em nuvem poderá ser empregada
+quando o treinamento dos modelos de Machine Learning exigir maior
+capacidade de processamento, em especial na presença de GPU.
+\end{document}
 
