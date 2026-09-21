@@ -5,3 +5,90 @@
 % As etapas do Projeto Final de Curso devem ser utilizadas como referência, mas é necessário apresentar os passos específicos do projeto em questão.
 % (Recomendado pelo orientador: Gráfico de Gantt)
 
+Na Etapa 1, é elaborado e entregue o Formulário de Proposta e, em
+seguida, a Proposta de Projeto. Na Etapa 2, o presente Plano de Projeto
+é finalizado tendo o levantamento do estado da arte, a definição da
+arquitetura, das tecnologias, dos testes e dos riscos, e a redação e
+revisão do documento. Ele é defendido na Etapa 3. Na Etapa 4, os módulos
+do sistema são implementados em sequência, encerrando-se com uma
+semana de testes de integração e documentação antes da entrega do
+Projeto Físico. A partir da Etapa 5, já no
+1\textsuperscript{o} semestre de 2027 (etapa de \textit{previsão}), o
+projeto evolui para um protótipo, onde os Large Language Models são integrados à análise contextual, o e o modelo é reavaliado por meio de testes comparativos com as ferramentas tradicionais de análise
+estática, até a entrega do Protótipo na etapa 6. Nas etapas 7, a
+implementação é finalizada realizando ajustes de desempenho, avaliação
+final por meio das métricas de classificação definidas. E na etapa 8 elaboração do
+Relatório Final e do vídeo de apresentação e a defesa da
+implementação final do projeto.
+
+\begin{figure}[htbp]
+\centering
+\resizebox{\textwidth}{!}{%
+\begin{ganttchart}[
+    time slot format=isodate,
+    x unit=0.05cm,
+    y unit title=0.7cm,
+    y unit chart=0.45cm,
+    vgrid, hgrid,
+    title height=1,
+    bar/.append style={fill=blue!40, rounded corners=1pt},
+    group/.append style={fill=blue!70, rounded corners=1pt},
+    milestone/.append style={fill=red},
+    bar label font=\small,
+    group label font=\small\bfseries,
+    milestone label font=\small,
+    title label font=\normalsize
+]{2026-08-01}{2027-06-15}
+\gantttitlecalendar{year, month=shortname} \\
+\ganttgroup{Etapa 1 - Formulário e Proposta}{2026-08-01}{2026-09-02} \\
+\ganttbar{Elaboração da Proposta}{2026-08-01}{2026-09-02} \\
+\ganttmilestone{Formulário da Proposta}{2026-09-02} \\
+\ganttbar{Elaboração da Proposta de Projeto}{2026-09-02}{2026-09-03} \\
+\ganttgroup{Etapa 2 - Plano de Projeto}{2026-09-01}{2026-09-24} \\
+\ganttbar{Estado da arte e detalhamento do problema}{2026-09-01}{2026-09-07} \\
+\ganttbar{Arquitetura e diagrama de blocos}{2026-09-08}{2026-09-12} \\
+\ganttbar{Tecnologias, testes e riscos}{2026-09-13}{2026-09-18} \\
+\ganttbar{Redação e revisão geral do documento}{2026-09-19}{2026-09-24} \\
+\ganttmilestone{Entrega do Plano de Projeto}{2026-09-25} \\
+\ganttgroup{Etapa 3 - Defesa do Plano}{2026-09-26}{2026-10-01} \\
+\ganttbar{Elaboração de slides e ensaios}{2026-09-26}{2026-10-01} \\
+\ganttbar{Revisão do Plano com o feedback da banca}{2026-10-03}{2026-10-06} \\
+\ganttbar{Diagrama em blocos geral atualizado}{2026-10-07}{2026-10-09} \\
+\ganttbar{Detalhamento técnico: módulo entrada/pré-proc.}{2026-10-10}{2026-10-13} \\
+\ganttbar{Detalhamento técnico: módulo análise estática}{2026-10-14}{2026-10-17} \\
+\ganttbar{Detalhamento técnico: extração de características}{2026-10-18}{2026-10-21} \\
+\ganttbar{Detalhamento técnico: classificação (ML/LLM)}{2026-10-22}{2026-10-27} \\
+\ganttbar{Detalh. relatório/interface + interfaces entre blocos}{2026-10-28}{2026-10-31} \\
+\ganttbar{Especificação de testes (caixa preta/branca)}{2026-11-01}{2026-11-04} \\
+\ganttbar{Atualização de riscos e cronograma}{2026-11-05}{2026-11-07} \\
+\ganttbar{Conclusão, referências e revisão geral}{2026-11-08}{2026-11-11} \\
+\ganttmilestone{Entrega do Projeto Físico}{2026-11-12} \\
+\ganttgroup{Etapa 5 - Defesa do Proj. Físico}{2026-11-13}{2026-11-19} \\
+\ganttbar{Preparação de apresentação/demo e ensaios}{2026-11-13}{2026-11-19} \\
+\ganttmilestone{Defesa do Projeto Físico}{2026-11-20} \\
+\ganttgroup{Etapa 6 - Efetuação do Protótipo}{2026-11-21}{2027-04-29} \\
+\ganttbar{Preparação do ambiente e dos datasets}{2026-11-21}{2026-12-05} \\
+\ganttbar{Entrada e pré-processamento + análise estática}{2026-12-06}{2026-12-31} \\
+\ganttbar{Implementar módulo de extração de características}{2027-01-01}{2027-01-20} \\
+\ganttbar{Implementar e treinar o modulo de classificação}{2027-01-21}{2027-02-20} \\
+\ganttbar{Integração de LLMs à análise contextual}{2027-02-21}{2027-03-10} \\
+\ganttbar{Módulo de relatório/interface + integração geral}{2027-03-11}{2027-03-31} \\
+\ganttbar{Testes (caixa preta/branca) e ajustes}{2027-04-01}{2027-04-20} \\
+\ganttbar{Documentação e revisão do Projeto Físico}{2027-04-21}{2027-04-29} \\
+\ganttmilestone{Entrega do Protótipo}{2027-04-30} \\
+\ganttgroup{Etapa 7 - Defesa do Protótipo}{2027-05-01}{2027-05-04} \\
+\ganttbar{Atualização de slides/demo e ensaio}{2027-05-01}{2027-05-04} \\
+\ganttmilestone{Defesa do Protótipo}{2027-05-05} \\
+\ganttgroup{Etapa 8 - Finalização da Implementação}{2027-05-06}{2027-06-09} \\
+\ganttbar{Ajustes finais de desempenho}{2027-05-06}{2027-05-19} \\
+\ganttbar{Avaliação final com métricas comparativas}{2027-05-20}{2027-06-02} \\
+\ganttbar{Relatório Final e vídeo}{2027-06-03}{2027-06-09} \\
+\ganttmilestone{Entrega do Projeto Final}{2027-06-10} \\
+\ganttgroup{Etapa 9 - Defesa Final}{2027-06-11}{2027-06-14} \\
+\ganttbar{Preparação da apresentação final e ensaio}{2027-06-11}{2027-06-14} \\
+\ganttmilestone{Defesa da Implementação Final}{2027-06-15} \\
+\end{ganttchart}%
+}
+\caption{Cronograma do projeto -- Gráfico de Gantt.}
+\label{fig:gantt-cronograma}
+\end{figure}
