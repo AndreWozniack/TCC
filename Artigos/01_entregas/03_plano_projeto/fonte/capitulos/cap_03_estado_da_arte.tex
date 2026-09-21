@@ -15,22 +15,6 @@ Claude Code e Codex, cujo código produzido apresenta índices
 elevados de vulnerabilidades quando comparado ao código escrito por
 humanos \cite{pearce2022copilot,veracode2025,wu2025}.
 
-% Este capítulo apresenta o estado da arte sobre o tema, organizado em seis
-% partes. A Seção~\ref{sec:analise_estatica} caracteriza as ferramentas de
-% análise estática e suas técnicas subjacentes. A Seção~\ref{sec:ml_tradicional}
-% descreve modelos tradicionais de ML aplicados à detecção de
-% vulnerabilidades. A Seção~\ref{sec:deep_learning} discute abordagens de
-% \textit{Deep Learning} e representações em grafo. A
-% Seção~\ref{sec:modelos_pre_treinados} apresenta modelos pré-treinados
-% para código, como CodeBERT e GraphCodeBERT. A Seção~\ref{sec:llms_hibridos}
-% aborda LLMs e soluções híbridas, incluindo trabalhos que combinam LLMs
-% com análise estática para reduzir falsos positivos. A
-% Seção~\ref{sec:trabalhos_relacionados} apresenta trabalhos relacionados
-% com foco em segurança de código gerado por IA, tema central desta
-% proposta. Por fim, as Seções~\ref{sec:analise_critica} e
-% \ref{sec:sintese_estado_arte} apresentam a análise crítica e a síntese do
-% capítulo.
-
 \section{Ferramentas de análise estática}
 \label{sec:analise_estatica}
 
@@ -38,12 +22,12 @@ A análise estática de software, também conhecida como \textit{Static
 Application Security Testing} (SAST), consiste na inspeção do código-fonte,
 do \textit{bytecode} ou do binário sem a sua execução, com o objetivo de
 identificar defeitos, violações de estilo e, em particular, vulnerabilidades
-de segurança \cite{techscience2025}. Diferentemente do
-\textit{Dynamic Application Security Testing} (DAST), que analisa o
-programa em tempo de execução, a análise estática opera sobre uma
-representação intermediária do código e é aplicada, tipicamente, durante
-o desenvolvimento ou nos processos de integração contínua e entrega
-contínua (\textit{Continuous Integration/Continuous Delivery} — CI/CD).
+de segurança \cite{techscience2025}. Diferentemente das abordagens
+dinâmicas discutidas na Seção~\ref{sec:analise_dinamica}, a análise
+estática opera sobre uma representação intermediária do código, sem
+executá-lo, e é aplicada tipicamente durante o desenvolvimento ou nos
+processos de integração contínua e entrega contínua (\textit{Continuous
+Integration/Continuous Delivery} — CI/CD).
 
 Internamente, um analisador estático constrói representações
 intermediárias do programa, como \textit{Abstract Syntax Trees} (ASTs),
@@ -52,8 +36,8 @@ Sobre essas estruturas são executadas técnicas como \textbf{casamento de
 padrões sintáticos}, \textbf{análise de fluxo de dados},
 \textbf{análise interprocedural} e, notadamente, a \textbf{análise de taint}
 (\textit{taint analysis}), que rastreia se dados provenientes de fontes
-não confiáveis, chamadas \textit{sources} — por exemplo, parâmetros de
-requisições HTTP ou leitura de arquivos —, atingem operações sensíveis,
+não confiáveis, chamadas \textit{sources}, por exemplo, parâmetros de
+requisições HTTP ou leitura de arquivos, atingem operações sensíveis,
 chamadas \textit{sinks}, como consultas SQL, chamadas de sistema
 operacional ou renderização de HTML, sem passar por uma sanitização
 adequada \cite{yamaguchi2014cpg,safeguard2024}. Uma representação
@@ -85,9 +69,8 @@ Entretanto, essas soluções apresentam limitações bem documentadas. Em
 primeiro lugar, sua capacidade de detecção depende de regras
 predefinidas, o que reduz a eficácia diante de padrões novos ou não
 modelados. Em segundo lugar, elas produzem elevadas taxas de
-\textbf{falsos positivos} — alertas que apontam trechos aparentemente
-vulneráveis, mas que não representam risco real no contexto da aplicação
-— o que pode saturar equipes de desenvolvimento e reduzir a confiança nos
+\textbf{falsos positivos}, alertas que apontam trechos aparentemente
+vulneráveis, mas que não representam risco real no contexto da aplicação, o que pode saturar equipes de desenvolvimento e reduzir a confiança nos
 relatórios \cite{techscience2025,yang2025}. Estudos recentes mostram que
 frameworks que combinam análise estática com LLMs, como o ZeroFalse
 \cite{yang2025} e propostas correlatas \cite{wen2025falsealarm}, chegam a
@@ -96,6 +79,57 @@ o que evidencia tanto a magnitude do problema quanto o potencial das
 abordagens híbridas. Essas limitações motivaram a investigação de
 técnicas de ML capazes de aprender padrões a partir de exemplos de código
 vulnerável.
+
+\section{Análise dinâmica e abordagens complementares}
+\label{sec:analise_dinamica}
+
+Embora este trabalho concentre-se em análise estática, é importante
+situá-la em relação às demais famílias de \textit{Application Security
+Testing} (AST), que se distinguem principalmente pelo momento do ciclo
+de desenvolvimento em que atuam e pelo acesso ao código-fonte.
+
+O \textit{Dynamic Application Security Testing} (DAST) analisa a
+aplicação em execução, tipicamente em ambiente de \textit{staging} ou
+homologação, sem acesso ao código-fonte. Ferramentas como OWASP ZAP,
+Burp Suite e Nuclei operam como um agente externo que envia requisições
+maliciosas, como cargas de \textit{SQL Injection}, XSS, \textit{path
+traversal}, entre outras e observa as respostas da aplicação para
+inferir a presença de vulnerabilidades \cite{owasp_devsecops,ranasinghe2025comparative}.
+Por atuar sobre o sistema em funcionamento, o DAST identifica falhas
+que dificilmente aparecem em análise estática, como problemas de
+configuração de servidor, falhas de autenticação e autorização,
+\textit{Security Misconfiguration} e \textit{Broken Access Control},
+categorias em que o DAST supera o SAST em avaliações empíricas
+recentes \cite{ranasinghe2025comparative}. Em contrapartida, o DAST
+depende de uma aplicação executável e razoavelmente instrumentada, não
+aponta a localização exata da vulnerabilidade no código-fonte e tende a
+apresentar cobertura inferior à da análise estática, já que só
+identifica falhas nos caminhos efetivamente exercitados durante o
+\textit{scan}.
+
+Entre SAST e DAST, o \textit{Interactive Application Security Testing}
+(IAST) atua como abordagem híbrida: instrumenta a aplicação em tempo
+de execução por meio de agentes ou \textit{sensors}, de forma que as
+vulnerabilidades sejam observadas durante a execução, mas com acesso ao
+código e ao fluxo de dados internos. Essa combinação tende a produzir
+menos falsos positivos, ao custo de exigir instrumentação e cobertura
+adequada de testes funcionais \cite{elder2023comparison,owasp_devsecops}.
+Já o \textit{Runtime Application Self-Protection} (RASP) atua em
+produção, bloqueando ativamente tentativas de exploração e é
+complementar, não substituto às demais abordagens.
+
+Na prática, essas famílias são adotadas de forma \textbf{complementar}
+ao longo do ciclo de vida do \textit{software}: SAST durante o
+desenvolvimento e nos \textit{pipelines} de CI/CD; DAST em fases de
+homologação e pré-produção; IAST em testes automatizados; e RASP em
+produção \cite{owasp_devsecops}. O presente trabalho posiciona-se na
+etapa inicial desse ciclo, atuando sobre o código-fonte antes de sua
+integração ao sistema, recorte particularmente relevante para o
+cenário de código gerado por LLMs, em que muitas vezes ainda não existe
+uma aplicação executável para submeter a técnicas dinâmicas. Por essa
+razão, as próximas seções concentram-se em abordagens baseadas em
+análise estática, aprendizado de máquina e modelos de linguagem
+aplicados ao código-fonte.
 
 \section{Modelos tradicionais de \textit{Machine Learning}}
 \label{sec:ml_tradicional}
@@ -126,6 +160,7 @@ modelos tradicionais tendem a apresentar dificuldade para detectar
 falhas complexas, especialmente quando o padrão vulnerável não está
 restrito a uma única linha ou função \cite{chakraborty2021survey}.
 
+\newpage
 \section{\textit{Deep Learning} para análise de código}
 \label{sec:deep_learning}
 
@@ -166,7 +201,7 @@ interação entre arquivos, classes, módulos ou chamadas interprocedurais
 \section{Modelos pré-treinados para código}
 \label{sec:modelos_pre_treinados}
 
-Uma linha mais recente utiliza modelos de linguagem pré-treinados
+Uma outra abordagem recente utiliza modelos de linguagem pré-treinados
 especificamente em código-fonte. Esses modelos aprendem padrões a partir
 de grandes coleções de programas e podem ser adaptados por
 \textit{fine-tuning} para tarefas como classificação de código
@@ -203,8 +238,8 @@ representação estrutural oferecida pelos grafos de código
 \section{\textit{Large Language Models} e soluções híbridas}
 \label{sec:llms_hibridos}
 
-Atualmente, os \textit{Large Language Models} voltados à programação —
-como Code Llama, StarCoder, DeepSeek-Coder, GPT-4 e Claude — vêm sendo
+Atualmente, os \textit{Large Language Models} voltados à programação
+como Code Llama, StarCoder, DeepSeek-Coder, GPT-4 e Claude, vêm sendo
 explorados para detectar vulnerabilidades, explicar os riscos
 encontrados e sugerir possíveis correções \cite{mdpi2026}. Diferentemente
 de classificadores tradicionais, esses modelos podem analisar um trecho
@@ -213,8 +248,8 @@ vulnerabilidade, sua categoria CWE e uma recomendação de mitigação.
 
 Uma tendência clara é a integração de LLMs com \textbf{Code Property
 Graphs}. Nessa combinação, o grafo fornece informações estruturais
-precisas — fluxo de dados, fluxo de controle e relações
-interprocedurais —, enquanto o LLM contribui com a interpretação
+precisas, fluxo de dados, fluxo de controle e relações
+interprocedurais, enquanto o LLM contribui com a interpretação
 contextual do código. O \textbf{LLMxCPG} \cite{llmxcpg2025} explora
 essa estratégia para detecção sensível a contexto, e o \textbf{SV-GEN}
 \cite{svgen2026} combina semântica de variáveis extraída por LLM com
@@ -244,12 +279,13 @@ dados específico podem apresentar desempenho significativamente inferior
 quando aplicados a projetos, linguagens ou distribuições de dados
 diferentes \cite{ding2024primevul,outofdistribution2025}.
 
+\newpage 
 \section{Trabalhos relacionados: segurança de código gerado por IA}
 \label{sec:trabalhos_relacionados}
 
 Uma vez que o presente trabalho tem como foco a análise de código-fonte
-antes de sua integração a um sistema — em particular considerando o
-crescente uso de assistentes de IA na produção de código — esta seção
+antes de sua integração a um sistema, em particular considerando o
+crescente uso de assistentes de IA na produção de código, esta seção
 apresenta os trabalhos mais próximos, especificamente voltados à
 segurança de código gerado por LLMs.
 
@@ -300,8 +336,6 @@ Uma síntese comparativa das principais famílias de abordagens é
 apresentada na Tabela~\ref{tab:comparativo_abordagens}, considerando
 critérios relevantes para o presente trabalho.
 
-\newpage
-
 \section{Análise crítica das soluções existentes}
 \label{sec:analise_critica}
 
@@ -317,6 +351,7 @@ critérios relevantes para o presente trabalho.
     \textbf{Abordagem} & \textbf{Explica\-bili\-dade} & \textbf{Custo compu\-tacional} & \textbf{Falsos posi\-tivos} & \textbf{Generalização} \\
     \hline
     Análise estática (SAST) & Alta & Baixo & Altos & Baixa (regras fixas) \\
+    Análise dinâmica (DAST) & Média & Médio & Baixos & Cobertura limitada \\
     ML tradicional & Média & Baixo/Médio & Médios & Média \\
     \textit{Deep Learning} (CNN, RNN, GNN) & Baixa & Médio/Alto & Médios & Média \\
     Pré-treinados (CodeBERT, GraphCodeBERT) & Baixa/Média & Alto & Médios & Média/Alta \\
