@@ -6,6 +6,43 @@
 
 \section{Procedimentos de Teste}
 
+Os módulos serão avaliados inicialmente de forma isolada. A etapa de entrada e normalização será testada com códigos válidos e inválidos em Java e C\#, incluindo variações de codificação e organização dos arquivos. A análise estrutural será verificada por meio de exemplos controlados, para os quais serão definidas previamente as estruturas esperadas, como nós e relações da AST, do CFG, do DFG e, caso adotado, do CPG. Na preparação dos dados, serão examinadas a remoção de duplicatas, a preservação dos rótulos e a separação entre os conjuntos de treinamento, validação e teste.
+
+Os testes de caixa branca serão empregados nas funções responsáveis pelas transformações internas e pela extração de características. Já os testes de caixa preta avaliarão o comportamento da solução a partir de exemplos vulneráveis e seguros, sem considerar sua implementação interna. Serão utilizados casos associados às vulnerabilidades selecionadas, entre elas CWE-22, CWE-78, CWE-79 e CWE-89.
+
+O classificador será avaliado em um conjunto de teste independente, com o registro da matriz de confusão e das métricas de precisão, revocação e medida F1. A divisão dos dados será realizada por projeto ou repositório, evitando que amostras muito semelhantes apareçam simultaneamente nos conjuntos de treinamento e teste, condição que pode superestimar o desempenho do modelo \cite{ding2024primevul}.
+
+Por fim, testes de integração percorrerão o fluxo completo, desde o recebimento do código-fonte até a emissão do relatório. Esses testes verificarão a comunicação entre os módulos, a preservação das informações de origem e a apresentação dos resultados ao usuário. A definição dos casos também considerará práticas de teste de segurança recomendadas para o ciclo de desenvolvimento \cite{owasp_devsecops}.
+
+\newpage
 
 \section{Critérios de Aceite e Desempenho}
 
+Os critérios de aceite da solução são apresentados na Tabela~\ref{tab:criterios_aceite}.
+
+\begin{longtable}{p{0.25\textwidth} p{0.68\textwidth}}
+    \caption{Critérios de aceite da solução.}
+    \label{tab:criterios_aceite} \\
+    \toprule
+    \textbf{Aspecto} & \textbf{Critério de aceite} \\
+    \midrule
+    \endfirsthead
+    \toprule
+    \textbf{Aspecto} & \textbf{Critério de aceite} \\
+    \midrule
+    \endhead
+    Entrada e normalização & Processar exemplos válidos em Java e C\# e tratar entradas inválidas ou não suportadas com mensagem clara, sem interromper indevidamente a execução. \\
+    \addlinespace
+    Representação e extração & Produzir, nos casos controlados, as estruturas e características esperadas, preservando a correspondência com arquivo e linha de origem. \\
+    \addlinespace
+    Preparação dos dados & Remover duplicatas, preservar os rótulos e impedir que amostras do mesmo projeto ou repositório sejam distribuídas entre treinamento e teste. \\
+    \addlinespace
+    Classificação & Apresentar precisão, revocação, medida F1 e taxas de falsos positivos e falsos negativos, por categoria e no conjunto geral. O modelo selecionado deverá superar a linha de base em medida F1 no mesmo conjunto de teste. \\
+    \addlinespace
+    Relatório & Informar, para cada alerta, a categoria CWE, o arquivo e a linha associados, o nível de confiança e, quando disponível, a justificativa da classificação. \\
+    \addlinespace
+    Integração & Executar todos os casos de teste de ponta a ponta, da entrada do código à geração do relatório, sem intervenção manual entre os módulos. \\
+    \addlinespace
+    Desempenho e reprodutibilidade & Processar o conjunto de teste no hardware disponível sem falhas ou esgotamento de recursos, registrando tempo e memória utilizados. Execuções com os mesmos dados e configurações deverão produzir métricas compatíveis. \\
+    \bottomrule
+\end{longtable}

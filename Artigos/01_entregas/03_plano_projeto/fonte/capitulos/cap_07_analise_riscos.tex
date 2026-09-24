@@ -6,6 +6,31 @@
 \section{Análise dos Riscos}
 \label{sec:riscos}
 
+Os riscos foram avaliados qualitativamente quanto à probabilidade de
+ocorrência e ao impacto sobre o desenvolvimento do projeto. A
+probabilidade foi classificada como baixa, média ou alta, considerando
+o escopo proposto, os recursos disponíveis e o cronograma acadêmico. O
+impacto utiliza a mesma escala e representa o efeito potencial do risco
+sobre os prazos, a qualidade da solução e a validade dos resultados.
+
+Entre os riscos técnicos, a qualidade dos conjuntos de dados merece
+atenção, pois bases de vulnerabilidades podem apresentar ruído nos
+rótulos e diferenças entre os dados utilizados no treinamento e os
+encontrados em cenários reais. Estudos com o DiverseVul e o PrimeVul
+mostram que essas limitações podem influenciar diretamente o desempenho
+e a capacidade de generalização dos modelos
+\cite{chen2023diversevul,ding2024primevul,outofdistribution2025}.
+
+A geração dos \textit{Code Property Graphs} (CPGs) também constitui um
+risco relevante. Embora essa representação permita reunir informações
+de sintaxe, fluxo de controle e fluxo de dados, sua construção depende
+de ferramentas adicionais e pode elevar a complexidade e o custo
+computacional do \textit{pipeline} \cite{yamaguchi2014cpg,chakraborty2021survey}.
+Além disso, a integração de LLMs pode introduzir dificuldades de custo,
+reprodutibilidade e confiabilidade das respostas, especialmente quando
+o modelo é aplicado a projetos diferentes daqueles utilizados em sua
+avaliação \cite{mdpi2026,ding2024primevul}.
+
 A Tabela~\ref{tab:riscos} apresenta os principais riscos identificados
 para o projeto, classificados quanto à sua probabilidade de ocorrência
 e ao seu impacto sobre o cronograma e os resultados, acompanhados das
@@ -37,6 +62,11 @@ Complexidade na integração de \textit{Large Language Models} ao
 Média & Médio &
 Tratar o uso de LLMs como módulo complementar e opcional, priorizando
 inicialmente um classificador de ML mais simples e funcional \\
+Complexidade na geração e integração dos \textit{Code Property Graphs} &
+Média & Alto &
+Restringir inicialmente o escopo a uma linguagem e a um conjunto de
+CWEs, validar os grafos gerados, fixar as versões das ferramentas de
+extração e manter representações mais simples como alternativa \\
 Restrição de tempo do cronograma acadêmico &
 Alta & Alto &
 Priorizar entregas incrementais, com um MVP funcional antes de
@@ -54,3 +84,11 @@ métricas obtidas \\
 \bottomrule
 \end{longtable}
 \normalsize
+
+Os riscos de impacto alto serão tratados com prioridade e revistos ao
+final das principais etapas do cronograma. Caso um desses riscos se
+concretize, o escopo dos módulos complementares poderá ser reduzido para
+preservar a entrega de um protótipo funcional. Em particular, a
+integração com CPGs e LLMs será conduzida de forma incremental, de modo
+que o funcionamento básico do classificador e a avaliação das métricas
+não dependam exclusivamente desses componentes.
