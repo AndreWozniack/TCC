@@ -21,18 +21,7 @@ de descrições em linguagem natural. Embora aumentem a produtividade e
 reduzam o tempo de desenvolvimento, também introduzem novos desafios de
 segurança.
 
-Estudos recentes indicam que o código assistido por IA apresenta, em
-média, 4,4 vezes mais vulnerabilidades do que o código escrito apenas
-por humanos, com determinados tipos de falha aparecendo com maior
-frequência e \textit{templates} inseguros se repetindo em diferentes
-repositórios, o que sugere padrões induzidos pelos próprios modelos
-\cite{stateofcyber2026,wu2025}. As ferramentas de análise estática
-tradicionalmente utilizadas para identificar esses problemas apresentam
-duas limitações centrais: elevada taxa de falsos positivos e
-dificuldade em compreender o contexto do código, como a intenção do
-desenvolvedor e as chamadas entre funções \cite{yang2025,techscience2025}.
-Diante disso, há demanda por abordagens mais contextuais, baseadas em
-\textit{Machine Learning} e \textit{Large Language Models}, capazes de
-detectar vulnerabilidades e priorizar alertas em código gerado
-automaticamente \cite{wang2025,mdpi2026}.
+Estudos empíricos e levantamentos da indústria apontam que o código gerado ou assistido por IA pode apresentar um volume expressivo de falhas de segurança --- com relatórios recentes indicando taxas de até 4,4 vezes mais vulnerabilidades em cenários específicos de desenvolvimento acelerado por assistentes inteligentes ---, com determinados tipos de fraquezas aparecendo com frequência e \textit{templates} inseguros se repetindo em diferentes repositórios, o que sugere padrões induzidos pelos próprios modelos \cite{stateofcyber2026,wu2025}. 
+
+Contudo, o desafio da segurança de código transcende a origem do artefato: seja o código escrito puramente por humanos ou produzido com auxílio de modelos gerativos, a necessidade de validação antes do \textit{merge} e da integração definitiva à \textit{branch} principal é imperativa. As ferramentas de análise estática tradicionalmente utilizadas para identificar esses problemas apresentam duas limitações centrais: elevada taxa de falsos positivos e dificuldade em compreender o contexto do código, como a intenção do desenvolvedor e o fluxo de dados entre funções \cite{yang2025,techscience2025}. Diante disso, há demanda por abordagens mais contextuais, baseadas na integração de análise estática a classificadores de \textit{Machine Learning} e, de forma complementar, \textit{Large Language Models}, capazes de detectar vulnerabilidades e priorizar alertas com maior precisão no fluxo contínuo de desenvolvimento \cite{wang2025,mdpi2026}.
 

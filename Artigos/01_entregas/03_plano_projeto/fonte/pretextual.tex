@@ -9,16 +9,13 @@
 \begin{resumo}
 O crescente uso de ferramentas de Inteligência Artificial para geração automática de código, 
 como GitHub Copilot, Claude Code e Codex, tem impulsionado a produtividade no desenvolvimento de software, 
-mas também introduzido riscos de segurança significativos: estudos recentes indicam que o código assistido por IA apresenta, 
-em média, 4,4 vezes mais vulnerabilidades do que o código escrito exclusivamente por humanos. 
+mas também ampliado os desafios de segurança: levantamentos empíricos recentes indicam que o código assistido por IA pode apresentar taxas significativamente maiores de vulnerabilidades e recorrência de padrões inseguros quando comparado ao código tradicionalmente inspecionado por humanos. 
 As ferramentas tradicionais de análise estática (SAST), amplamente utilizadas para identificar essas falhas, apresentam limitações relevantes, 
 como elevadas taxas de falsos positivos e dificuldade em compreender o contexto semântico do código. 
-Diante desse cenário, este trabalho tem como objetivo geral desenvolver um software capaz de analisar trechos de código-fonte antes de sua integração a um sistema, 
-identificando padrões associados a vulnerabilidades de segurança conhecidas por meio da combinação de análise estática, 
-\textit{Machine Learning} e, de forma complementar, \textit{Large Language Models} (LLMs), tornando a análise mais contextual do que a oferecida pelas ferramentas tradicionais. 
-A versão inicial da ferramenta será voltada à análise de código Java e C\#, com foco nas categorias CWE-22, CWE-78, CWE-79 e CWE-89. O desenvolvimento seguirá uma abordagem modular e incremental, contemplando revisão bibliográfica, 
-definição de arquitetura, seleção de tecnologias por meio de provas de conceito, 
-implementação dos módulos do sistema e validação por meio de testes de caixa branca, caixa preta e de integração, com avaliação de métricas de precisão, revocação e medida F1. 
+Diante desse cenário, este trabalho tem como objetivo geral desenvolver um software capaz de analisar código-fonte antes de seu \textit{merge} e integração à \textit{branch} principal, 
+identificando padrões associados a vulnerabilidades de segurança conhecidas por meio da combinação de análise estática e \textit{Machine Learning}, auxiliados de forma complementar por \textit{Large Language Models} (LLMs). 
+A proposta adota uma abordagem modular e incremental: o Produto Mínimo Viável (MVP) estabelece um \textit{pipeline} de análise estática e classificação supervisionada prioritariamente em linguagem Java, delimitado às categorias CWE-22, CWE-78, CWE-79 e CWE-89, enquanto representações avançadas em grafos (\textit{Code Property Graphs}), suporte a C\# e uso de LLMs configuram extensões avaliadas progressivamente. 
+A validação será realizada por meio de testes de caixa branca, caixa preta e de integração, avaliando precisão, revocação e medida F1 em relação a linhas de base tradicionais. 
 Espera-se, ao final do projeto, disponibilizar um protótipo funcional capaz de reduzir a quantidade de falsos positivos encaminhados ao desenvolvedor e de auxiliar na priorização de alertas de segurança em código-fonte.
 
 \textbf{Palavras-chave}: Detecção de vulnerabilidades. Análise estática de código. \textit{Machine Learning}. \textit{Large Language Models}. Segurança de software.

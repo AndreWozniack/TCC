@@ -39,8 +39,7 @@ A partir dessa fundamentação, o Capítulo~\ref{cap:trabalho} definiu uma
 arquitetura modular composta por módulos de ingestão e normalização,
 análise sintática e estrutural, representação intermediária e extração
 de características, detecção e classificação de vulnerabilidades,
-explicação e priorização de alertas, e geração de relatórios. A versão
-inicial da ferramenta contemplará as linguagens Java e C\#, com foco nas
+explicação e priorização de alertas, e geração de relatórios. O escopo do MVP concentrará o \textit{pipeline} básico de análise estática e classificação na linguagem prioritária Java, adotando C\# como extensão experimental de portabilidade, com foco nas
 categorias CWE-22, CWE-78, CWE-79 e CWE-89, refletindo o mesmo recorte
 de vulnerabilidades investigado por trabalhos correlatos de medição de
 segurança de código gerado por IA \cite{pearce2022copilot,wu2025}.
@@ -59,8 +58,7 @@ et al. \cite{ding2024primevul} para evitar a superestimação de
 desempenho observada em benchmarks tradicionais. Da mesma forma, os
 riscos identificados no Capítulo~\ref{cap:riscos} -- como a qualidade
 dos dados rotulados e a dificuldade de generalização entre distribuições
-distintas de projetos \cite{chen2023diversevul,ding2024primevul,
-outofdistribution2025} -- orientaram diretamente as estratégias de
+distintas de projetos \cite{chen2023diversevul,ding2024primevul,outofdistribution2025} -- orientaram diretamente as estratégias de
 mitigação propostas, entre elas o uso de bases consolidadas como
 DiverseVul e PrimeVul e a adoção de uma abordagem incremental para a
 integração de CPGs e LLMs ao \textit{pipeline}.
@@ -71,14 +69,12 @@ desde a elaboração deste Plano de Projeto até a defesa da implementação
 final, prevista para o primeiro semestre de 2027. Dessa forma, o
 presente trabalho posiciona-se como uma contribuição à etapa
 intermediária do ciclo de desenvolvimento seguro de software --
-anterior à integração do código ao sistema --, complementando as
+anterior ao \textit{merge} e à integração definitiva do código à \textit{branch} principal --, complementando as
 abordagens de medição de insegurança e de indução de geração mais
 segura discutidas na literatura \cite{liu2025securecodegen,wu2025}.
 Espera-se que, ao final do desenvolvimento, a ferramenta proposta
-contribua para a redução de vulnerabilidades introduzidas por código
-gerado com auxílio de IA, oferecendo aos desenvolvedores alertas mais
+contribua para a redução de vulnerabilidades introduzidas no fluxo contínuo de desenvolvimento (incluindo código assistido por IA), oferecendo aos desenvolvedores alertas mais
 precisos, contextualizados e priorizados, e reduzindo a dependência de
 revisões manuais exaustivas para a identificação de falhas de
 segurança.
-\end{document}
 

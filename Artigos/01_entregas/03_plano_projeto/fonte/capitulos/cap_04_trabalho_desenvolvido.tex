@@ -5,25 +5,29 @@
 
 Este projeto propõe o desenvolvimento de uma ferramenta de apoio à
 segurança de software capaz de analisar código-fonte e identificar
-possíveis vulnerabilidades antes de sua integração ao sistema. A solução
+possíveis vulnerabilidades antes de seu \textit{merge} e de sua integração definitiva à \textit{branch} principal. A solução
 será orientada à detecção de padrões associados a fraquezas de segurança
-conhecidas, utilizando técnicas de análise estática, \textit{Machine
-Learning} e, de forma complementar, \textit{Large Language Models}. A
+conhecidas, utilizando prioritariamente técnicas de análise estática e \textit{Machine
+Learning}, auxiliadas de forma complementar por \textit{Large Language Models}. A
 ferramenta buscará complementar os analisadores estáticos tradicionais e
 reduzir a quantidade de falsos positivos encaminhados ao desenvolvedor.
 
+Para assegurar a viabilidade técnica e a aderência aos prazos acadêmicos, a arquitetura do sistema é dividida em dois níveis de maturidade:
+\begin{enumerate}
+    \item \textbf{Arquitetura-Base (Produto Mínimo Viável - MVP)}: constitui o \textit{pipeline} essencial e executável da pesquisa. Concentra-se nas linguagens Java e C\#, na ingestão de alterações em nível de método ou função (a unidade elementar de análise do classificador), na extração de estruturas sintáticas básicas (AST) e regras de análise estática de referência (SAST), e no treinamento de um classificador supervisionado de \textit{Machine Learning} para categorizar as quatro CWEs do escopo;
+    \item \textbf{Arquitetura Estendida (Prova de Conceito e Módulos Opcionais)}: engloba a investigação de \textit{Code Property Graphs} (CPGs) e o emprego de LLMs para sumarização explicativa dos alertas. Esses componentes serão incorporados e consolidados apenas se as provas de conceito demonstrarem ganho mensurável de eficácia frente ao custo computacional.
+\end{enumerate}
+
 O sistema receberá como entrada os arquivos modificados em um \textit{commit}
-ou \textit{pull request}. A proposta inicial é, normalizar o conteúdo e processar.
-Em seguida, serão extraídas informações sintáticas, estruturais e semânticas. Essas informações serão convertidas para uma representação comum, utilizada como entrada pelo módulo de detecção de vulnerabilidades.
+ou \textit{pull request}. A proposta inicial é normalizar o conteúdo e processá-lo, delimitando como unidade de análise os métodos ou blocos de código impactados pelas alterações.
+Em seguida, serão extraídas informações sintáticas, estruturais e de fluxo. Essas informações serão convertidas para uma representação estruturada, utilizada como entrada pelo módulo de detecção e classificação de vulnerabilidades.
 
-O módulo de detecção classificará os trechos analisados de acordo com a
+O módulo de detecção classificará as funções analisadas de acordo com a
 possível presença de padrões associados às CWEs definidas no escopo do
-projeto. Como resultado, a ferramenta deverá apresentar a categoria da
-fraqueza identificada, a localização aproximada do alerta no código, o
-nível de confiança da classificação e, quando aplicável, uma explicação ou
+projeto (CWE-22, CWE-78, CWE-79 e CWE-89). Como resultado, a ferramenta deverá apresentar a categoria da
+fraqueza identificada, a localização no código (arquivo e linha), o
+nível de confiança da classificação e, quando aplicável, uma explicação contextualizada ou
 recomendação que auxilie a revisão pelo desenvolvedor.
-
-\newpage
 
 A Figura~\ref{fig:arquitetura_sistema} apresenta uma visão geral da
 arquitetura proposta e do fluxo de processamento da solução.
@@ -245,9 +249,8 @@ situações em que dados externos percorrem o programa e alcançam operações
 potencialmente sensíveis, tais como execução de comandos, acesso a
 arquivos, geração de conteúdo web ou consultas a bancos de dados.
 
-Como fonte complementar, o módulo poderá orquestrar ferramentas de análise
-estática, como SonarQube, \textit{linters} específicos de cada linguagem e
-Dependabot. Os alertas produzidos serão normalizados, preservando arquivo,
+Como fonte complementar, o módulo poderá orquestrar ferramentas consagradas de análise
+estática (SAST), como SonarQube, Semgrep e \textit{linters} específicos de cada linguagem. (Ferramentas de análise de vulnerabilidades em dependências externas/SCA, como o Dependabot, não fazem parte da análise direta de código-fonte aqui proposta e ficam reservadas para trabalhos futuros). Os alertas produzidos pelas ferramentas SAST serão normalizados, preservando arquivo,
 linha, categoria e severidade, para que possam ser combinados com as
 características extraídas diretamente do código. Quando aplicável, essas
 ferramentas serão executadas em contêineres Docker para favorecer a
@@ -274,11 +277,12 @@ dados empregados no treinamento e na avaliação dos modelos. Serão
 considerados exemplos de código vulnerável e corrigido, acompanhados de
 informações como CVE, CWE, projeto de origem e alteração de correção.
 
+Para garantir a cobertura empírica das linguagens e fraquezas abordadas, o projeto utilizará bases públicas consolidadas: o \textit{CVEfixes} e o \textit{CrossVul}, que reúnem históricos de correções de segurança em nível de \textit{commit} e método com ampla representatividade para Java e C\# nas categorias de injeção e travessia de diretório (CWE-22, CWE-78, CWE-79 e CWE-89), além do \textit{CWE-Bench-Java}, que fornece instâncias curadas e verificadas para a validação rigorosa da linguagem prioritária do MVP.
+
 Para reduzir ameaças à validade dos resultados, os dados serão separados
-em conjuntos de treinamento, validação e teste. Sempre que possível, a
-separação será realizada por projeto ou repositório, evitando que versões
+em conjuntos de treinamento, validação e teste. A separação será rigorosamente realizada por projeto ou repositório, evitando que versões
 muito semelhantes de um mesmo código sejam utilizadas simultaneamente no
-treinamento e na avaliação.
+treinamento e na avaliação \cite{ding2024primevul}.
 
 \subsection{Módulo de Detecção de Vulnerabilidades}
 

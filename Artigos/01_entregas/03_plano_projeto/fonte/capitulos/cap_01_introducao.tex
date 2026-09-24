@@ -9,59 +9,36 @@
 
 \section{Motivação e Relevância}
 
-Com o crescente uso de Inteligência Artificial para gerar código, trechos produzidos automaticamente vêm sendo incorporados a projetos sem análise adequada de segurança, o que pode introduzir vulnerabilidades como injeção de comandos, vazamento de dados e falhas de gerenciamento de memória. Estudos recentes começam a indicar que o código desenvolvido por IA apresenta, mais vulnerabilidades do que o código escrito apenas por humanos, apresentando falhas que se repetem e formas inseguras, sugerindo padrões induzidos pelos próprios modelos. Diante desse cenário, torna-se necessário adotar uma medida proativa para identificar vulnerabilidades em código-fonte antes de sua integração a um sistema, reduzindo o risco de exploração de falhas de segurança e protegendo dados sensíveis de usuários e empresas.
+Com a rápida difusão de assistentes de Inteligência Artificial para escrita de código, como GitHub Copilot, Claude Code e Codex, a taxa de produção de código acelerou consideravelmente, ampliando a necessidade de inspeção contínua de segurança. Embora a IA configure um contexto motivador central --- haja vista estudos empíricos apontando que o código gerado tende a reproduzir vulnerabilidades recorrentes e padrões inseguros assimilados durante o treinamento dos modelos ---, a demanda por verificação de segurança é universal e abrange qualquer código-fonte submetido a repositórios, seja ele redigido manualmente por humanos ou gerado com assistência de IA. Diante desse cenário, torna-se necessário adotar uma medida proativa para analisar código-fonte antes de seu \textit{merge} e de sua integração definitiva à \textit{branch} principal, reduzindo o risco de exploração de falhas em produção.
 
-Embora existam ferramentas de análise estática que auxiliam na
-identificação de parte desses problemas, elas frequentemente geram
-falsos positivos e apresentam dificuldade para compreender o contexto do
-código, como a intenção do desenvolvedor e as chamadas entre funções
-\cite{techscience2025,yang2025}. Essa limitação torna o problema
-relevante do ponto de vista técnico: não basta detectar vulnerabilidades
-já catalogadas por regras fixas, é preciso compreender o contexto do
-código para reduzir os falsos positivos e priorizar corretamente os
-alertas mais críticos.
+Embora existam ferramentas consolidadas de análise estática (SAST) que auxiliam na identificação de fraquezas de segurança, elas frequentemente sofrem com elevadas taxas de falsos positivos e exibem dificuldade para compreender o contexto semântico do código, como a intenção do desenvolvedor e o encadeamento de chamadas entre funções \cite{techscience2025,yang2025}. Essa limitação torna o problema relevante do ponto de vista técnico e científico: não basta apontar possíveis violações com base em regras sintáticas rígidas; é imperativo enriquecer a análise com contexto semântico e estrutural para mitigar alarmes falsos e priorizar com precisão as vulnerabilidades críticas.
+
+\section{Pergunta de Pesquisa}
+
+A partir do problema delineado e das limitações das abordagens estáticas convencionais, este trabalho orienta-se pela seguinte questão de pesquisa:
+
+\begin{quote}
+\textit{Em que medida a combinação de análise estática e classificação baseada em Aprendizado de Máquina reduz falsos positivos na detecção de CWE-22, CWE-78, CWE-79 e CWE-89 em código-fonte Java e C\#?}
+\end{quote}
 
 \section{Objetivos}
 
 \subsection{Objetivo Geral}
 
-Desenvolver um software capaz de analisar trechos de código-fonte antes
-de sua integração a um sistema, identificando padrões e erros comuns que
-possam resultar em vulnerabilidades de segurança conhecidas, utilizando
-técnicas de \textit{Machine Learning} e \textit{Large Language Models}
-para tornar essa análise mais contextual do que a oferecida pelas
-ferramentas tradicionais de análise estática.
+Desenvolver um software capaz de analisar código-fonte antes de seu \textit{merge} e integração à \textit{branch} principal, identificando padrões associados a vulnerabilidades de segurança conhecidas nas categorias CWE-22, CWE-78, CWE-79 e CWE-89. A solução fundamenta-se em uma arquitetura modular em que o Produto Mínimo Viável (MVP) provê um \textit{pipeline} de análise estática e classificação por Aprendizado de Máquina (\textit{Machine Learning}) com foco inicial em Java, enquanto representações avançadas em grafos (\textit{Code Property Graphs}), suporte a C\# e modelos de linguagem (\textit{Large Language Models}) configuram componentes estendidos avaliados experimentalmente conforme a viabilidade técnica e o ganho mensurável.
 
 \subsection{Objetivos Específicos}
 
-Para alcançar o objetivo geral, foram definidos os seguintes objetivos
-específicos:
+Para alcançar o objetivo geral, foram definidos os seguintes objetivos específicos:
 
 \begin{itemize}
-  \item Realizar uma revisão bibliográfica sobre vulnerabilidades de
-  segurança em código-fonte, ferramentas de análise estática e técnicas
-  de \textit{Machine Learning} e \textit{Large Language Models}
-  aplicadas à detecção de vulnerabilidades;
-  \item Definir a arquitetura do sistema, incluindo a decomposição em
-  módulos e o diagrama em blocos do software;
-  \item Selecionar as tecnologias que serão utilizadas para o
-  desenvolvimento do software, justificando suas escolhas;
-  \item Implementar o software, integrando os módulos e garantindo sua
-  funcionalidade;
-  \item Validar o software por meio de testes, avaliando sua eficácia
-  na detecção de vulnerabilidades em código-fonte.
+  \item Realizar uma revisão bibliográfica sobre vulnerabilidades de segurança em código-fonte, ferramentas de análise estática, representações intermediárias em grafos e técnicas de \textit{Machine Learning} e \textit{Large Language Models} aplicadas à detecção de vulnerabilidades;
+  \item Definir a arquitetura modular do sistema, delimitando o \textit{pipeline} básico (MVP) e os módulos de extensão experimental;
+  \item Selecionar as tecnologias e bases de dados abertas para o desenvolvimento do software, justificando suas escolhas por meio de critérios técnicos e provas de conceito;
+  \item Implementar o software de forma incremental, garantindo a integração entre ingestão, extração de características e classificação;
+  \item Validar a solução por meio de testes de caixa branca, caixa preta e de integração, mensurando precisão, revocação e medida F1 em comparação direta com ferramentas SAST de referência.
 \end{itemize}
 
-% \section{Estrutura do Documento}
+\section{Estrutura do Documento}
 
-% Este documento está estruturado da seguinte forma: o
-% Capítulo~\ref{cap:problema} detalha o problema a ser resolvido; o
-% Capítulo~\ref{cap:estado_arte} apresenta o estado da arte das soluções
-% existentes; o Capítulo~\ref{cap:trabalho} descreve o trabalho a ser
-% desenvolvido, incluindo a decomposição em módulos e o diagrama em blocos
-% do sistema; o Capítulo~\ref{cap:tecnologias} apresenta as tecnologias
-% que serão utilizadas; o Capítulo~\ref{cap:testes} descreve os
-% procedimentos de teste e validação; o Capítulo~\ref{cap:riscos} traz a
-% análise dos riscos do projeto; o Capítulo~\ref{cap:cronograma}
-% apresenta o cronograma; e o Capítulo~\ref{cap:conclusao} conclui o
-% documento.
+Este documento está estruturado da seguinte forma: o Capítulo~\ref{cap:problema} detalha o problema a ser resolvido e a contextualização de riscos; o Capítulo~\ref{cap:estado_arte} apresenta o estado da arte das soluções existentes e técnicas correlatas; o Capítulo~\ref{cap:trabalho} descreve o trabalho a ser desenvolvido, detalhando a arquitetura modular, o MVP e os módulos do sistema; o Capítulo~\ref{cap:tecnologias} fundamenta as tecnologias selecionadas; o Capítulo~\ref{cap:testes} descreve os procedimentos de teste, métricas e critérios de aceite; o Capítulo~\ref{cap:riscos} analisa os riscos técnicos e metodológicos do projeto; o Capítulo~\ref{cap:cronograma} apresenta o cronograma detalhado de execução; e o Capítulo~\ref{cap:conclusao} sintetiza as considerações finais deste Plano de Projeto.
