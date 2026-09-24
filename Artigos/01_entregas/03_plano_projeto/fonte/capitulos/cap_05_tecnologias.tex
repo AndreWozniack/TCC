@@ -6,8 +6,87 @@
 % - Descrever com mais detalhes as tecnologias escolhidas.
 % - As tecnologias alternativas podem ser apresentadas de maneira mais resumida.
 
-\section{Tecnologias Escolhidas e Justificativas}
+\section{Tecnologias em Avaliação}
 
+As tecnologias de implementação ainda não foram definidas de forma
+definitiva. Como o projeto combina análise estática, representações
+estruturadas de código e modelos de \textit{Machine Learning}, a escolha
+será realizada por meio de provas de conceito, considerando o suporte a
+Java e C\#, o custo computacional, a integração entre os módulos e a
+reprodutibilidade dos resultados.
+
+\subsection{Linguagens de Entrada e de Implementação}
+
+Java e C\# foram definidas como as linguagens de entrada da versão inicial
+da ferramenta por serem utilizadas em ambientes corporativos. A linguagem
+de implementação do \textit{pipeline}, entretanto, será selecionada durante
+o desenvolvimento. Python é uma alternativa devido ao seu ecossistema de
+ML; Java ou Kotlin podem facilitar a integração com a JVM; e C\#/.NET
+permite o uso de APIs de compilação e análise de projetos dessa linguagem.
+
+A decisão considerará a experiência da equipe e as bibliotecas disponíveis.
+Formatos estruturados, como JSON, poderão ser utilizados para reduzir o
+acoplamento entre os módulos.
+
+\subsection{Análise Sintática, Estrutural e Estática}
+
+A representação inicial poderá utilizar árvores sintáticas abstratas,
+complementadas por informações de fluxo de controle e de dados. O uso de
+\textit{Code Property Graphs} será avaliado por meio de uma prova de
+conceito, pois os CPGs reúnem essas representações em um único grafo
+\cite{yamaguchi2014cpg}.
+
+CPG/Codyze e Joern serão considerados para a geração e consulta dos grafos
+\cite{codyze2026,joern2026}. A escolha dependerá da qualidade dos grafos
+produzidos para Java e C\# e do custo de integração. Se o CPG não apresentar
+ganho suficiente, serão mantidas representações mais simples, como AST,
+CFG e DFG. SonarQube, CodeQL, Semgrep e analisadores específicos das
+linguagens poderão fornecer alertas complementares.
+
+\subsection{Modelos de Classificação}
+
+O primeiro modelo deverá ser um classificador de referência com baixo
+custo computacional, utilizado para validar as características extraídas e
+as métricas de avaliação. A biblioteca dependerá da linguagem escolhida;
+em Python, o scikit-learn constitui uma alternativa para classificação e
+validação cruzada \cite{scikitlearn2026}. Posteriormente, poderão ser avaliados CodeBERT e GraphCodeBERT
+\cite{feng2020codebert,guo2021graphcodebert}. No ecossistema Python,
+PyTorch e Transformers são alternativas para executar esses modelos
+\cite{huggingface2026}. Eles não serão requisitos para o produto mínimo
+viável devido ao maior custo computacional.
+
+% \subsection{LLMs, Relatórios e Integração}
+
+% O uso de \textit{Large Language Models} será complementar. O LLM poderá
+% auxiliar na explicação e na priorização dos alertas, mas não será a única
+% fonte para determinar uma vulnerabilidade. A interface deverá evitar
+% dependência de um único modelo ou fornecedor.
+
+% Os resultados serão apresentados inicialmente em linha de comando e em
+% arquivos estruturados, contendo a CWE, a localização, a confiança da
+% classificação e a justificativa do alerta, quando disponíveis.
+
+\subsection{Recursos de \textit{Hardware}}
+
+O projeto não prevê o desenvolvimento de \textit{hardware} específico. O
+desenvolvimento e os testes iniciais serão realizados nos computadores
+pessoais da equipe, utilizando CPU e memória convencionais. Caso o
+treinamento ou a avaliação de modelos mais complexos exija maior capacidade,
+poderão ser utilizadas GPUs locais ou infraestrutura em nuvem. A necessidade
+será definida conforme o modelo e o volume de dados selecionados.
+
+\subsection{Ambiente de Desenvolvimento e Execução}
+
+O código e as configurações serão mantidos em um sistema de controle de
+versão, o Git. As dependências serão registradas e, quando aplicável, Docker será
+utilizado para isolar analisadores externos e padronizar a execução.
 
 \section{Tecnologias Alternativas Avaliadas}
 
+As alternativas serão comparadas por meio de provas de conceito com um
+conjunto reduzido de arquivos Java e C\#. Serão considerados o suporte às
+linguagens, o tempo de execução, a integração com os demais módulos e a
+qualidade das características produzidas. Tecnologias mais complexas, como CPGs e modelos pré-treinados, somente
+serão adotadas se apresentarem ganho mensurável sobre a linha de base. Caso
+contrário, será mantida a alternativa mais simples para preservar a
+viabilidade do cronograma e a entrega do protótipo.

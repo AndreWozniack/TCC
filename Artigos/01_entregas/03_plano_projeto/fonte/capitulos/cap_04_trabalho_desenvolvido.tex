@@ -222,12 +222,15 @@ representação intermediária do código. Pretende-se investigar o uso de
 provenientes de árvores sintáticas, fluxos de controle e fluxos de dados
 em uma representação baseada em grafos.
 
-Como alternativa tecnológica, será avaliado o ecossistema CPG/Codyze,
-considerando seu suporte às linguagens Java e C\# e seus recursos para
-análise estática e exploração das relações presentes no código. A
-tecnologia de implementação e o formato de intercâmbio entre os módulos
-serão definidos durante o desenvolvimento, priorizando interoperabilidade,
-extensibilidade e representação estruturada dos dados.
+Entre as alternativas tecnológicas, serão avaliados o ecossistema
+CPG/Codyze, o Joern e bibliotecas específicas de análise sintática. A
+adoção de um CPG dependerá do benefício obtido para as CWEs selecionadas,
+do suporte às linguagens Java e C\# e do custo de integração. Caso essa
+representação não se mostre adequada, serão mantidas estruturas mais
+simples, como ASTs, CFGs e DFGs. A tecnologia de implementação e o formato
+de intercâmbio entre os módulos serão definidos durante o desenvolvimento,
+priorizando interoperabilidade, extensibilidade e representação
+estruturada dos dados.
 
 \subsection{Módulo de Análise Sintática e Estrutural}
 
@@ -319,10 +322,11 @@ básicas de tratamento. Em versões futuras, esse módulo poderá ser integrado
 a ambientes de desenvolvimento, repositórios de código ou pipelines de
 integração contínua.
 
-\textit{Implementação:} Python, com geração de relatórios em formato
-estruturado e uma interface inicial de linha de comando, permitindo tanto a
-execução manual quanto a integração a um \textit{pipeline} de integração
-contínua.
+A linguagem de implementação será definida após as provas de conceito
+descritas no Capítulo~\ref{cap:tecnologias}. A versão inicial deverá gerar
+relatórios em formato estruturado e oferecer uma interface de linha de
+comando, permitindo tanto a execução manual quanto a integração a um
+\textit{pipeline} de integração contínua.
 
 \subsection{Considerações sobre \textit{Hardware}}
 \label{sec:hardware}
