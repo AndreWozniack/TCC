@@ -3,3 +3,82 @@
 
 % A conclusão deve destacar os principais aspectos do projeto, resumindo os objetivos do projeto, a solução proposta, as tecnologias que serão utilizadas e a estratégia de desenvolvimento.
 
+Este documento apresentou o Plano de Projeto referente ao desenvolvimento
+de uma ferramenta de apoio à segurança de software voltada à detecção de
+vulnerabilidades em código-fonte, com ênfase no cenário de código
+produzido com o auxílio de ferramentas de Inteligência Artificial. Como
+discutido no Capítulo~\ref{cap:problema}, estudos como os de Pearce et
+al. \cite{pearce2022copilot}, Perry et al. \cite{perry2023users} e o
+relatório da Veracode \cite{veracode2025} evidenciam que o código gerado
+com o apoio de assistentes de IA apresenta índices de vulnerabilidade
+significativamente superiores aos do código escrito exclusivamente por
+humanos, com padrões inseguros que se repetem entre diferentes projetos
+e modelos \cite{wu2025,stateofcyber2026}. Esse cenário reforça a
+relevância prática do problema tratado neste trabalho.
+
+A revisão do estado da arte, apresentada no Capítulo~\ref{cap:estado_arte},
+mostrou que as ferramentas tradicionais de análise estática (SAST),
+apesar de sua maturidade e explicabilidade, apresentam limitações bem
+documentadas relacionadas à elevada taxa de falsos positivos e à
+dificuldade de compreender o contexto semântico do código
+\cite{techscience2025,yang2025}. Modelos de \textit{Machine Learning}
+baseados em grafos, como o Devign \cite{zhou2019devign}, e modelos
+pré-treinados para código, como CodeBERT \cite{feng2020codebert} e
+GraphCodeBERT \cite{guo2021graphcodebert}, representam avanços
+relevantes na captura de relações estruturais e semânticas do
+código-fonte, mas ainda enfrentam desafios de generalização e de custo
+computacional \cite{chakraborty2021survey,ding2024primevul}. Nesse
+contexto, abordagens híbridas que combinam \textit{Code Property Graphs}
+\cite{yamaguchi2014cpg} com \textit{Large Language Models}, como o
+LLMxCPG \cite{llmxcpg2025}, o SV-GEN \cite{svgen2026} e o ZeroFalse
+\cite{yang2025}, demonstraram potencial para reduzir de forma expressiva
+os falsos alarmes gerados por analisadores estáticos, o que motivou a
+proposta de arquitetura apresentada neste projeto.
+
+A partir dessa fundamentação, o Capítulo~\ref{cap:trabalho} definiu uma
+arquitetura modular composta por módulos de ingestão e normalização,
+análise sintática e estrutural, representação intermediária e extração
+de características, detecção e classificação de vulnerabilidades,
+explicação e priorização de alertas, e geração de relatórios. A versão
+inicial da ferramenta contemplará as linguagens Java e C\#, com foco nas
+categorias CWE-22, CWE-78, CWE-79 e CWE-89, refletindo o mesmo recorte
+de vulnerabilidades investigado por trabalhos correlatos de medição de
+segurança de código gerado por IA \cite{pearce2022copilot,wu2025}.
+
+No que diz respeito às tecnologias, discutidas no
+Capítulo~\ref{cap:tecnologias}, a decisão sobre o uso de
+\textit{Code Property Graphs} dependerá de provas de conceito com
+ferramentas como Joern e CPG/Codyze \cite{yamaguchi2014cpg}, enquanto a
+etapa de classificação poderá evoluir de modelos de referência mais
+simples para arquiteturas baseadas em \textit{Transformers}, como
+CodeBERT e GraphCodeBERT \cite{feng2020codebert,guo2021graphcodebert}. Os
+procedimentos de teste e validação definidos no
+Capítulo~\ref{cap:testes} adotam a separação dos dados por projeto ou
+repositório como salvaguarda metodológica, prática recomendada por Ding
+et al. \cite{ding2024primevul} para evitar a superestimação de
+desempenho observada em benchmarks tradicionais. Da mesma forma, os
+riscos identificados no Capítulo~\ref{cap:riscos} -- como a qualidade
+dos dados rotulados e a dificuldade de generalização entre distribuições
+distintas de projetos \cite{chen2023diversevul,ding2024primevul,
+outofdistribution2025} -- orientaram diretamente as estratégias de
+mitigação propostas, entre elas o uso de bases consolidadas como
+DiverseVul e PrimeVul e a adoção de uma abordagem incremental para a
+integração de CPGs e LLMs ao \textit{pipeline}.
+
+O cronograma apresentado no Capítulo~\ref{cap:cronograma} organiza essas
+atividades ao longo das etapas previstas para o Projeto Final de Curso,
+desde a elaboração deste Plano de Projeto até a defesa da implementação
+final, prevista para o primeiro semestre de 2027. Dessa forma, o
+presente trabalho posiciona-se como uma contribuição à etapa
+intermediária do ciclo de desenvolvimento seguro de software --
+anterior à integração do código ao sistema --, complementando as
+abordagens de medição de insegurança e de indução de geração mais
+segura discutidas na literatura \cite{liu2025securecodegen,wu2025}.
+Espera-se que, ao final do desenvolvimento, a ferramenta proposta
+contribua para a redução de vulnerabilidades introduzidas por código
+gerado com auxílio de IA, oferecendo aos desenvolvedores alertas mais
+precisos, contextualizados e priorizados, e reduzindo a dependência de
+revisões manuais exaustivas para a identificação de falhas de
+segurança.
+\end{document}
+

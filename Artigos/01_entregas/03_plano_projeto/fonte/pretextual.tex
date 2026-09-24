@@ -7,9 +7,21 @@
 
 %---------------------- Resumo ---------------------------------%
 \begin{resumo}
-% Insira aqui o resumo do Plano de Projeto (descrição sucinta incluindo o problema a ser resolvido, a solução que será desenvolvida e as principais tecnologias que serão utilizadas).
+O crescente uso de ferramentas de Inteligência Artificial para geração automática de código, 
+como GitHub Copilot, Claude Code e Codex, tem impulsionado a produtividade no desenvolvimento de software, 
+mas também introduzido riscos de segurança significativos: estudos recentes indicam que o código assistido por IA apresenta, 
+em média, 4,4 vezes mais vulnerabilidades do que o código escrito exclusivamente por humanos. 
+As ferramentas tradicionais de análise estática (SAST), amplamente utilizadas para identificar essas falhas, apresentam limitações relevantes, 
+como elevadas taxas de falsos positivos e dificuldade em compreender o contexto semântico do código. 
+Diante desse cenário, este trabalho tem como objetivo geral desenvolver um software capaz de analisar trechos de código-fonte antes de sua integração a um sistema, 
+identificando padrões associados a vulnerabilidades de segurança conhecidas por meio da combinação de análise estática, 
+\textit{Machine Learning} e, de forma complementar, \textit{Large Language Models} (LLMs), tornando a análise mais contextual do que a oferecida pelas ferramentas tradicionais. 
+A versão inicial da ferramenta será voltada à análise de código Java e C\#, com foco nas categorias CWE-22, CWE-78, CWE-79 e CWE-89. O desenvolvimento seguirá uma abordagem modular e incremental, contemplando revisão bibliográfica, 
+definição de arquitetura, seleção de tecnologias por meio de provas de conceito, 
+implementação dos módulos do sistema e validação por meio de testes de caixa branca, caixa preta e de integração, com avaliação de métricas de precisão, revocação e medida F1. 
+Espera-se, ao final do projeto, disponibilizar um protótipo funcional capaz de reduzir a quantidade de falsos positivos encaminhados ao desenvolvedor e de auxiliar na priorização de alertas de segurança em código-fonte.
 
-\textbf{Palavras-chave}: Palavra 1. Palavra 2. Palavra 3.
+\textbf{Palavras-chave}: Detecção de vulnerabilidades. Análise estática de código. \textit{Machine Learning}. \textit{Large Language Models}. Segurança de software.
 \end{resumo}
 
 %---------------------- Sumário --------------------------------%
