@@ -1,11 +1,92 @@
-%----------------Cap_04----------------%
+% !TeX root = ../main.tex
+\chapter{Procedimentos de Teste e Validação do Projeto}
+\label{cap:testes}
 
-\chapter{Considerações Finais ou Conclusão}
+\section{Testes de Caixa Preta (ponto de vista do usuário)}
 
-Texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto.
+O usuário fornece um repositório e um relatório do Semgrep pela CLI e observa o relatório, o \textit{diff} e o laudo. Os cenários usam projetos .NET de exemplo mantidos junto ao sistema.
 
-Texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto.
+\begin{table}[H]
+\centering
+\caption{Casos de teste de caixa preta.}
+\label{tab:cp}
+\footnotesize
+\begin{tabular}{p{0.9cm}p{4.5cm}p{6.7cm}}
+\toprule
+\textbf{ID} & \textbf{Entrada} & \textbf{Resultado esperado} \\
+\midrule
+CP-01 & Projeto .NET com injeção de SQL e relatório válido & proposta com \textit{diff}, plano, evidências e laudo no estado ``verificado'' ou ``não corrigido'' \\
+CP-02 & Alerta de classe sem ficha & alerta listado como não tratável; nenhuma chamada ao LLM \\
+CP-03 & Relatório malformado ou inexistente & erro claro, código de saída diferente de zero, nenhum arquivo alterado \\
+CP-04 & Alerta de criptografia fraca & laudo ``parcial'', indicando que não há teste de exploração aplicável \\
+CP-05 & Caso em que o agente atinge o limite de ciclos & entrega ``não corrigido'' com o laudo da última tentativa, dentro do teto de custo \\
+CP-06 & \texttt{revisar --rejeitar} com motivo & motivo gravado na memória e exibido em alerta semelhante posterior \\
+CP-07 & \texttt{revisar --aceitar} & \textit{branch} criada com o \textit{patch}; \textit{branch} principal inalterada \\
+CP-08 & Arquivo de origem de uma memória alterado & entrada da memória marcada como desatualizada \\
+\bottomrule
+\end{tabular}
+\sourceTab{Elaborado pelos autores.}
+\end{table}
 
-Texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto.
+\section{Testes de Caixa Branca (ponto de vista do sistema)}
 
-Texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto.
+Cada bloco é testado isoladamente com \textit{pytest}. O LLM é substituído por um simulador determinístico que devolve sequências de ações predefinidas, para que os testes sejam reprodutíveis e sem custo.
+
+\begin{itemize}
+    \item \textbf{B1:} relatórios válidos, duplicados, sem CWE e malformados; classificação correta de CWEs em classes.
+    \item \textbf{B2:} criação e remoção de \textit{worktrees}; \textit{hash} do repositório original igual antes e depois; contêiner sem acesso à rede.
+    \item \textbf{B3:} \textit{chunking} por classe e método em arquivos C\# e Java de exemplo; tabela de símbolos com declarações e usos esperados; índice incremental idêntico ao reconstruído do zero após criar, alterar e remover arquivos; precisão@k e revocação@k sobre casos anotados, comparando \textit{embedding} e BM25.
+    \item \textbf{B4/B5:} carga e validação das fichas; busca na memória por classe e arquivo; invalidação por mudança de \textit{hash}.
+    \item \textbf{B6:} com o simulador: execução de cada ferramenta; respeito aos limites de ciclos, ações e custo; retorno das falhas do laudo ao histórico; recusa de edições em testes existentes.
+    \item \textbf{B7:} \textit{patches} preparados para cada resultado esperado: correção válida (todas passam); \textit{patch} que não compila (falha em V1); \textit{patch} que quebra um teste (V2); \textit{patch} que só suprime a regra (falha em V7); \textit{patch} que engana a regra do Semgrep mas não corrige (passa em V3 e falha em V5).
+    \item \textbf{Integração:} execução de ponta a ponta B1 a B8 sobre um caso do eShop com o LLM real.
+\end{itemize}
+
+\section{Desenho Experimental e Métricas}
+
+Cada caso do conjunto (Seção~\ref{sec:casos}) é executado nas configurações A, B e C (Tabela~\ref{tab:grupos}), três vezes cada, para medir a variação do modelo. A avaliação usa os testes de exploração de referência da equipe, que o agente não vê.
+
+\begin{itemize}
+    \item \textbf{Correção completa (métrica principal):} compila, mantém os testes existentes, o teste de exploração de referência passa a bloquear o ataque, o Semgrep não reporta o achado e as restrições de V7 são respeitadas. A mesma decomposição em compilação, segurança e funcionalidade é usada por \citeonline{almaamari2026whyfail}, o que permite comparar os resultados do subconjunto Java;
+    \item \textbf{Taxa por nível:} proporção de \textit{patches} que passam em cada verificação V1 a V7, para localizar onde as configurações falham;
+    \item \textbf{Falsa correção:} \textit{patches} que passam em V3 (alerta sumiu) mas falham no teste de exploração de referência;
+    \item \textbf{Concordância do laudo:} quantas correções marcadas como ``verificado'' pelo agente também passam no teste de referência;
+    \item \textbf{Compatibilidade com o projeto:} nos casos do eShop, testes de arquitetura (NetArchTest) e uma rubrica de 0 a 2 em três itens (usa APIs e padrões já existentes, segue convenções de erro e validação, mantém o escopo mínimo), atribuída por dois avaliadores, com concordância medida pelo Kappa de Cohen;
+    \item \textbf{Esforço:} iterações, ações, \textit{tokens}, custo e tempo por etapa (indexação completa e incremental, investigação, geração, verificação);
+    \item \textbf{Recuperação:} precisão@k e revocação@k do índice nos casos anotados.
+\end{itemize}
+
+Como as configurações são aplicadas aos mesmos casos, a comparação é pareada: teste exato de McNemar para as métricas binárias e teste de Wilcoxon para a rubrica. Com o número de casos previsto, as conclusões são apresentadas com a ressalva de baixo poder estatístico. Métricas de semelhança textual com a correção humana não são usadas como critério de sucesso, pois superestimam o desempenho \cite{han2026rethinking}.
+
+\section{Critérios de Aceite}
+
+\begin{longtable}{p{0.24\textwidth} p{0.69\textwidth}}
+\caption{Critérios de aceite da solução.}
+\label{tab:aceite} \\
+\toprule
+\textbf{Aspecto} & \textbf{Critério de aceite} \\
+\midrule
+\endfirsthead
+\toprule
+\textbf{Aspecto} & \textbf{Critério de aceite} \\
+\midrule
+\endhead
+Segurança da execução & Nenhum código gerado é executado fora do contêiner; a \textit{branch} principal nunca é alterada sem \texttt{revisar --aceitar}. \\
+\addlinespace
+Ingestão e triagem & Todos os alertas de relatórios válidos são normalizados e classificados; os não tratáveis são listados. \\
+\addlinespace
+Índice & Índice incremental idêntico ao reconstruído; relatório de precisão@k e revocação@k disponível. \\
+\addlinespace
+Agente & Respeita os limites configurados em todos os casos; toda proposta inclui \textit{diff}, plano e evidências. \\
+\addlinespace
+Verificação & Os \textit{patches} preparados dos testes de caixa branca de B7 são classificados corretamente em 100\% dos casos. \\
+\addlinespace
+Conjunto de casos & Cada caso admitido compila no contêiner, reproduz o alerta e, quando aplicável, tem teste de exploração que falha na versão vulnerável e passa na de referência. \\
+\addlinespace
+Experimento & Todos os casos executados nas três configurações com configuração idêntica; tabelas geradas automaticamente. \\
+\addlinespace
+Reprodutibilidade & Modelo, versões, instruções, imagens Docker, regras e \textit{commits} dos casos registrados; o experimento é reexecutável a partir de um arquivo de configuração. \\
+\bottomrule
+\end{longtable}
+
+Não se fixa uma meta de taxa de correção: o objetivo do experimento é medir a diferença entre as configurações, e uma meta anterior aos dados seria arbitrária.

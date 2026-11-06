@@ -14,7 +14,7 @@
 \usepackage{graphicx}		% Inclusão de gráficos
 \usepackage{microtype} 		% para melhorias de justificação
 \usepackage{pslatex}        % torna o documento padrão para as fontes Times/Helvetica/Courier
-\usepackage{url}
+% \usepackage{url}
 \usepackage{booktabs}
 \usepackage{subfig}
 \usepackage{pdfpages}
@@ -30,10 +30,16 @@
 \usepackage{longtable, ltcaption}
 \usepackage{newfloat}
 \usepackage{tikz}
+\usepackage{pgfgantt}
 \usepackage{hyperref}
 \usepackage{fancyvrb}
 \usepackage{titlesec}
-% \usepackage{ifthen}
+\usepackage{ifthen}
+\usepackage{titlesec}
+\usepackage{float}
+\usepackage{adjustbox}
+\usepackage{tikz}
+\usetikzlibrary{positioning,arrows.meta}
 % ---
 % ---
 % Pacote de citações
@@ -49,6 +55,16 @@
   breakatwhitespace=true,
   basicstyle=\ttfamily\small
 }
+
+\usepackage{graphicx} 
+\usepackage{pgfgantt}  
+\usepackage{graphicx} 
+
+\makeatletter
+\renewcommand{\pgfcalendarmonthshortname}[1]{%
+  \ifcase#1\or Jan\or Fev\or Mar\or Abr\or Mai\or Jun\or Jul\or Ago\or Set\or Out\or Nov\or Dez\fi
+}
+\makeatother
 
 % Troca "Listing" por "Listagem"
 \renewcommand{\lstlistingname}{Listagem}
@@ -98,7 +114,7 @@
 
 
 \titleformat{\subsection}
-  {\bfseries}   % transforma em negrito
+  {\bfseries\MakeUppercase}   % transforma em negrito e caixa alta
   {\thesubsection}{1em}{}
 
 
@@ -127,7 +143,7 @@
 \renewcommand{\cftsectionpagefont}{\normalfont}
 
 % subsection entries (in the table of contents)
-\renewcommand{\cftsubsectionfont}{\bfseries}
+\renewcommand{\cftsubsectionfont}{\bfseries\MakeUppercase}
 \renewcommand{\cftsubsectionpagefont}{\bfseries}
 
 % subsection entries (in the table of contents)
@@ -299,6 +315,38 @@
 % ---
 % Modelo de Capa conforme Manual PUCPR
 \renewcommand{\imprimircapa}{
+\ifthenelse{\equal{\imprimirTrabalhoTipo}{plano}}{
+\begin{capa}
+    \begin{center}
+ 		\MakeUppercase{\textbf{\imprimirinstituicao}}\\
+ 		\MakeUppercase{\textbf{\imprimirEscola}}\\
+ 		\MakeUppercase{\textbf{\imprimirCurso}}\\
+ 		\vspace{1.8cm}
+		\MakeUppercase{\textbf{\imprimirautor}}\\
+        \vspace{2.5cm}
+        {\large \MakeUppercase{\textbf{\imprimirtitulo}}}\\
+        \MakeUppercase{\textbf{\imprimirsubtitulo}}
+        \vspace{1.0cm}
+        
+        \textbf{\tituloDocumento}
+        
+        \vspace{1.5cm}
+        \textbf{Orientador:} \imprimirNomeOrientador
+        
+        \vspace{2.0cm}
+        \begin{minipage}{8.5cm}
+            \centering
+            \rule{8.5cm}{0.4pt}\\
+            \vspace{0.15cm}
+            Visto do Orientador
+        \end{minipage}
+
+        \vfill
+        \MakeUppercase{\textbf{\imprimirCidade}}\\
+        \textbf{\imprimirdata}
+    \end{center}
+\end{capa}
+}{
 \begin{capa}
     \begin{center}
         % \includegraphics[height=15ex]{img/brasao.png}\\[1.5ex]
@@ -315,6 +363,7 @@
         \textbf{\imprimirdata}
     \end{center}
 \end{capa}
+}
 }
 
 % ---

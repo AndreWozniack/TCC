@@ -5,23 +5,245 @@
 \providecommand{\abntbstabout}[1]{}
 \abntbstabout{v-1.9.7 }
 
-\bibitem[{ABNT} 2021]{nbr6028}
-\abntrefinfo{{ABNT}}{{ABNT}}{2021}
-{{ABNT}. \textbf{ABNT NBR 6028}: Informação e documentação: resumo, resenha e recensão: apresentação.
-Rio de Janeiro, 2021. Dispon{\'\i}vel em: \url{https://www.exemplo1.com.br}. Acesso em: 01 dez. 2025.}
+\bibitem[Al-Maamari 2026]{almaamari2026whyfail}
+\abntrefinfo{Al-Maamari}{AL-MAAMARI}{2026}
+{AL-MAAMARI, A. \textbf{Why {LLMs} Fail: A Failure Analysis and Partial Success
+  Measurement for Automated Security Patch Generation}. 2026. ArXiv:2603.10072.
+Dispon{\'\i}vel em: \url{https://arxiv.org/abs/2603.10072}. Acesso em: 6 nov.
+  2026.}
 
-\bibitem[{ABNT} 2024]{nbr14724}
-\abntrefinfo{{ABNT}}{{ABNT}}{2024}
-{{ABNT}. \textbf{ABNT NBR 14724}: Informação e documentação: trabalhos acadêmicos: apresentação.
-Rio de Janeiro, 2024. Dispon{\'\i}vel em: \url{https://www.exemplo2.com.br}. Acesso em: 02 dez. 2025.}
+\bibitem[Bhandari, Naseer e Moonen 2021]{bhandari2021cvefixes}
+\abntrefinfo{Bhandari, Naseer e Moonen}{BHANDARI; NASEER; MOONEN}{2021}
+{BHANDARI, G.; NASEER, A.; MOONEN, L. {CVEfixes}: Automated collection of
+  vulnerabilities and their fixes from open-source software. In:
+  \textbf{Proceedings of the 17th International Conference on Predictive Models
+  and Data Analytics in Software Engineering (PROMISE)}. [S.l.: s.n.], 2021.}
 
-\bibitem[Ciclano 2025]{ciclano}
-\abntrefinfo{Ciclano}{CICLANO}{2025}
-{CICLANO, B. Exemplo de título.
-\textbf{Exemplo de periódico}, Exemplo de cidade, v.~1, n.~2, p. 99--99, 2025.}
+\bibitem[Bouzenia, Devanbu e Pradel 2025]{bouzenia2025repairagent}
+\abntrefinfo{Bouzenia, Devanbu e Pradel}{BOUZENIA; DEVANBU; PRADEL}{2025}
+{BOUZENIA, I.; DEVANBU, P.; PRADEL, M. {RepairAgent}: An autonomous,
+  {LLM}-based agent for program repair. In:  \textbf{Proceedings of the 47th
+  International Conference on Software Engineering (ICSE)}. [S.l.: s.n.],
+  2025.}
 
-\bibitem[Gil 2008]{gil2008metodos}
-\abntrefinfo{Gil}{GIL}{2008}
-{GIL, A.~C. \textbf{Métodos e Técnicas de Pesquisa Social}. São Paulo: Atlas, 2008.}
+\bibitem[Bui, Scandariato e Ferreyra 2022]{bui2022vul4j}
+\abntrefinfo{Bui, Scandariato e Ferreyra}{BUI; SCANDARIATO; FERREYRA}{2022}
+{BUI, Q.-C.; SCANDARIATO, R.; FERREYRA, N. E.~D. {Vul4J}: A dataset of
+  reproducible {Java} vulnerabilities geared towards the study of program
+  repair techniques. In:  \textbf{Proceedings of the 19th International
+  Conference on Mining Software Repositories (MSR)}. [S.l.: s.n.], 2022.}
+
+\bibitem[Feng \textit{et al.} 2020]{feng2020codebert}
+\abntrefinfo{Feng \textit{et al.}}{FENG \textit{et al.}}{2020}
+{FENG, Z.; GUO, D.; TANG, D.; DUAN, N.; FENG, X.; GONG, M.; SHOU, L.; QIN, B.;
+  LIU, T.; JIANG, D.; ZHOU, M. Codebert: A pre-trained model for programming
+  and natural languages. In:  \textbf{Findings of the Association for
+  Computational Linguistics: EMNLP 2020}. [S.l.: s.n.], 2020. p. 1536--1547.}
+
+\bibitem[{GitHub} 2026]{codeql2026}
+\abntrefinfo{{GitHub}}{{GitHub}}{2026a}
+{{GitHub}. \textbf{{CodeQL} {CLI}}. 2026. GitHub Docs.
+Dispon{\'\i}vel em:
+  \url{https://docs.github.com/en/code-security/concepts/code-scanning/codeql/codeql-cli}.
+  Acesso em: 6 nov. 2026.}
+
+\bibitem[{GitHub} 2026]{githubautofix2026}
+\abntrefinfo{{GitHub}}{{GitHub}}{2026b}
+{{GitHub}. \textbf{Copilot Autofix for code scanning}. 2026. GitHub Docs.
+Dispon{\'\i}vel em:
+  \url{https://docs.github.com/en/code-security/concepts/code-scanning/copilot-autofix-for-code-scanning}.
+  Acesso em: 6 nov. 2026.}
+
+\bibitem[Guo \textit{et al.} 2021]{guo2021graphcodebert}
+\abntrefinfo{Guo \textit{et al.}}{GUO \textit{et al.}}{2021}
+{GUO, D.; REN, S.; LU, S.; FENG, Z.; TANG, D.; LIU, S.; ZHOU, L.; DUAN, N.;
+  SVYATKOVSKIY, A.; FU, S.; TUFANO, M.; DENG, S.~K.; CLEMENT, C.; DRAIN, D.;
+  SUNDARESAN, N.; YIN, J.; JIANG, D.; ZHOU, M. Graphcodebert: Pre-training code
+  representations with data flow. In:  \textbf{International Conference on
+  Learning Representations (ICLR)}. [S.l.: s.n.], 2021.}
+
+\bibitem[Han \textit{et al.} 2026]{han2026rethinking}
+\abntrefinfo{Han \textit{et al.}}{HAN \textit{et al.}}{2026}
+{HAN, W.; KWAK, Y.; YU, M.; KIM, K.; LEE, Y.; MOON, H.; PAEK, Y. Rethinking the
+  capability of fine-tuned language models for automated vulnerability repair.
+  In:  \textbf{Proceedings of the 48th International Conference on Software
+  Engineering (ICSE)}. [S.l.: s.n.], 2026. ArXiv:2512.22633.}
+
+\bibitem[Hu \textit{et al.} 2025]{hu2025sokavr}
+\abntrefinfo{Hu \textit{et al.}}{HU \textit{et al.}}{2025}
+{HU, Y. \textit{et al.} {SoK}: Automated vulnerability repair: Methods, tools,
+  and assessments. In:  \textbf{Proceedings of the 34th USENIX Security
+  Symposium}. [S.l.: s.n.], 2025. p. 4421--4440.}
+
+\bibitem[Iranmanesh \textit{et al.} 2025]{yang2025}
+\abntrefinfo{Iranmanesh \textit{et al.}}{IRANMANESH \textit{et al.}}{2025}
+{IRANMANESH, M. \textit{et al.} \textbf{ZeroFalse: Improving Precision in
+  Static Analysis with LLMs}. 2025. ArXiv:2510.02534.
+Dispon{\'\i}vel em: \url{https://arxiv.org/abs/2510.02534}. Acesso em: 15 set.
+  2026.}
+
+\bibitem[{Jina AI} 2026]{jinacode2026}
+\abntrefinfo{{Jina AI}}{{Jina AI}}{2026}
+{{Jina AI}. \textbf{jina-embeddings-v2-base-code}. 2026. Hugging Face.
+Dispon{\'\i}vel em:
+  \url{https://huggingface.co/jinaai/jina-embeddings-v2-base-code}. Acesso em:
+  6 nov. 2026.}
+
+\bibitem[Lewis \textit{et al.} 2020]{lewis2020rag}
+\abntrefinfo{Lewis \textit{et al.}}{LEWIS \textit{et al.}}{2020}
+{LEWIS, P.; PEREZ, E.; PIKTUS, A.; PETRONI, F.; KARPUKHIN, V.; GOYAL, N.;
+  K{\"U}TTLER, H.; LEWIS, M.; YIH, W.-t.; ROCKT{\"A}SCHEL, T.; RIEDEL, S.;
+  KIELA, D. Retrieval-augmented generation for knowledge-intensive {NLP} tasks.
+  In:  \textbf{Advances in Neural Information Processing Systems (NeurIPS)}.
+  [S.l.: s.n.], 2020.}
+
+\bibitem[Liu \textit{et al.} 2026]{liu2026memrepair}
+\abntrefinfo{Liu \textit{et al.}}{LIU \textit{et al.}}{2026}
+{LIU, S.; ZHANG, L.; LIU, F.; LIAN, X.; LIU, Y.; ZHU, Y. \textbf{{MemRepair}:
+  Hierarchical Memory for Agentic Repository-Level Vulnerability Repair}. 2026.
+  ArXiv:2605.17444.
+Dispon{\'\i}vel em: \url{https://arxiv.org/abs/2605.17444}. Acesso em: 6 nov.
+  2026.}
+
+\bibitem[{Microsoft} 2026]{dotneteshop2026}
+\abntrefinfo{{Microsoft}}{{Microsoft}}{2026}
+{{Microsoft}. \textbf{{eShop} Reference Application}. 2026. GitHub.
+Dispon{\'\i}vel em: \url{https://github.com/dotnet/eShop}. Acesso em: 6 nov.
+  2026.}
+
+\bibitem[{MITRE} 2026]{mitrecwe2026}
+\abntrefinfo{{MITRE}}{{MITRE}}{2026}
+{{MITRE}. \textbf{{CWE} -- Common Weakness Enumeration}. 2026.
+Dispon{\'\i}vel em: \url{https://cwe.mitre.org/}. Acesso em: 6 nov. 2026.}
+
+\bibitem[Morris 2026]{netarchtest2026}
+\abntrefinfo{Morris}{MORRIS}{2026}
+{MORRIS, B. \textbf{{NetArchTest}: a fluent {API} for .{NET} that can enforce
+  architectural rules in unit tests}. 2026. GitHub.
+Dispon{\'\i}vel em: \url{https://github.com/BenMorris/NetArchTest}. Acesso em:
+  6 nov. 2026.}
+
+\bibitem[{National Institute of Standards and Technology}
+  2026]{nistjulietcsharp2026}
+\abntrefinfo{{National Institute of Standards and Technology}}{{National
+  Institute of Standards and Technology}}{2026}
+{{National Institute of Standards and Technology}. \textbf{Juliet {C\#} 1.3 --
+  {SARD} Test Suite 110}. 2026.
+Dispon{\'\i}vel em: \url{https://samate.nist.gov/SARD/test-suites/110}. Acesso
+  em: 6 nov. 2026.}
+
+\bibitem[{OWASP Foundation} 2026]{owaspcheatsheets2026}
+\abntrefinfo{{OWASP Foundation}}{{OWASP Foundation}}{2026}
+{{OWASP Foundation}. \textbf{{OWASP} Cheat Sheet Series}. 2026.
+Dispon{\'\i}vel em: \url{https://cheatsheetseries.owasp.org/}. Acesso em: 6
+  nov. 2026.}
+
+\bibitem[Pearce \textit{et al.} 2022]{pearce2022copilot}
+\abntrefinfo{Pearce \textit{et al.}}{PEARCE \textit{et al.}}{2022}
+{PEARCE, H.; AHMAD, B.; TAN, B.; DOLAN-GAVITT, B.; KARRI, R. Asleep at the
+  keyboard? assessing the security of github copilot's code contributions. In:
+  \textbf{2022 IEEE Symposium on Security and Privacy (SP)}. [S.l.: s.n.],
+  2022. p. 754--768.}
+
+\bibitem[{Semgrep} 2026]{semgrepcsharp2026}
+\abntrefinfo{{Semgrep}}{{Semgrep}}{2026a}
+{{Semgrep}. \textbf{{C\#} support}. 2026. Semgrep Docs.
+Dispon{\'\i}vel em: \url{https://semgrep.dev/docs/languages/csharp}. Acesso em:
+  6 nov. 2026.}
+
+\bibitem[{Semgrep} 2026]{semgrep2026}
+\abntrefinfo{{Semgrep}}{{Semgrep}}{2026b}
+{{Semgrep}. \textbf{Semgrep: repositório e documentação da {CLI}}. 2026.
+  GitHub.
+Dispon{\'\i}vel em: \url{https://github.com/semgrep/semgrep}. Acesso em: 6 nov.
+  2026.}
+
+\bibitem[{Snyk} 2026]{snykagentfix2026}
+\abntrefinfo{{Snyk}}{{Snyk}}{2026}
+{{Snyk}. \textbf{Fix code vulnerabilities automatically}. 2026. Snyk User Docs.
+Dispon{\'\i}vel em:
+  \url{https://docs.snyk.io/scan-with-snyk/snyk-code/manage-code-vulnerabilities/fix-code-vulnerabilities-automatically}.
+  Acesso em: 6 nov. 2026.}
+
+\bibitem[{SonarSource} 2026]{sonaraicodefix2026}
+\abntrefinfo{{SonarSource}}{{SonarSource}}{2026}
+{{SonarSource}. \textbf{{AI CodeFix}}. 2026. Documentação do SonarQube Cloud.
+Dispon{\'\i}vel em:
+  \url{https://docs.sonarsource.com/sonarqube-cloud/ai-capabilities/ai-codefix}.
+  Acesso em: 6 nov. 2026.}
+
+\bibitem[{TechScience} 2025]{techscience2025}
+\abntrefinfo{{TechScience}}{{TechScience}}{2025}
+{{TechScience}. Static analysis techniques for secure software: A systematic
+  review.
+\textbf{Journal of Cyber Security}, v.~7, n.~1, 2025.
+Dispon{\'\i}vel em: \url{https://www.techscience.com/JCS/v7n1/64045/html}.
+  Acesso em: 15 set. 2026.}
+
+\bibitem[{Tree-sitter} 2026]{treesitter2026}
+\abntrefinfo{{Tree-sitter}}{{Tree-sitter}}{2026}
+{{Tree-sitter}. \textbf{Tree-sitter: a parser generator tool and an incremental
+  parsing library}. 2026.
+Dispon{\'\i}vel em: \url{https://tree-sitter.github.io/tree-sitter/}. Acesso
+  em: 6 nov. 2026.}
+
+\bibitem[{Veracode} 2025]{veracode2025}
+\abntrefinfo{{Veracode}}{{Veracode}}{2025}
+{{Veracode}. \textbf{2025 GenAI Code Security Report}. 2025. Relatório
+  técnico.
+Dispon{\'\i}vel em:
+  \url{https://www.veracode.com/resources/reports/2025-genai-code-security-report/}.
+  Acesso em: 15 set. 2026.}
+
+\bibitem[Wang \textit{et al.} 2023]{wang2023reef}
+\abntrefinfo{Wang \textit{et al.}}{WANG \textit{et al.}}{2023}
+{WANG, C.; LI, Z.; PENG, Y.; GAO, S.; CHEN, S.; WANG, S.; GAO, C.; LYU, M.~R.
+  {REEF}: A framework for collecting real-world vulnerabilities and fixes. In:
+  \textbf{Proceedings of the 38th IEEE/ACM International Conference on
+  Automated Software Engineering (ASE)}. [S.l.: s.n.], 2023.}
+
+\bibitem[Wang, Liu e Xiao 2025]{wang2025cvebench}
+\abntrefinfo{Wang, Liu e Xiao}{WANG; LIU; XIAO}{2025}
+{WANG, P.; LIU, X.; XIAO, C. {CVE-Bench}: Benchmarking {LLM}-based software
+  engineering agent's ability to repair real-world {CVE} vulnerabilities. In:
+  \textbf{Proceedings of the 2025 Conference of the Nations of the Americas
+  Chapter of the Association for Computational Linguistics (NAACL)}. [S.l.:
+  s.n.], 2025. p. 4207--4224.}
+
+\bibitem[Wang \textit{et al.} 2025]{wang2025vulnrepaireval}
+\abntrefinfo{Wang \textit{et al.}}{WANG \textit{et al.}}{2025}
+{WANG, W.; MA, W.; HU, Q.; ZHANG, Y.; SUN, J.; WU, B.; LIU, Y.; XU, G.; JIANG,
+  L. \textbf{{VulnRepairEval}: An Exploit-Based Evaluation Framework for
+  Assessing Large Language Model Vulnerability Repair Capabilities}. 2025.
+  ArXiv:2509.03331.
+Dispon{\'\i}vel em: \url{https://arxiv.org/abs/2509.03331}. Acesso em: 6 nov.
+  2026.}
+
+\bibitem[Xiao \textit{et al.} 2026]{xiao2026predicatefix}
+\abntrefinfo{Xiao \textit{et al.}}{XIAO \textit{et al.}}{2026}
+{XIAO, Y.-A.; WANG, W.; LIU, D.; ZHOU, J.; CHENG, S.; XIONG, Y. {PredicateFix}:
+  Repairing static analysis alerts with bridging predicates. In:
+  \textbf{Proceedings of the 48th International Conference on Software
+  Engineering (ICSE)}. [S.l.: s.n.], 2026. ArXiv:2503.12205.}
+
+\bibitem[Yang \textit{et al.} 2024]{yang2024sweagent}
+\abntrefinfo{Yang \textit{et al.}}{YANG \textit{et al.}}{2024}
+{YANG, J.; JIMENEZ, C.~E.; WETTIG, A.; LIERET, K.; YAO, S.; NARASIMHAN, K.;
+  PRESS, O. {SWE-agent}: Agent-computer interfaces enable automated software
+  engineering. In:  \textbf{Advances in Neural Information Processing Systems
+  (NeurIPS)}. [S.l.: s.n.], 2024.}
+
+\bibitem[Yu \textit{et al.} 2025]{yu2025patchagent}
+\abntrefinfo{Yu \textit{et al.}}{YU \textit{et al.}}{2025}
+{YU, Z. \textit{et al.} {PatchAgent}: A practical program repair agent
+  mimicking human expertise. In:  \textbf{Proceedings of the 34th USENIX
+  Security Symposium}. [S.l.: s.n.], 2025. p. 4381--4400.}
+
+\bibitem[Zhang \textit{et al.} 2026]{zhang2026coderovers}
+\abntrefinfo{Zhang \textit{et al.}}{ZHANG \textit{et al.}}{2026}
+{ZHANG, Y. \textit{et al.} Fixing security vulnerabilities with agentic {AI} in
+  {OSS-Fuzz}. In:  \textbf{Proceedings of the 48th International Conference on
+  Software Engineering: Software Engineering in Practice (ICSE-SEIP)}. [S.l.:
+  s.n.], 2026. Versão preliminar: arXiv:2411.03346.}
 
 \end{thebibliography}
