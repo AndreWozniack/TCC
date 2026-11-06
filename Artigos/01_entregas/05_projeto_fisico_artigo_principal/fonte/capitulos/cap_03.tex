@@ -1,21 +1,63 @@
-%----------------Cap_03----------------%
+% !TeX root = ../main.tex
+\chapter{Cronograma do Projeto}
+\label{cap:cronograma}
 
-\chapter{Análise dos Resultados}
+O cronograma foi revisado após a defesa do Plano de Projeto e a mudança de ênfase, de detecção com \textit{Machine Learning} para remediação com um agente de LLM. As Etapas 1 a 3 foram cumpridas: Formulário e Proposta, Plano de Projeto (entregue em 25/09/2026) e sua defesa (28/09/2026). A Etapa 4 (este Projeto Físico) encerra-se com a entrega em 12/11/2026. A partir da Etapa 6, a implementação segue a ordem de menor risco: primeiro o ambiente, as fichas do especialista e o conjunto de casos, junto com a verificação (B7), que é necessária para avaliar qualquer configuração; depois as configurações A e B; por último o agente completo (C). Assim, há resultados comparáveis mesmo que o agente atrase.
 
-Texto texto texto texto texto texto texto texto texto texto texto texto texto texto
-texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto
-texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto
-texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto
-texto texto texto texto texto texto texto texto texto texto.
+Na Figura~\ref{fig:gantt}, barras verdes indicam etapas cumpridas e barras azuis, etapas planejadas.
 
-Texto texto texto texto texto texto texto texto texto texto texto texto texto texto
-texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto
-texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto
-texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto
-texto texto texto texto texto texto texto texto texto texto.
-
-Texto texto texto texto texto texto texto texto texto texto texto texto texto texto
-texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto
-texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto
-texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto
-texto texto texto texto texto texto texto texto texto texto.
+\begin{figure}[htbp]
+\centering
+\resizebox{\textwidth}{!}{%
+\begin{ganttchart}[
+    time slot format=isodate,
+    x unit=0.05cm,
+    y unit title=0.7cm,
+    y unit chart=0.45cm,
+    title height=1,
+    bar/.append style={fill=blue!40, rounded corners=1pt},
+    group/.append style={fill=blue!70, rounded corners=1pt},
+    milestone/.append style={fill=red},
+    bar label font=\small,
+    group label font=\small\bfseries,
+    milestone label font=\small,
+    title label font=\normalsize
+]{2026-08-01}{2027-06-15}
+\gantttitlecalendar{year, month=shortname} \\
+\ganttgroup[group/.append style={fill=green!60!black}]{Etapas 1 a 3 -- Proposta, Plano e Defesa}{2026-08-01}{2026-09-28} \\
+\ganttbar[bar/.append style={fill=green!50}]{Formulário, Proposta e Plano de Projeto}{2026-08-01}{2026-09-25} \\
+\ganttbar[bar/.append style={fill=green!50}]{Defesa do Plano de Projeto}{2026-09-26}{2026-09-28} \\
+\ganttgroup{Etapa 4 -- Projeto Físico}{2026-10-03}{2026-11-12} \\
+\ganttbar[bar/.append style={fill=green!50}]{Revisão do foco com o orientador}{2026-10-03}{2026-10-20} \\
+\ganttbar[bar/.append style={fill=green!50}]{Definição de escopo, arquitetura e métricas}{2026-10-21}{2026-11-05} \\
+\ganttbar{Redação e revisão do Projeto Físico}{2026-11-05}{2026-11-11} \\
+\ganttmilestone{Entrega do Projeto Físico}{2026-11-12} \\
+\ganttgroup{Etapa 5 -- Defesa do Projeto Físico}{2026-11-13}{2026-11-19} \\
+\ganttbar{Slides e ensaios}{2026-11-13}{2026-11-18} \\
+\ganttmilestone{Defesa do Projeto Físico}{2026-11-19} \\
+\ganttgroup{Etapa 6 -- Efetuação do Protótipo}{2026-11-21}{2027-04-29} \\
+\ganttbar{B1, B2 e ambiente Docker (.NET e Java)}{2026-11-21}{2026-12-10} \\
+\ganttbar{Conjunto C\#: Juliet e casos no eShop}{2026-11-21}{2027-01-31} \\
+\ganttbar{Fichas do especialista (B4)}{2026-12-11}{2027-01-10} \\
+\ganttbar{B7: verificação e laudo}{2027-01-11}{2027-02-10} \\
+\ganttbar{B3: índice incremental e prova de conceito}{2027-01-11}{2027-02-10} \\
+\ganttbar{Configurações A e B; subconjunto Vul4J}{2027-02-11}{2027-02-28} \\
+\ganttbar{B6 agente e B5 memória (configuração C)}{2027-03-01}{2027-04-05} \\
+\ganttbar{B8, B9 e testes (caixa preta/branca)}{2027-04-06}{2027-04-25} \\
+\ganttbar{Documentação do protótipo}{2027-04-26}{2027-04-29} \\
+\ganttmilestone{Entrega do Protótipo}{2027-04-30} \\
+\ganttgroup{Etapa 7 -- Defesa do Protótipo}{2027-05-01}{2027-05-05} \\
+\ganttmilestone{Defesa do Protótipo}{2027-05-05} \\
+\ganttgroup{Etapa 8 -- Finalização}{2027-05-06}{2027-06-09} \\
+\ganttbar{Casos reais C\#, experimento completo e análise}{2027-05-06}{2027-06-02} \\
+\ganttbar{Relatório Final e vídeo}{2027-06-03}{2027-06-09} \\
+\ganttmilestone{Entrega do Projeto Final}{2027-06-10} \\
+\ganttgroup{Etapa 9 -- Defesa Final}{2027-06-11}{2027-06-15} \\
+\ganttmilestone{Defesa Final}{2027-06-15} \\
+\end{ganttchart}%
+}
+\caption{Cronograma revisado do projeto -- Gráfico de Gantt.}
+\label{fig:gantt}
+\par\vspace{0.4em}
+\begin{minipage}{\textwidth}\centering\footnotesize\textbf{Fonte:} Elaborado pelos autores.\end{minipage}
+\end{figure}

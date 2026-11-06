@@ -1,53 +1,328 @@
-%----------------Cap_02----------------%
+% !TeX root = ../main.tex
+\chapter{Detalhamento do Projeto}
+\label{cap:detalhamento}
 
-\chapter{Título da Seção Primária}
+\section{Visão Geral em Blocos}
 
-Esta seção mostra como estruturar um documento em LaTeX.  
-O nível mais alto de divisão é a seção primária, criada com o comando:
+O sistema é inteiramente de \textit{software} e é escrito em Python. Não há blocos de \textit{hardware} nem de \textit{firmware}; portanto, não há diagrama elétrico nem código em \textit{Assembly}. Ele é executado por linha de comando em computadores de propósito geral (Linux ou macOS) com Docker e recebe dois insumos: um repositório Git de um projeto em uma das linguagens desta fase (C\#/.NET ou Java, Seção~\ref{sec:recorte}) e o relatório de alertas do Semgrep. Para cada alerta tratável, entrega um \textit{patch}, o raciocínio do agente e um laudo de verificação, que o desenvolvedor aprova ou rejeita.
 
+A Figura~\ref{fig:blocos} apresenta os blocos. A abordagem de descrição é a estruturada: para cada bloco são apresentadas entradas, saídas, processamento e pseudocódigo. As interfaces entre blocos estão resumidas na Tabela~\ref{tab:interfaces}.
+
+\begin{figure}[H]
+    \centering
+    \begin{adjustbox}{max width=\textwidth, keepaspectratio, center}
+    \begin{tikzpicture}[
+        node distance=6mm and 10mm,
+        bloco/.style={rectangle, rounded corners=3pt, draw=black, fill=gray!12,
+            text width=3.7cm, minimum height=1.0cm, align=center, font=\small, inner sep=4pt},
+        externo/.style={bloco, fill=blue!10},
+        saida/.style={bloco, fill=green!12},
+        conhec/.style={bloco, fill=yellow!20},
+        seta/.style={-{Stealth[length=2.5mm]}, thick}
+    ]
+        \node[externo] (sast) {Relatório Semgrep};
+        \node[externo, right=of sast] (repo) {Repositório Git};
+        \node[bloco, below=of sast] (b1) {\textbf{B1} Ingestão e triagem de alertas};
+        \node[bloco, below=of repo] (b2) {\textbf{B2} Ambiente isolado\\\footnotesize \textit{worktree} + Docker};
+        \node[conhec, right=of b2] (b3) {\textbf{B3} Índice do projeto\\\footnotesize incremental};
+        \node[bloco, below=of b1, yshift=-4mm, text width=4.6cm, minimum height=1.4cm, fill=gray!25] (b6) {\textbf{B6} Agente de remediação\\\footnotesize entender, investigar, planejar, editar};
+        \node[conhec, left=of b6] (b4) {\textbf{B4} Base do especialista\\\footnotesize fichas por classe};
+        \node[conhec, right=of b6] (b5) {\textbf{B5} Memória de correções};
+        \node[externo, left=of b1] (llm) {API do LLM};
+        \node[bloco, below=of b6, yshift=-4mm] (b7) {\textbf{B7} Verificação em camadas e laudo};
+        \node[saida, below=of b7] (b8) {\textbf{B8} Relatório e revisão humana};
+        \node[bloco, fill=orange!12, left=of b7] (b9) {\textbf{B9} Orquestrador experimental};
+
+        \draw[seta] (sast) -- (b1);
+        \draw[seta] (repo) -- (b2);
+        \draw[seta] (b2) -- (b3);
+        \draw[seta] (b1) -- (b6);
+        \draw[seta] (b4) -- (b6);
+        \draw[seta] (b3) |- (b6.north east);
+        \draw[seta, {Stealth[length=2.5mm]}-{Stealth[length=2.5mm]}] (b5) -- (b6);
+        \draw[seta, {Stealth[length=2.5mm]}-{Stealth[length=2.5mm]}] (llm) -- (b6.north west);
+        \draw[seta, {Stealth[length=2.5mm]}-{Stealth[length=2.5mm]}] (b6) -- node[right, font=\scriptsize]{\textit{patch} / resultado} (b7);
+        \draw[seta] (b7) -- (b8);
+        \draw[seta, dashed] (b8.east) -| node[pos=0.75, right, font=\scriptsize]{aceite / rejeição} (b5.south);
+        \draw[seta, dashed] (b9.north east) -- node[left, font=\scriptsize]{modo A/B/C} (b6.south west);
+    \end{tikzpicture}
+    \end{adjustbox}
+    \caption{Diagrama em blocos do agente de remediação.}
+    \label{fig:blocos}
+    \par\vspace{0.6em}
+    \begin{minipage}{\textwidth}\centering\footnotesize\textbf{Fonte:} Elaborado pelos autores.\end{minipage}
+\end{figure}
+
+Os blocos em amarelo formam o conhecimento disponível ao agente: o índice do projeto (B3), a base do especialista (B4) e a memória de correções (B5). O agente (B6) é o único bloco que chama o LLM e usa o verificador (B7) dentro do seu ciclo. O orquestrador (B9) existe apenas para o experimento.
+
+\section{Estruturas de Dados Comuns}
+
+Os blocos trocam registros serializáveis em JSON, o que permite testá-los isoladamente:
+
+\begin{itemize}
+    \item \texttt{Alerta}: \texttt{id}, \texttt{regra}, \texttt{cwe}, \texttt{severidade}, \texttt{arquivo}, \texttt{linha\_ini}, \texttt{linha\_fim}, \texttt{mensagem}, \texttt{trecho}, \texttt{classe} (preenchida pela triagem);
+    \item \texttt{Chunk}: \texttt{arquivo}, \texttt{simbolo}, \texttt{linha\_ini}, \texttt{linha\_fim}, \texttt{tipo} (código, teste, configuração, documentação), \texttt{hash}, \texttt{texto};
+    \item \texttt{Ficha}: classe de vulnerabilidade, CWEs, correção recomendada por \textit{framework}, falsas correções, modelo de teste de exploração e verificações obrigatórias (Seção~\ref{sec:especialista});
+    \item \texttt{Memoria}: alerta, \textit{patch}, decisão (aceito ou rejeitado), motivo, arquivos de origem e seus \textit{hashes};
+    \item \texttt{Proposta}: \texttt{diff}, \texttt{plano} (causa e estratégia em texto), \texttt{evidencias} (trechos consultados), \texttt{iteracoes}, \texttt{tokens}, \texttt{custo};
+    \item \texttt{Laudo}: resultado de cada verificação (V1 a V8), \texttt{estado} final (verificado, parcial ou não corrigido) e tempos.
+\end{itemize}
+
+\section{Detalhamento dos Blocos}
+\label{sec:blocos}
+
+\subsection{B1 -- Ingestão e Triagem de Alertas}
+
+\textbf{Entrada:} relatório do Semgrep em JSON ou SARIF. \textbf{Saída:} lista de \texttt{Alerta} classificados.
+
+O bloco normaliza os resultados, remove duplicatas (mesmo arquivo, linha e regra) e atribui a cada alerta uma classe de vulnerabilidade a partir da CWE informada nos metadados da regra. Alertas cuja classe não tem ficha na base do especialista são marcados como \textit{não tratáveis} e aparecem no relatório final, sem chamada ao LLM. O Semgrep é executado com as regras de segurança da comunidade para C\# e Java, com versão fixada. A própria documentação do Semgrep informa que parte das regras de C\# específicas de \textit{frameworks} exige o motor comercial \cite{semgrepcsharp2026}; essa limitação é registrada como risco, e o trabalho usa apenas o que a edição comunitária detecta.
+
+\begin{footnotesize}
 \begin{verbatim}
-\chapter{Seção Primária}
+funcao ingerir(relatorio, base):
+    alertas = deduplicar(normalizar(relatorio.results))
+    para cada a em alertas:
+        a.classe = base.classe_da_cwe(a.cwe)     // None se nao houver ficha
+        a.tratavel = (a.classe != None)
+    retornar alertas
 \end{verbatim}
+\end{footnotesize}
 
-Cada seção primária inicia automaticamente em uma nova página.
+\subsection{B2 -- Ambiente Isolado}
 
+Cada alerta é tratado em uma cópia de trabalho própria (\textit{git worktree}) criada a partir do \textit{commit} analisado. Compilação, testes e análises rodam em um contêiner Docker sem acesso à rede, com limites de CPU, memória e tempo. As dependências (NuGet ou Maven) são baixadas antes, em uma etapa separada, e ficam em \textit{cache}. Nenhum código gerado pelo agente é executado fora do contêiner, e a \textit{branch} principal nunca é alterada por este bloco.
 
-\section{Título da Seção Secundária}
+\subsection{B3 -- Índice do Projeto}
+\label{sec:contexto}
 
-Dentro de uma seção primária, podemos criar subdivisões (seções secundárias) usando o seguinte comando:
+\textbf{Função.} Permitir que o agente encontre o \textit{contexto do projeto}: (a) implementações semelhantes e padrões já usados; (b) classes, interfaces e contratos relacionados; (c) bibliotecas, \textit{frameworks} e versões (\texttt{.csproj}, \texttt{packages.config}, \texttt{pom.xml}); (d) convenções de arquitetura, tratamento de erros e validação; (e) testes existentes; e (f) documentação técnica.
 
+\textbf{Indexação.} Os arquivos C\# e Java são divididos em \textit{chunks} por classe e por método com o \textit{parser} \textit{tree-sitter} \cite{treesitter2026}, que possui gramáticas para as duas linguagens; arquivos de projeto, configuração (por exemplo, \texttt{appsettings.json}) e documentação em Markdown também são indexados. Cada \textit{chunk} recebe uma entrada em um índice lexical BM25 e um \textit{embedding} armazenado em uma base vetorial local (ChromaDB). Também é mantida uma tabela de símbolos (declarações e usos por nome), extraída pelo \textit{tree-sitter}, usada para responder ``quem chama'' e ``onde é usado''.
+
+\textbf{Modelo de \textit{embedding}.} O UniXcoder, considerado anteriormente, foi pré-treinado sobre linguagens que não incluem C\# e, por isso, foi descartado. O modelo inicial é o \texttt{jina-embeddings-v2-base-code}, cuja documentação lista C\# e Java entre as linguagens suportadas, embora indique desempenho mais forte em outras linguagens \cite{jinacode2026}. Por isso, a escolha é confirmada na primeira fase da implementação por uma prova de conceito: os casos anotados do conjunto C\# (Seção~\ref{sec:casos}) são usados para medir precisão@k e revocação@k do modelo, comparadas às da busca apenas lexical (BM25). Se o modelo não superar a busca lexical, o índice usa apenas BM25 e a tabela de símbolos. Os modelos da família CodeBERT \cite{feng2020codebert,guo2021graphcodebert} não são usados para gerar \textit{patches}: sua janela de entrada curta não comporta o contexto do projeto.
+
+\textbf{Atualização incremental.} Para cada arquivo guarda-se o \textit{hash} SHA-256 do conteúdo e a versão do modelo e das regras de \textit{chunking}. A cada execução, apenas arquivos novos ou alterados são reprocessados, e os removidos têm seus \textit{chunks} apagados; se a versão do modelo ou do \textit{chunking} mudar, o índice é reconstruído.
+
+\begin{footnotesize}
 \begin{verbatim}
-\section{Seção Secundária}
+funcao atualizar_indice(repo, indice):
+    se indice.versao != versao_atual(): retornar reconstruir(repo)
+    atuais = {arq: sha256(arq) para arq em arquivos_indexaveis(repo)}
+    para cada arq em indice.arquivos - atuais: remover(indice, arq)
+    para cada arq, h em atuais:
+        se indice.hash(arq) != h:
+            remover(indice, arq)
+            inserir(indice, chunkear(arq), embeddings(...), simbolos(arq), h)
 \end{verbatim}
+\end{footnotesize}
 
-Essas seções não iniciam em nova página automaticamente.
+\subsection{B4 -- Base do Especialista}
+\label{sec:especialista}
 
-Texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto.
+O ``especialista'' não é um modelo treinado à parte: é uma base de conhecimento curada, consultada pelo agente no início de cada alerta. Ela é organizada em fichas, uma por classe de vulnerabilidade, escritas em Markdown com cabeçalho estruturado. Cada ficha contém:
 
-\section{Título da Seção Secundária}
+\begin{enumerate}
+    \item descrição da falha e condição de exploração;
+    \item correção recomendada por linguagem e \textit{framework} (nesta fase, .NET e Java; por exemplo, parâmetros do ADO.NET, do Entity Framework e do JDBC para injeção de SQL);
+    \item falsas correções a evitar (por exemplo, escapar a \textit{string} manualmente, usar lista de caracteres proibidos ou suprimir a regra com \texttt{nosemgrep});
+    \item modelo de teste de exploração (xUnit em C\#, JUnit em Java), ou a indicação de que a classe não admite esse teste (por exemplo, algoritmo criptográfico fraco);
+    \item verificações obrigatórias para a classe (Seção~\ref{sec:verificacao}).
+\end{enumerate}
 
-Para \cite{ciclano}, ``citação direta, aquela até três linhas, deve aparecer desta forma no texto. Texto texto texto''.
+As fichas são redigidas a partir do OWASP Cheat Sheet Series \cite{owaspcheatsheets2026}, do catálogo CWE \cite{mitrecwe2026} e das descrições e referências das próprias regras do Semgrep. A versão inicial cobre as classes previstas no conjunto de casos (Tabela~\ref{tab:classes}); outras classes podem ser acrescentadas sem alterar o código, apenas com novas fichas. A ideia de reutilizar padrões de defesa conhecidos corresponde à camada de padrões de segurança do MemRepair \cite{liu2026memrepair}.
 
-Texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto.
+\begin{table}[H]
+\centering
+\caption{Classes de vulnerabilidade cobertas pela versão inicial da base.}
+\label{tab:classes}
+\footnotesize
+\begin{tabular}{p{4.2cm}p{2.6cm}p{5.6cm}}
+\toprule
+\textbf{Classe} & \textbf{CWE} & \textbf{Correção típica (exemplo em .NET)} \\
+\midrule
+Injeção de SQL & CWE-89 & consulta parametrizada (ADO.NET, EF) \\
+Injeção de comando do SO & CWE-78 & argumentos separados, sem \textit{shell}; lista de permissão \\
+\textit{Path traversal} & CWE-22 & normalizar caminho e validar a raiz permitida \\
+\textit{Cross-site scripting} & CWE-79 & codificação de saída do \textit{framework} \\
+Desserialização insegura & CWE-502 & desserializador seguro, tipos permitidos \\
+XXE & CWE-611 & desativar DTD e resolução externa \\
+Criptografia fraca & CWE-327, CWE-328 & algoritmo atual do \texttt{System.Security.Cryptography} \\
+Credencial no código & CWE-798 & leitura de configuração ou cofre de segredos \\
+Redirecionamento aberto & CWE-601 & validar destino local \\
+\bottomrule
+\end{tabular}
+\sourceTab{Elaborado pelos autores.}
+\end{table}
 
-\subsection{Título da seção terciária}
+\subsection{B5 -- Memória de Correções}
 
-Dentro de uma seção secundária, podemos ainda criar subdivisões menores, chamadas seções terciárias, com o comando:
+Guarda as decisões do desenvolvedor sobre as propostas do agente no próprio projeto. Correções aceitas tornam-se exemplos de ``como este projeto resolve esta classe de falha''; correções rejeitadas são guardadas com o motivo informado, para não serem repetidas. No início de cada alerta, o agente busca na memória as entradas da mesma classe e de arquivos relacionados. Cada entrada registra os \textit{hashes} dos arquivos de onde veio; quando esses arquivos mudam, a entrada é marcada como desatualizada e deixa de ser oferecida como exemplo. A memória segue a ideia da camada de histórico de correções do MemRepair \cite{liu2026memrepair}. Nos experimentos, a memória começa vazia em cada repositório, para não favorecer o agente com correções já validadas.
 
+\subsection{B6 -- Agente de Remediação}
+
+\textbf{Função.} Para cada alerta tratável, produzir um \textit{patch} que passe nas verificações obrigatórias. O agente segue um ciclo de ações e observações, com ferramentas definidas a seguir, à semelhança do SWE-agent e do RepairAgent \cite{yang2024sweagent,bouzenia2025repairagent}.
+
+\textbf{Ferramentas oferecidas ao LLM:}
+\begin{itemize}
+    \item \texttt{buscar(consulta)}: busca híbrida no índice B3;
+    \item \texttt{simbolo(nome)}: declaração e usos de um símbolo;
+    \item \texttt{grep(padrao)} e \texttt{ler(arquivo, linhas)}: busca textual e leitura;
+    \item \texttt{estrutura()}: árvore de diretórios e projetos da \textit{solution};
+    \item \texttt{ficha(classe)} e \texttt{memoria(classe, arquivo)}: consulta a B4 e B5;
+    \item \texttt{editar(arquivo, trecho\_antigo, trecho\_novo)}: substituição exata na cópia de trabalho;
+    \item \texttt{criar\_teste(arquivo, conteudo)}: cria o teste de exploração em um projeto de testes separado, nunca nos testes existentes;
+    \item \texttt{verificar()}: executa o bloco B7 e devolve o laudo parcial.
+\end{itemize}
+
+\textbf{Ciclo.} (1) \textit{Entender:} ler o alerta, a ficha e o trecho. (2) \textit{Investigar:} usar as ferramentas de busca para entender o fluxo do dado e como o projeto resolve problemas parecidos. (3) \textit{Planejar:} registrar em texto a causa, a estratégia e por que ela segue o padrão do projeto. (4) \textit{Escrever o teste de exploração}, quando a ficha o prevê, e confirmar que ele falha no código original. (5) \textit{Editar} o código. (6) \textit{Verificar.} Se alguma verificação obrigatória falhar, o resultado volta ao agente, que retoma a partir do passo 2.
+
+\begin{footnotesize}
 \begin{verbatim}
-\subsection{SEÇÃO TERCIÁRIA}
+funcao remediar(alerta, ferramentas, cfg):
+    hist = [instrucoes_sistema(cfg), alerta, ferramentas.ficha(alerta.classe)]
+    para i em 1..cfg.max_iteracoes:              // padrao: 5
+        enquanto nao estourou(cfg.max_acoes, cfg.max_custo):
+            acao = llm(hist)                      // escolhe ferramenta ou conclui
+            se acao.tipo == "concluir": sair
+            hist += [acao, executar(acao)]        // observacao da ferramenta
+        laudo = ferramentas.verificar()
+        se laudo.obrigatorias_ok: retornar Proposta(diff(), plano(hist), laudo)
+        hist += [laudo.falhas]
+    retornar NaoCorrigido(laudo, hist)
 \end{verbatim}
+\end{footnotesize}
 
-Elas servem para detalhar melhor a organização do texto em níveis mais específicos.
+\textbf{Restrições.} As instruções proíbem e o bloco B7 verifica: alterar testes existentes, alterar configurações do Semgrep ou do CodeQL, inserir comentários de supressão, adicionar dependências não justificadas no plano e alterar arquivos sem relação com o alerta. \textbf{Limites:} no máximo 5 ciclos de verificação, 40 ações e um teto de custo por alerta, definidos no arquivo de configuração. Ao atingir um limite, o agente entrega ``não corrigido'' com o laudo da última tentativa. \textbf{Modelo:} Claude, via API, com modelo, versão e parâmetros registrados em cada execução.
 
-Texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto.
+\subsection{B7 -- Verificação em Camadas e Laudo}
+\label{sec:verificacao}
 
-\subsection{Título da seção terciária}
+A verificação segue a evidência da literatura de que compilar e eliminar o alerta não basta \cite{almaamari2026whyfail,wang2025vulnrepaireval}. As verificações são executadas no contêiner, nesta ordem, interrompendo nas obrigatórias que falham:
 
-Texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto.
+\begin{table}[H]
+\centering
+\caption{Níveis de verificação do laudo.}
+\label{tab:verificacao}
+\footnotesize
+\begin{tabular}{p{0.7cm}p{3.3cm}p{5.6cm}p{2.5cm}}
+\toprule
+\textbf{Nível} & \textbf{Verificação} & \textbf{Como} & \textbf{Tipo} \\
+\midrule
+V1 & Compila & \texttt{dotnet build} / \texttt{mvn compile} & obrigatória \\
+V2 & Testes existentes & mesmos resultados antes e depois (\texttt{dotnet test} / \texttt{mvn test}) & obrigatória \\
+V3 & Alerta resolvido & Semgrep não reporta o achado nem novos achados nas linhas alteradas & obrigatória \\
+V4 & Segunda análise & CodeQL não reporta a mesma CWE no trecho \cite{codeql2026} & obrigatória se houver consulta para a CWE \\
+V5 & Exploração bloqueada & teste PoV falha no original e passa no corrigido & obrigatória se a ficha prever \\
+V6 & Comportamento preservado & testes gerados com entradas legítimas dão o mesmo resultado no original e no corrigido & obrigatória se V5 se aplicar \\
+V7 & Restrições e arquitetura & restrições do bloco B6 sobre o \textit{diff} e testes de arquitetura do projeto (NetArchTest \cite{netarchtest2026}), se existirem & obrigatória \\
+V8 & Revisão por LLM & segundo LLM, em papel de revisor de segurança, avalia o \textit{diff} e o plano & informativa \\
+\bottomrule
+\end{tabular}
+\sourceTab{Elaborado pelos autores.}
+\end{table}
 
-\subsubsection{Título da seção quaternária}
+O laudo atribui um de três estados: \textbf{verificado} (todas as obrigatórias aplicáveis passaram, incluindo V5); \textbf{parcial} (as obrigatórias passaram, mas a classe não admite teste de exploração e a evidência de segurança vem apenas de V3 e V4); e \textbf{não corrigido}. O teste de exploração e os testes de comportamento são escritos pelo próprio agente; por isso, nos experimentos, cada caso também tem um teste de exploração de referência, escrito pela equipe e desconhecido do agente, usado na avaliação (Capítulo~\ref{cap:testes}). O laudo nunca afirma que a correção é ``garantida'': ele informa quais evidências foram obtidas.
 
-Texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto.
+\subsection{B8 -- Relatório e Revisão Humana}
 
-Texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto texto.
+Para cada alerta, apresenta o \textit{diff}, o plano do agente, os trechos consultados, o laudo e as limitações. O desenvolvedor sempre vê o código proposto antes de decidir. Comandos da CLI:
+\begin{itemize}
+    \item \texttt{remediar indexar <repo>}: constrói ou atualiza o índice;
+    \item \texttt{remediar corrigir <repo> <relatorio> [--modo A|B|C]}: trata os alertas;
+    \item \texttt{remediar revisar <id> --aceitar | --rejeitar "motivo"}: registra a decisão na memória (B5); ao aceitar, cria uma \textit{branch} com o \textit{patch}, sem \textit{merge}.
+\end{itemize}
+
+\subsection{B9 -- Orquestrador Experimental}
+
+Executa todos os casos em cada configuração (Seção~\ref{sec:experimento}) com os mesmos modelo, versão e parâmetros, aplica os testes de exploração de referência, registra tempo por etapa, \textit{tokens}, custo e iterações em CSV e gera as tabelas de análise. Não faz parte do produto entregue ao desenvolvedor.
+
+\section{Interfaces entre Blocos}
+
+\begin{table}[H]
+\centering
+\caption{Interfaces entre os blocos.}
+\label{tab:interfaces}
+\footnotesize
+\begin{tabular}{p{2.1cm}p{2.4cm}p{3.4cm}p{4.3cm}}
+\toprule
+\textbf{De $\to$ Para} & \textbf{Mecanismo} & \textbf{Dado} & \textbf{Formato} \\
+\midrule
+Semgrep $\to$ B1 & arquivo & relatório & JSON/SARIF do Semgrep \\
+B1 $\to$ B6 & chamada de função & \texttt{Alerta} & JSON \\
+Repositório $\to$ B2 & CLI do Git & \textit{commit} & caminho da \textit{worktree} \\
+B2 $\to$ B3 & sistema de arquivos & arquivos do projeto & caminhos e \textit{hashes} \\
+B3/B4/B5 $\to$ B6 & ferramentas do agente & \texttt{Chunk}, \texttt{Ficha}, \texttt{Memoria} & JSON \\
+B6 $\leftrightarrow$ LLM & HTTPS & mensagens e chamadas de ferramenta & API do provedor \\
+B6 $\leftrightarrow$ B7 & ferramenta \texttt{verificar} & cópia de trabalho; \texttt{Laudo} & JSON \\
+B7 $\leftrightarrow$ Docker & CLI do Docker & comandos de \textit{build}, teste e análise & códigos de saída e saídas JSON/SARIF \\
+B8 $\to$ B5 & CLI & decisão e motivo & JSON \\
+B9 $\to$ B6 & configuração & modo A/B/C, limites & YAML \\
+\bottomrule
+\end{tabular}
+\sourceTab{Elaborado pelos autores.}
+\end{table}
+
+\section{Tecnologias, Ferramentas e Configuração}
+
+\begin{table}[H]
+\centering
+\caption{Tecnologias selecionadas.}
+\label{tab:tecnologias}
+\footnotesize
+\begin{tabular}{p{2.0cm}p{5.2cm}p{5.0cm}}
+\toprule
+\textbf{Bloco} & \textbf{Tecnologia} & \textbf{Justificativa} \\
+\midrule
+Todos & Python 3.12, \textit{pytest}, Git & ecossistema de LLM e RAG; acessível a toda a equipe \\
+B1, B7 & Semgrep CLI (edição comunitária) & alertas de entrada; C\# e Java suportados \cite{semgrepcsharp2026} \\
+B2, B7 & Docker; .NET SDK 8; JDK 17 e Maven 3.9 & isolamento e reprodutibilidade \\
+B3 & \textit{tree-sitter} (C\#, Java); \textit{rank\_bm25}; \texttt{jina-embeddings-v2-base-code}; ChromaDB & índice local, sem custo de API \\
+B4, B5 & Markdown com cabeçalho YAML; SQLite & legível por humanos e versionável \\
+B6 & API do Claude com chamada de ferramentas & raciocínio em várias etapas \\
+B7 & CodeQL CLI; xUnit/JUnit; NetArchTest & segunda análise, testes e regras de arquitetura \\
+B8 & Typer (CLI); Markdown e JSON & uso manual e integração futura \\
+B9 & YAML, pandas, SciPy & execução e análise estatística \\
+\bottomrule
+\end{tabular}
+\sourceTab{Elaborado pelos autores.}
+\end{table}
+
+\textbf{Plataforma alvo:} Linux e macOS com Docker. \textbf{Compilação e depuração:} o sistema é interpretado (Python) e depurado com o depurador do VS Code e com \textit{logs} estruturados de cada ação do agente; o código dos casos é compilado dentro do contêiner pelo .NET SDK ou pelo Maven. \textbf{Software de projeto de circuito elétrico:} não aplicável. \textbf{Configuração de software existente:} versões do Semgrep, das regras, do CodeQL e das imagens Docker são fixadas; chaves de API são lidas de variáveis de ambiente e nunca armazenadas no repositório. O CodeQL cria a base de dados de cada caso dentro do contêiner, usando o mesmo comando de \textit{build} da verificação V1, e é executado com as consultas de segurança padrão para C\# e Java.
+
+\section{Conjunto de Casos}
+\label{sec:casos}
+
+Cada caso contém: a versão vulnerável do projeto, um alerta do Semgrep reproduzível, uma correção de referência, um teste de exploração de referência (quando a classe admite) e o comando de \textit{build} e testes. Um caso só é admitido se compila de forma reprodutível no contêiner e se o Semgrep reproduz o alerta. Os números abaixo são metas; os números finais serão os casos que atenderem aos critérios e serão reportados como tal.
+
+\textbf{C\# (conjunto construído neste trabalho):}
+\begin{enumerate}
+    \item \textbf{Juliet C\# 1.3} \cite{nistjulietcsharp2026}: suíte sintética do NIST que abrange 105 CWEs. São selecionados casos das classes da Tabela~\ref{tab:classes} que o Semgrep detecta. Meta: 20 casos. Testam a variedade de classes, mas não a arquitetura, pois os casos são pequenos e isolados.
+    \item \textbf{Vulnerabilidades inseridas no dotnet/eShop} \cite{dotneteshop2026}: aplicação de referência da Microsoft em ASP.NET Core, com arquitetura em camadas e testes. A equipe insere vulnerabilidades das classes da Tabela~\ref{tab:classes} em pontos realistas, escreve os testes de exploração em xUnit e regras de arquitetura com NetArchTest. A versão original é a correção de referência. Meta: 15 casos. Testam diretamente a hipótese H2.
+    \item \textbf{Casos reais}: \textit{commits} de correção em projetos C\# obtidos do CVEfixes e do REEF \cite{bhandari2021cvefixes,wang2023reef}, filtrados manualmente pelos critérios de admissão. Meta: 5 casos, dependente da disponibilidade.
+\end{enumerate}
+
+\textbf{Java:} subconjunto reproduzível do Vul4J \cite{bui2022vul4j}, que reúne 79 vulnerabilidades reais com correção humana e testes de prova de vulnerabilidade. O próprio repositório do Vul4J informa que parte dos casos deixou de ser reproduzível; por isso, só entram os casos que compilarem. Meta: 20 casos. Esse subconjunto permite comparar os resultados com o estudo de \citeonline{almaamari2026whyfail}, que usou o mesmo conjunto.
+
+Como os casos do Juliet, do Vul4J e de CVEs públicas podem ter sido vistos pelo LLM no treinamento, os resultados são reportados separadamente por origem, e os casos inseridos no eShop, criados pela equipe, servem de controle para essa ameaça.
+
+\section{Configurações Comparadas}
+\label{sec:experimento}
+
+\begin{table}[H]
+\centering
+\caption{Configurações do experimento.}
+\label{tab:grupos}
+\footnotesize
+\begin{tabular}{p{3.0cm}p{5.4cm}p{3.8cm}}
+\toprule
+\textbf{Configuração} & \textbf{Funcionamento} & \textbf{O que permite avaliar} \\
+\midrule
+A -- mínimo & uma chamada ao LLM com o alerta e o trecho vulnerável & linha de base \\
+B -- contexto & uma chamada com o alerta, a ficha do especialista e os trechos recuperados de B3, com orçamento fixo de \textit{tokens} & efeito do contexto (H2) \\
+C -- agente & agente completo (B6) com ferramentas, memória e verificação em ciclo & efeito do agente e da verificação (H1) \\
+\bottomrule
+\end{tabular}
+\sourceTab{Elaborado pelos autores.}
+\end{table}
+
+As três configurações usam o mesmo modelo, versão e parâmetros. As correções de A e B passam pelo bloco B7 apenas para avaliação, sem retorno ao modelo.

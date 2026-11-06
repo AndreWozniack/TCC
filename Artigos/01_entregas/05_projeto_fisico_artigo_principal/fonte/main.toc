@@ -1,55 +1,49 @@
 \changetocdepth {4}
 \babel@toc {brazil}{}\relax 
 \setlength {\cftchapterindent }{\cftlastnumwidth } \setlength {\cftchapternumwidth }{2em}
-\setlength {\cftchapterindent }{\cftlastnumwidth } \setlength {\cftchapternumwidth }{2em}
-\setlength {\cftchapterindent }{\cftlastnumwidth } \setlength {\cftchapternumwidth }{2em}
-\setlength {\cftchapterindent }{\cftlastnumwidth } \setlength {\cftchapternumwidth }{2em}
-\setlength {\cftchapterindent }{\cftlastnumwidth } \setlength {\cftchapternumwidth }{2em}
-\setlength {\cftchapterindent }{\cftlastnumwidth } \setlength {\cftchapternumwidth }{2em}
-\setlength {\cftchapterindent }{\cftlastnumwidth } \setlength {\cftchapternumwidth }{2em}
-\setlength {\cftchapterindent }{\cftlastnumwidth } \setlength {\cftchapternumwidth }{2em}
 \setlength {\cftchapterindent }{0em} \setlength {\cftchapternumwidth }{\cftlastnumwidth }
-\contentsline {chapter}{\chapternumberline {1}\MakeTextUppercase []{Introdução}}{17}{chapter.1}%
-\contentsline {section}{\numberline {1.1}Problematização}{17}{section.1.1}%
-\contentsline {section}{\numberline {1.2}Objetivos}{18}{section.1.2}%
-\contentsline {subsection}{\numberline {1.2.1}Objetivo Geral}{18}{subsection.1.2.1}%
-\contentsline {subsection}{\numberline {1.2.2}Objetivos Específicos}{18}{subsection.1.2.2}%
-\contentsline {section}{\numberline {1.3}Procedimentos Metodológicos}{18}{section.1.3}%
+\contentsline {chapter}{\chapternumberline {1}\MakeTextUppercase []{Introdução}}{4}{chapter.1}%
+\contentsline {section}{\numberline {1.1}Contexto e Problema}{4}{section.1.1}%
+\contentsline {section}{\numberline {1.2}Conceitos Básicos}{5}{section.1.2}%
+\contentsline {section}{\numberline {1.3}Trabalhos Relacionados e Lacuna}{5}{section.1.3}%
+\contentsline {section}{\numberline {1.4}Pergunta de Pesquisa e Hipóteses}{6}{section.1.4}%
+\contentsline {section}{\numberline {1.5}Objetivos}{7}{section.1.5}%
+\contentsline {subsection}{\numberline {1.5.1}Objetivo Geral}{7}{subsection.1.5.1}%
+\contentsline {subsection}{\numberline {1.5.2}Objetivos Específicos}{7}{subsection.1.5.2}%
+\contentsline {section}{\numberline {1.6}Escopo do Projeto}{8}{section.1.6}%
+\contentsline {section}{\numberline {1.7}Recorte desta Fase: .NET e Java}{8}{section.1.7}%
+\contentsline {section}{\numberline {1.8}Contribuições Esperadas}{9}{section.1.8}%
+\contentsline {section}{\numberline {1.9}Estrutura do Documento}{9}{section.1.9}%
 \setlength {\cftchapterindent }{0em} \setlength {\cftchapternumwidth }{\cftlastnumwidth }
-\contentsline {chapter}{\chapternumberline {2}\MakeTextUppercase []{Título da Seção Primária}}{20}{chapter.2}%
-\contentsline {section}{\numberline {2.1}Título da Seção Secundária}{20}{section.2.1}%
-\contentsline {section}{\numberline {2.2}Título da Seção Secundária}{20}{section.2.2}%
-\contentsline {subsection}{\numberline {2.2.1}Título da seção terciária}{21}{subsection.2.2.1}%
-\contentsline {subsection}{\numberline {2.2.2}Título da seção terciária}{21}{subsection.2.2.2}%
-\contentsline {subsubsection}{\numberline {2.2.2.1}Título da seção quaternária}{21}{subsubsection.2.2.2.1}%
+\contentsline {chapter}{\chapternumberline {2}\MakeTextUppercase []{Detalhamento do Projeto}}{10}{chapter.2}%
+\contentsline {section}{\numberline {2.1}Visão Geral em Blocos}{10}{section.2.1}%
+\contentsline {section}{\numberline {2.2}Estruturas de Dados Comuns}{11}{section.2.2}%
+\contentsline {section}{\numberline {2.3}Detalhamento dos Blocos}{11}{section.2.3}%
+\contentsline {subsection}{\numberline {2.3.1}B1 -- Ingestão e Triagem de Alertas}{11}{subsection.2.3.1}%
+\contentsline {subsection}{\numberline {2.3.2}B2 -- Ambiente Isolado}{12}{subsection.2.3.2}%
+\contentsline {subsection}{\numberline {2.3.3}B3 -- Índice do Projeto}{12}{subsection.2.3.3}%
+\contentsline {subsection}{\numberline {2.3.4}B4 -- Base do Especialista}{13}{subsection.2.3.4}%
+\contentsline {subsection}{\numberline {2.3.5}B5 -- Memória de Correções}{14}{subsection.2.3.5}%
+\contentsline {subsection}{\numberline {2.3.6}B6 -- Agente de Remediação}{15}{subsection.2.3.6}%
+\contentsline {subsection}{\numberline {2.3.7}B7 -- Verificação em Camadas e Laudo}{16}{subsection.2.3.7}%
+\contentsline {subsection}{\numberline {2.3.8}B8 -- Relatório e Revisão Humana}{17}{subsection.2.3.8}%
+\contentsline {subsection}{\numberline {2.3.9}B9 -- Orquestrador Experimental}{18}{subsection.2.3.9}%
+\contentsline {section}{\numberline {2.4}Interfaces entre Blocos}{18}{section.2.4}%
+\contentsline {section}{\numberline {2.5}Tecnologias, Ferramentas e Configuração}{19}{section.2.5}%
+\contentsline {section}{\numberline {2.6}Conjunto de Casos}{19}{section.2.6}%
+\contentsline {section}{\numberline {2.7}Configurações Comparadas}{21}{section.2.7}%
 \setlength {\cftchapterindent }{0em} \setlength {\cftchapternumwidth }{\cftlastnumwidth }
-\contentsline {chapter}{\chapternumberline {3}\MakeTextUppercase []{Análise dos Resultados}}{22}{chapter.3}%
+\contentsline {chapter}{\chapternumberline {3}\MakeTextUppercase []{Cronograma do Projeto}}{22}{chapter.3}%
 \setlength {\cftchapterindent }{0em} \setlength {\cftchapternumwidth }{\cftlastnumwidth }
-\contentsline {chapter}{\chapternumberline {4}\MakeTextUppercase []{Considerações Finais ou Conclusão}}{23}{chapter.4}%
+\contentsline {chapter}{\chapternumberline {4}\MakeTextUppercase []{Procedimentos de Teste e Validação do Projeto}}{23}{chapter.4}%
+\contentsline {section}{\numberline {4.1}Testes de Caixa Preta (ponto de vista do usuário)}{23}{section.4.1}%
+\contentsline {section}{\numberline {4.2}Testes de Caixa Branca (ponto de vista do sistema)}{23}{section.4.2}%
+\contentsline {section}{\numberline {4.3}Desenho Experimental e Métricas}{24}{section.4.3}%
+\contentsline {section}{\numberline {4.4}Critérios de Aceite}{25}{section.4.4}%
 \setlength {\cftchapterindent }{0em} \setlength {\cftchapternumwidth }{\cftlastnumwidth }
-\contentsline {chapter}{\chapternumberline {5}\MakeTextUppercase []{Dicas Gerais Relacionadas ao LaTeX}}{24}{chapter.5}%
-\contentsline {section}{\numberline {5.1}Citações}{24}{section.5.1}%
-\contentsline {section}{\numberline {5.2}Listas}{25}{section.5.2}%
-\contentsline {subsection}{\numberline {5.2.1}Exemplo}{25}{subsection.5.2.1}%
-\contentsline {section}{\numberline {5.3}Notas de Rodapé}{25}{section.5.3}%
-\contentsline {subsection}{\numberline {5.3.1}Exemplo}{26}{subsection.5.3.1}%
-\contentsline {subsection}{\numberline {5.3.2}Boas práticas}{26}{subsection.5.3.2}%
-\contentsline {section}{\numberline {5.4}Figuras}{26}{section.5.4}%
-\contentsline {subsection}{\numberline {5.4.1}Exemplo}{26}{subsection.5.4.1}%
-\contentsline {subsection}{\numberline {5.4.2}Boas práticas}{27}{subsection.5.4.2}%
-\contentsline {section}{\numberline {5.5}Gráficos}{27}{section.5.5}%
-\contentsline {subsection}{\numberline {5.5.1}Exemplo}{27}{subsection.5.5.1}%
-\contentsline {section}{\numberline {5.6}Tabelas}{28}{section.5.6}%
-\contentsline {subsection}{\numberline {5.6.1}Exemplo com \texttt {\textbackslash hline}}{28}{subsection.5.6.1}%
-\contentsline {subsection}{\numberline {5.6.2}Exemplo com o pacote \texttt {booktabs}}{29}{subsection.5.6.2}%
-\contentsline {subsection}{\numberline {5.6.3}Boas práticas}{30}{subsection.5.6.3}%
-\contentsline {section}{\numberline {5.7}Quadros}{31}{section.5.7}%
-\contentsline {section}{\numberline {5.8}Referências Cruzadas}{31}{section.5.8}%
+\contentsline {chapter}{\chapternumberline {5}\MakeTextUppercase []{Análise de Riscos}}{27}{chapter.5}%
+\setlength {\cftchapterindent }{0em} \setlength {\cftchapternumwidth }{\cftlastnumwidth }
+\contentsline {chapter}{\chapternumberline {6}\MakeTextUppercase []{Conclusão}}{29}{chapter.6}%
 \vspace {\cftbeforechapterskip }
 \setlength {\cftchapterindent }{\cftlastnumwidth } \setlength {\cftchapternumwidth }{2em}
-\contentsline {chapter}{\MakeTextUppercase []{Refer\^encias}}{33}{section*.27}%
-\renewcommand *{\cftappendixname }{AP\^ENDICE \space }
-\setlength {\cftchapterindent }{0em} \setlength {\cftchapternumwidth }{\cftlastnumwidth }
-\setlength {\cftchapterindent }{\cftlastnumwidth } \setlength {\cftchapternumwidth }{2em}
-\cftinsert {A}
-\contentsline {appendix}{\chapternumberline {A}\MakeTextUppercase []{Tutorial de uso do modelo LaTeX de monografia/dissertação/tese PUCPR}}{34}{appendix.A}%
+\contentsline {chapter}{\MakeTextUppercase []{Refer\^encias}}{31}{section*.14}%

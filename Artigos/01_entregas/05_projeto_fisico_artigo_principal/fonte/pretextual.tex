@@ -1,156 +1,19 @@
-% Este trabalho está licenciado sob a licença Creative Commons CC-BY-SA.
-% Você é livre para usar, compartilhar e adaptar este material, desde que seja atribuída a autoria e que as obras derivadas mantenham a mesma licença.
+%---------------------------------------------------------------%
+%----------------- ELEMENTOS PRÉ-TEXTUAIS ----------------------%
+%---------------------------------------------------------------%
 
-%--------------------ELEMENTOS PRÉ-TEXTUAIS--------------------%
-
-%-----------------------------Capa-----------------------------%
+% Capa oficial configurada para o Projeto Físico
 \imprimircapa
 
-%------------------------Folha de rosto------------------------%
-\imprimirfolhaderosto
-
-
-%----------------------Ficha Catalográfica----------------------%
-
-\begin{fichacatalografica}
-    \includepdf{pdfs/ficha_catalografica.pdf}
-\end{fichacatalografica}
-
-%----------------------Folha de Aprovação----------------------%
-
-% Após aprovação do trabalho, solicite do orientador a Folha de Aprovação assinada pela Banca Examinadora.
-% Salve-a em formato PDF com o nome: folha_aprovacao.pdf
-% Substitua o arquivo temporário de mesmo nome presente neste modelo.
-
-\includepdf{pdfs/folha_aprovacao.pdf}
-
-
-%----------------------Dedicatória----------------------%
-\begin{dedicatoria}
-\vspace*{\fill}
-\begin{flushright}
-\begin{minipage}{8.5cm}
-\raggedleft
-\textit{
-A dedicatória teste Joyce agora
-}
-\end{minipage}
-\end{flushright}
-\end{dedicatoria}
-
-
-
-%----------------------Agradecimentos----------------------%
-\begin{agradecimentos}
-
-
-Agradeço à Pontifícia Universidade Católica do Paraná...
-
-Agradeço também ao órgão de fomento XYZ...  
-
-Sou grato(a) ao(à) meu(minha) orientador(a)... 
-
-Por fim, mas não menos importante, agradeço aos familiares e amigos...
-
-\end{agradecimentos}
-
-
-
-
-%----------------------Epígrafe----------------------%
-\begin{epigrafe}
-    \vspace*{\fill}
-    \begin{flushright}
-        \begin{minipage}{8.5cm}
-            \raggedleft
-            \textit{
-                A epígrafe é a frase de um autor cujo tema tenha relação com o trabalho.\\Não é obrigatório constar na lista de referências a citação da epígrafe.\\[\baselineskip]
-                (Autor)
-            }
-        \end{minipage}
-    \end{flushright}
-\end{epigrafe}
-
-
-%----------------------Resumos----------------------%
-%----------------Resumo em Português----------------%
+%---------------------- Resumo ---------------------------------%
 \begin{resumo}
-\SingleSpacing
+Ferramentas de análise estática de segurança (SAST), como o Semgrep, apontam vulnerabilidades no código-fonte, mas a correção continua manual. Produtos comerciais já geram correções com modelos de linguagem (LLMs), e estudos recentes mostram que muitas dessas correções compilam e preservam o comportamento do sistema, mas não eliminam a falha. Este projeto especifica um agente autônomo de remediação que recebe o relatório do SAST e, para cada achado, investiga o repositório com ferramentas de busca e leitura, consulta uma base de conhecimento especializada por classe de vulnerabilidade e uma memória das correções já aceitas no projeto, propõe um \textit{patch} compatível com a arquitetura existente e o submete a uma verificação em camadas: compilação, testes existentes, reanálise por dois analisadores, teste de exploração que falha antes e passa depois da correção, preservação de comportamento e restrições de arquitetura. O resultado é entregue com o código, o raciocínio e um laudo de verificação, e só é aplicado após aprovação humana. O contexto do projeto é mantido por um índice atualizado incrementalmente. Nesta fase, o trabalho se concentra em projetos C\#/.NET e Java. Como não há um conjunto público de vulnerabilidades em C\# com testes de exploração, o trabalho também constrói esse conjunto; em Java, usa o Vul4J. A avaliação compara três configurações: LLM com contexto mínimo, LLM com contexto recuperado e agente completo.
 
-    \noindent O texto do resumo convém ter entre 150 e 500 palavras. O texto do resumo deve conter a apresentação do tema, o problema ou objetivo geral da pesquisa, a metodologia e os principais resultados. Deve ser redigido em parágrafo único, na mesma fonte do trabalho e com espaçamento de linhas simples. O texto do resumo convém ter entre 150 e 500 palavras. O texto do resumo deve conter a apresentação do tema, o problema ou objetivo geral da pesquisa, a metodologia e os principais resultados. Deve ser redigido em parágrafo único, na mesma fonte do trabalho e com espaçamento de linhas simples. O texto do resumo convém ter entre 150 e 500 palavras. O texto do resumo deve conter a apresentação do tema, o problema ou objetivo geral da pesquisa, a metodologia e os principais resultados. Deve ser redigido em parágrafo único, na mesma fonte do trabalho e com espaçamento de linhas simples.
-    
-    \vspace{\onelineskip}
-    
-    \noindent
-    \textbf{Palavras-chave}: palavra 1; palavra 2; palavra 3; palavra 4.
-    
+\textbf{Palavras-chave}: Remediação de vulnerabilidades. Agentes de LLM. Análise estática de código. Verificação de \textit{patches}. Contexto de projeto.
 \end{resumo}
 
-%----------------Resumo em Inglês----------------%
-\begin{resumo}[\textbf{Abstract}]
-\SingleSpacing
-    \begin{otherlanguage*}{english}
-    
-        \noindent O texto do resumo em língua portuguesa deve estar traduzido em outra língua (inglês ou francês e/ou espanhol). Abstract abstract abstract abstract abstract abstract abstract abstract abstract abstract abstract abstract abstract abstract abstract abstract abstract abstract abstract abstract abstract abstract abstract abstract abstract abstract abstract abstract abstract abstract abstract abstract abstract abstract abstract abstract abstract abstract abstract abstract abstract abstract abstract abstract abstract abstract abstract abstract abstract abstract abstract abstract abstract abstract abstract abstract abstract abstract abstract abstract.
-        
-        \vspace{\onelineskip}
-        
-        \noindent 
-        \textbf{Keywords}: keyword 1; keyword 2; keyword 3.
-        
-    \end{otherlanguage*}
-\end{resumo}
-
-
-
-
-
-
-%----------------Lista de Ilustrações----------------%
-\pdfbookmark[0]{\listfigurename}{lof}
-\listoffigures*
-\cleardoublepage
-
-
-%----------------Lista de Quadros----------------%
-\pdfbookmark[0]{\listofquadrosname}{loq}
-\listofquadros*
-\cleardoublepage
-
-
-
-
-%----------------Lista de Tabelas----------------%
-\pdfbookmark[0]{\listtablename}{lot}
-\listoftables*
-\cleardoublepage
-
-%----------------Lista de Gráficos ----------------%
-\pdfbookmark[0]{\listplotname}{lop}
-\listofplots*
-\cleardoublepage
-
-
-%--------Lista de abreviaturas e siglas---------%
-\begin{siglas}
-    \item[ABNT] Associação Brasileira de Normas Técnicas
-    \item[IBGE] Instituto Brasileiro de Geografia e Estatística
-    \item[ISBN] \textit{International Standard Book Number}
-    \item[NBR] Norma Brasileira Regulamentar
-    \item[PUCPR] Pontifícia Universidade Católica do Paraná
-\end{siglas}
-
-
-%----------------Lista de Símbolos----------------%
-\begin{simbolos}
-  \item[$ \mathbb{R} $] Conjunto dos números reais
-  \item[$ \sum $] Somatório
-  \item[$ \dfrac{df}{dx} $] Derivada da função de uma variável $f(x)$ com reação à variável $x$
-  \item[$ \overrightarrow{v} $] Vetor
-\end{simbolos}
-
-
-%----------------SUMÁRIO----------------%
+%---------------------- Sumário --------------------------------%
 \pdfbookmark[0]{\contentsname}{toc}
+\enlargethispage{2\baselineskip}
 \tableofcontents*
 \cleardoublepage
