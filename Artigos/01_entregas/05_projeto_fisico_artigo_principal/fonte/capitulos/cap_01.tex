@@ -2,106 +2,44 @@
 \chapter{Introdução}
 \label{cap:introducao}
 
-\section{Contexto e Problema}
+\section{Contexto e problema}
 
-Ferramentas de análise estática de segurança, conhecidas pela sigla SAST (\textit{Static Application Security Testing}), examinam o código-fonte sem executá-lo, em busca de padrões que costumam originar vulnerabilidades. Um exemplo é o uso de um dado digitado pelo usuário diretamente na montagem de uma consulta ao banco de dados ou de um caminho de arquivo. Ferramentas como o Semgrep \cite{semgrep2026} e o SonarQube são amplamente adotadas, mas apresentam falsos positivos e dificuldade de compreender o contexto semântico do código \cite{techscience2025,yang2025}. O uso crescente de assistentes de IA na escrita de código aumenta o volume de código a inspecionar e reproduz padrões inseguros \cite{pearce2022copilot,veracode2025}.
+Ferramentas de análise estática de segurança (\textit{Static Application Security Testing}, SAST) produzem alertas que ajudam o desenvolvedor a localizar código que merece revisão. No caso da autorização, determinar a correção exige conhecer quais identidades podem realizar uma operação e em quais recursos. Essas regras podem estar distribuídas entre a configuração da aplicação, os metadados do endpoint e os serviços que decidem o acesso. Uma sugestão baseada apenas no alerta pode restringir uma operação a um papel inadequado ou permitir que uma identidade autenticada acesse um recurso para o qual ela não tem permissão.
 
-O resultado de uma ferramenta SAST é um \textit{alerta}: ele indica a regra violada, o arquivo e a linha, mas não entrega uma correção. Corrigir o alerta continua sendo um trabalho manual, que exige entender como o restante do sistema acessa dados, trata erros, valida entradas e organiza suas camadas. Uma correção genérica pode eliminar o alerta e, ainda assim, quebrar o sistema, violar a arquitetura ou não corrigir a falha de fato.
+O ASP.NET Core permite declarar políticas em controladores, ações e endpoints, além de avaliar a autorização explicitamente por meio de \texttt{IAuthorizationService}. Políticas podem combinar papéis, \textit{claims} e requisitos avaliados por \textit{handlers}. Quando a decisão depende da entidade carregada, como um documento associado a um proprietário, a verificação precisa levar esse recurso em conta \cite{aspnetpolicies,aspnetresource}. A correção precisa, portanto, considerar a operação, a política e as convenções do repositório.
 
-Esse risco está documentado. Ao avaliar 319 \textit{patches} gerados por um LLM para 64 vulnerabilidades Java reais, \citeonline{almaamari2026whyfail} verificou que apenas 24,8\% estavam totalmente corretos: os \textit{patches} preservavam a funcionalidade com frequência muito maior do que eliminavam a vulnerabilidade, e, para a CWE-20, nenhum corrigiu a falha. Avaliações baseadas em \textit{exploits} reais apontam na mesma direção \cite{wang2025vulnrepaireval}. Em resumo, gerar um \textit{patch} plausível é fácil; garantir que ele corrige a falha sem quebrar o projeto não é.
+O recorte adota a CWE-285 como categoria de referência e utiliza CWE-862 e CWE-863 para classificar os casos. A CWE-862 descreve a ausência da verificação exigida. A CWE-863 descreve uma verificação existente que decide o acesso de modo incorreto. A autorização por recurso pode aparecer em ambas as classes, conforme a natureza da falha observada \cite{cwe285,cwe862,cwe863}.
 
-Em conversas informais com desenvolvedores de uma empresa do setor automotivo, o esforço para tratar os alertas de análise estática foi apontado como uma dor recorrente. Essas observações motivam o problema, mas não fornecem dados para o trabalho: nenhum código, alerta ou repositório corporativo será utilizado.
+\section{Trabalhos relacionados}
 
-Na defesa do Plano de Projeto, a banca questionou o que a solução faria de diferente em relação a ferramentas como SonarLint e SonarQube. A resposta adotada é \textbf{não competir com o mecanismo de detecção}: o trabalho consome os alertas de um analisador existente e se concentra em corrigi-los de forma compatível com o projeto e comprovada por verificação.
+A geração aumentada por recuperação (\textit{Retrieval-Augmented Generation}, RAG) acrescenta informações recuperadas à entrada do modelo de linguagem \cite{lewis2020rag}. Neste trabalho, essas informações são trechos de código e relações entre símbolos do repositório avaliado. O PatchAgent integra localização, geração e validação de correções \cite{yu2025patchagent}. O GitHub também oferece sugestões de correção em seu fluxo de alertas de análise de código \cite{githubautofix}. Esses trabalhos estabelecem precedentes para a remediação assistida. A questão deste projeto é medir o efeito da recuperação orientada ao modelo de autorização do ASP.NET Core, mantendo fixos o modelo de linguagem e o procedimento de avaliação.
 
-\section{Conceitos Básicos}
-
-\begin{itemize}
-    \item \textbf{CWE} (\textit{Common Weakness Enumeration}): catálogo público que classifica tipos de fraqueza de \textit{software}, como a CWE-89 (\textit{SQL Injection}) e a CWE-22 (\textit{Path Traversal}).
-    \item \textbf{LLM} (\textit{Large Language Model}): modelo de linguagem treinado em grandes volumes de texto e código, capaz de gerar código a partir de instruções.
-    \item \textbf{Agente}: sistema em que o LLM não responde uma única vez, mas decide quais ferramentas usar (buscar, ler arquivos, editar, compilar, testar), observa os resultados e repete o ciclo até concluir a tarefa. O desenho das ferramentas oferecidas ao modelo influencia diretamente seu desempenho \cite{yang2024sweagent}.
-    \item \textbf{RAG} (\textit{Retrieval-Augmented Generation}): técnica em que um mecanismo de busca recupera documentos relevantes e os inclui na entrada do modelo, para que a resposta se apoie nessas informações \cite{lewis2020rag}. Aqui, os documentos são trechos do próprio repositório.
-    \item \textbf{\textit{Patch}}: descrição das linhas a remover e a adicionar no código, no formato \textit{unified diff} usado pelo Git.
-    \item \textbf{Teste de exploração} (PoV, \textit{proof of vulnerability}): teste automatizado que executa o ataque. Ele falha (a falha é explorável) no código original e passa no código corrigido.
-    \item \textbf{Laudo de verificação}: registro de quais verificações a correção passou, entregue junto com o código.
-\end{itemize}
-
-\section{Trabalhos Relacionados e Lacuna}
-
-\textbf{Agentes de correção.} O SWE-agent mostrou que um LLM com uma interface de ferramentas adequada resolve tarefas reais de manutenção de \textit{software} \cite{yang2024sweagent}, e o RepairAgent aplicou essa ideia à correção de \textit{bugs}, com o modelo planejando e executando ações por meio de ferramentas \cite{bouzenia2025repairagent}. Para segurança, o PatchAgent combina localização da falha, geração e validação de \textit{patches} usando um servidor de linguagem e um verificador, e relata a correção de mais de 90\% de 178 vulnerabilidades reais \cite{yu2025patchagent}. O CodeRover-S adaptou um agente de correção às vulnerabilidades encontradas por \textit{fuzzing} no OSS-Fuzz e corrigiu 61,1\% de 588 casos históricos \cite{zhang2026coderovers}. O MemRepair acrescenta ao agente memórias de correções anteriores do repositório, de padrões de segurança e de tentativas que falharam antes de dar certo \cite{liu2026memrepair}.
-
-\textbf{Correção de alertas de análise estática.} O PredicateFix usa os predicados das próprias regras do analisador para recuperar um exemplo de correção no código e orientar o LLM \cite{xiao2026predicatefix}. Na indústria, o Copilot Autofix \cite{githubautofix2026}, o AI CodeFix da Sonar \cite{sonaraicodefix2026} e o Snyk Agent Fix \cite{snykagentfix2026} geram correções com LLM para alertas de seus analisadores; são produtos fechados, sem avaliação pública e controlada.
-
-\textbf{Avaliação de correções.} Métricas de semelhança com a correção humana superestimam o desempenho, e avaliações baseadas em testes revelam muitos \textit{patches} incorretos \cite{han2026rethinking}. Por isso, trabalhos recentes avaliam por compilação, testes funcionais e testes de exploração \cite{almaamari2026whyfail,wang2025vulnrepaireval}. Em \textit{benchmarks} de CVEs reais, agentes gerais de engenharia de \textit{software} corrigem no máximo 21\% dos casos \cite{wang2025cvebench}, e uma sistematização recente aponta baixa eficácia das ferramentas em casos reais \cite{hu2025sokavr}.
-
-\textbf{Lacuna.} Os agentes de correção de vulnerabilidades encontrados partem, em geral, de falhas encontradas por \textit{fuzzing} ou de descrições de problemas, e não de alertas de análise estática; poucos combinam conhecimento especializado por classe de vulnerabilidade com o contexto do projeto, e são raros os que medem se a correção respeita a arquitetura existente. Este trabalho ocupa esse espaço: um agente que parte de alertas SAST, investiga o projeto, usa conhecimento especializado e comprova suas correções por verificação em camadas.
-
-\section{Pergunta de Pesquisa e Hipóteses}
+\section{Pergunta de pesquisa e hipótese}
 
 \begin{quote}
-\textit{Em que medida um agente autônomo que investiga o repositório, usa conhecimento especializado em vulnerabilidades e verifica suas próprias correções produz correções de alertas SAST mais corretas e mais compatíveis com o projeto do que um LLM que gera a correção em uma única tentativa?}
+O contexto recuperado de políticas, requisitos, \textit{handlers} e implementações equivalentes melhora a proporção de correções seguras, funcionais e aderentes ao modelo de autorização de APIs ASP.NET Core, em comparação com a geração sem recuperação?
 \end{quote}
 
-\begin{itemize}
-    \item \textbf{H1:} a proporção de correções totalmente corretas (compilam, preservam os testes, eliminam a falha comprovadamente e respeitam as restrições do projeto) é maior para o agente completo do que para o LLM em uma única tentativa, com ou sem contexto recuperado.
-    \item \textbf{H2:} fornecer contexto do projeto aumenta a compatibilidade das correções com a arquitetura e as convenções existentes, mesmo sem o ciclo de verificação.
-\end{itemize}
+A hipótese é que acrescentar contexto de autorização ao arquivo completo aumenta a proporção de correções que atendem simultaneamente aos três critérios, sem reduzir a proporção de correções seguras e funcionais. O contraste principal será entre o arquivo completo e o arquivo acrescido de contexto recuperado. A condição com apenas o método afetado permitirá observar quanto do ganho pode ser atribuído à leitura do arquivo.
 
 \section{Objetivos}
 
-\subsection{Objetivo Geral}
+\subsection{Objetivo geral}
 
-Desenvolver e avaliar um agente autônomo de remediação de vulnerabilidades que recebe alertas de uma ferramenta SAST, investiga o repositório, propõe correções compatíveis com a arquitetura do projeto e comprova seus efeitos por meio de verificação em camadas, sob aprovação humana.
+Desenvolver e avaliar uma ferramenta de linha de comando que sugere correções de autorização em APIs ASP.NET Core com apoio de um modelo de linguagem e do contexto recuperado do repositório.
 
-\subsection{Objetivos Específicos}
-
-\begin{enumerate}
-    \item Construir um índice do repositório, atualizado incrementalmente, que permita ao agente recuperar código, testes, configurações e documentação relacionados a cada alerta;
-    \item Elaborar uma base de conhecimento especializada, com fichas de correção por classe de vulnerabilidade e recomendações por linguagem e \textit{framework};
-    \item Implementar o agente, com ferramentas de investigação, edição e verificação, memória de correções do projeto e limites de iterações e custo;
-    \item Implementar a verificação em camadas e o laudo que acompanha cada correção;
-    \item Montar um conjunto de casos de vulnerabilidades com testes de exploração para as linguagens desta fase;
-    \item Comparar experimentalmente o agente com duas configurações de geração em uma única tentativa.
-\end{enumerate}
-
-\section{Escopo do Projeto}
-
-\textbf{Faz parte do projeto:}
-\begin{itemize}
-    \item alertas de segurança do Semgrep, de qualquer regra, consumidos em JSON/SARIF; o agente classifica cada alerta e trata as classes cobertas pela base de conhecimento (Seção~\ref{sec:especialista});
-    \item contexto restrito ao repositório local, com índice atualizado incrementalmente;
-    \item execução em cópia de trabalho isolada e contêiner sem rede; interface de linha de comando;
-    \item aprovação humana obrigatória antes de qualquer alteração na \textit{branch} principal; o código proposto é sempre exibido;
-    \item as linguagens definidas no recorte desta fase (Seção~\ref{sec:recorte}).
-\end{itemize}
-
-\textbf{Não faz parte do projeto:}
-\begin{itemize}
-    \item desenvolver um novo detector de vulnerabilidades ou reduzir o tempo de execução do SAST;
-    \item vulnerabilidades em dependências de terceiros (análise de composição de \textit{software});
-    \item \textit{plugin} de IDE, interface web ou integração com o \textit{pipeline} de integração contínua;
-    \item aplicar correções sem aprovação humana;
-    \item uso de código, alertas ou repositórios de empresas.
-\end{itemize}
-
-\section{Recorte desta Fase: .NET e Java}
-\label{sec:recorte}
-
-A abordagem do agente não depende de uma linguagem específica: o índice, as ferramentas, a memória e o ciclo de verificação funcionam sobre qualquer linguagem para a qual existam \textit{parser}, regras do Semgrep, compilador e \textit{framework} de testes. Para esta fase do projeto, o trabalho se concentra em duas linguagens:
-
-\begin{itemize}
-    \item \textbf{C\#/.NET:} os agentes de correção encontrados foram avaliados predominantemente em C/C++, Java e Python, e não foi encontrado um conjunto público de vulnerabilidades em C\# com testes de exploração; os conjuntos multilinguagem que incluem C\# não trazem esses testes \cite{bhandari2021cvefixes,wang2023reef}. A plataforma é amplamente usada em sistemas corporativos e é a de atuação profissional de um dos autores. Por essa lacuna, o trabalho constrói um conjunto de casos em C\#.
-    \item \textbf{Java:} conta com conjuntos públicos de vulnerabilidades reproduzíveis, como o Vul4J \cite{bui2022vul4j}, e com estudos recentes que usaram esse conjunto \cite{almaamari2026whyfail}, o que permite comparar os resultados com a literatura.
-\end{itemize}
-
-\section{Contribuições Esperadas}
+\subsection{Objetivos específicos}
 
 \begin{enumerate}
-    \item Um agente de remediação de código aberto cujas correções são acompanhadas de laudo de verificação;
-    \item Um conjunto de casos de vulnerabilidades em C\# com testes de exploração e regras de arquitetura, reutilizável por outros trabalhos;
-    \item Uma avaliação controlada, em C\# e Java, do efeito do contexto do projeto e do ciclo de verificação sobre a qualidade das correções.
+    \item Normalizar alertas SARIF e manifestos experimentais e localizar os endpoints correspondentes com Roslyn.
+    \item Recuperar as políticas, os requisitos, os \textit{handlers}, os serviços e as implementações relevantes para a operação afetada.
+    \item Gerar propostas de correção em formato \textit{diff}, com justificativa, referências e indicação de incerteza.
+    \item Validar as propostas em cópias isoladas e registrar evidências separadas de segurança, funcionalidade e aderência arquitetural.
+    \item Comparar as condições de geração em um piloto reproduzível e avaliar a viabilidade de ampliar o conjunto de casos.
 \end{enumerate}
 
-\section{Estrutura do Documento}
+\section{Escopo e estrutura do documento}
 
-O Capítulo~\ref{cap:detalhamento} apresenta o diagrama em blocos e o detalhamento de cada bloco, as interfaces, as tecnologias e o conjunto de casos. O Capítulo~\ref{cap:cronograma} traz o cronograma revisado. O Capítulo~\ref{cap:testes} descreve os testes de caixa preta e de caixa branca, o desenho experimental e os critérios de aceite. O Capítulo~\ref{cap:riscos} apresenta a análise de riscos revisada, e o Capítulo~\ref{cap:conclusao}, a conclusão.
+O protótipo abrange APIs ASP.NET Core em C\#, com controladores e Minimal APIs, e trata autorização ausente, política incorreta e falhas de autorização por recurso. A ferramenta atua na remediação após a indicação de um caso por um SAST ou pelo manifesto experimental. O escopo exclui a criação de um detector genérico, o suporte a outras linguagens ou classes de vulnerabilidade, a integração com IDE e a aplicação automática no repositório original.
+
+O Capítulo~\ref{cap:detalhamento} descreve a arquitetura e os casos. O Capítulo~\ref{cap:cronograma} apresenta o cronograma. O Capítulo~\ref{cap:testes} define os testes e o experimento. O Capítulo~\ref{cap:riscos} analisa os riscos, e o Capítulo~\ref{cap:conclusao} discute a viabilidade do recorte.

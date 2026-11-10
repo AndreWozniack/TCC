@@ -3,13 +3,15 @@
 %---------------------------------------------------------------%
 
 % Capa oficial configurada para o Projeto Físico
+\hypersetup{pageanchor=false}
 \imprimircapa
+\hypersetup{pageanchor=true}
 
 %---------------------- Resumo ---------------------------------%
 \begin{resumo}
-Ferramentas de análise estática de segurança (SAST), como o Semgrep, apontam vulnerabilidades no código-fonte, mas a correção continua manual. Produtos comerciais já geram correções com modelos de linguagem (LLMs), e estudos recentes mostram que muitas dessas correções compilam e preservam o comportamento do sistema, mas não eliminam a falha. Este projeto especifica um agente autônomo de remediação que recebe o relatório do SAST e, para cada achado, investiga o repositório com ferramentas de busca e leitura, consulta uma base de conhecimento especializada por classe de vulnerabilidade e uma memória das correções já aceitas no projeto, propõe um \textit{patch} compatível com a arquitetura existente e o submete a uma verificação em camadas: compilação, testes existentes, reanálise por dois analisadores, teste de exploração que falha antes e passa depois da correção, preservação de comportamento e restrições de arquitetura. O resultado é entregue com o código, o raciocínio e um laudo de verificação, e só é aplicado após aprovação humana. O contexto do projeto é mantido por um índice atualizado incrementalmente. Nesta fase, o trabalho se concentra em projetos C\#/.NET e Java. Como não há um conjunto público de vulnerabilidades em C\# com testes de exploração, o trabalho também constrói esse conjunto; em Java, usa o Vul4J. A avaliação compara três configurações: LLM com contexto mínimo, LLM com contexto recuperado e agente completo.
+A correção de falhas de autorização em APIs depende das regras de acesso da aplicação. Um alerta de análise estática pode indicar o endpoint afetado, enquanto a política aplicável, seus requisitos e o mecanismo de autorização por recurso podem estar definidos em outros arquivos. Este projeto propõe uma ferramenta de linha de comando em C\# para sugerir correções de autorização ausente ou incorreta em APIs ASP.NET Core. A ferramenta recebe um alerta em SARIF ou um manifesto experimental, analisa o código com Roslyn e recupera definições de políticas, \textit{handlers} e implementações equivalentes do próprio repositório. Um modelo de linguagem gera uma proposta em formato \textit{diff}, acompanhada de justificativa e referências ao código. A proposta é avaliada em ambiente isolado por compilação, testes funcionais, testes de autorização e revisão de aderência às regras do projeto. O experimento compara a geração com o método afetado, com o arquivo completo e com o arquivo acrescido de contexto recuperado. A métrica principal é a proporção de propostas simultaneamente seguras, funcionais e aderentes ao modelo de autorização. A avaliação começa com um caso de autorização por recurso e prossegue com um piloto de cinco a dez casos.
 
-\textbf{Palavras-chave}: Remediação de vulnerabilidades. Agentes de LLM. Análise estática de código. Verificação de \textit{patches}. Contexto de projeto.
+\textbf{Palavras-chave} \enspace Autorização. ASP.NET Core. Remediação de vulnerabilidades. Modelos de linguagem. Geração aumentada por recuperação.
 \end{resumo}
 
 %---------------------- Sumário --------------------------------%
