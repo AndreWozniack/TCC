@@ -2,91 +2,68 @@
 \chapter{Procedimentos de Teste e Validação do Projeto}
 \label{cap:testes}
 
-\section{Testes de Caixa Preta (ponto de vista do usuário)}
+\section{Testes de caixa preta}
 
-O usuário fornece um repositório e um relatório do Semgrep pela CLI e observa o relatório, o \textit{diff} e o laudo. Os cenários usam projetos .NET de exemplo mantidos junto ao sistema.
+Os testes exercitam a CLI pela interface disponível ao desenvolvedor. Para os cenários de falha controlada, será usado um provedor substituto de LLM, com respostas previamente definidas. Os resultados desses testes verificam o protótipo. As métricas experimentais serão calculadas sobre execuções com o modelo escolhido para o estudo.
 
 \begin{table}[H]
 \centering
-\caption{Casos de teste de caixa preta.}
+\caption{Cenários de caixa preta.}
 \label{tab:cp}
-\footnotesize
-\begin{tabular}{p{0.9cm}p{4.5cm}p{6.7cm}}
+\small
+\begin{tabular}{@{}p{5.1cm}p{9.2cm}@{}}
 \toprule
-\textbf{ID} & \textbf{Entrada} & \textbf{Resultado esperado} \\
+\textbf{Entrada ou cenário} & \textbf{Resultado esperado} \\
 \midrule
-CP-01 & Projeto .NET com injeção de SQL e relatório válido & proposta com \textit{diff}, plano, evidências e laudo no estado ``verificado'' ou ``não corrigido'' \\
-CP-02 & Alerta de classe sem ficha & alerta listado como não tratável; nenhuma chamada ao LLM \\
-CP-03 & Relatório malformado ou inexistente & erro claro, código de saída diferente de zero, nenhum arquivo alterado \\
-CP-04 & Alerta de criptografia fraca & laudo ``parcial'', indicando que não há teste de exploração aplicável \\
-CP-05 & Caso em que o agente atinge o limite de ciclos & entrega ``não corrigido'' com o laudo da última tentativa, dentro do teto de custo \\
-CP-06 & \texttt{revisar --rejeitar} com motivo & motivo gravado na memória e exibido em alerta semelhante posterior \\
-CP-07 & \texttt{revisar --aceitar} & \textit{branch} criada com o \textit{patch}; \textit{branch} principal inalterada \\
-CP-08 & Arquivo de origem de uma memória alterado & entrada da memória marcada como desatualizada \\
+SARIF válido ou manifesto com a mesma localização & Identificação do mesmo endpoint e registro da origem da entrada. \\
+Alerta sem localização válida ou fora do recorte & Diagnóstico explícito, com motivo da interrupção. \\
+Resposta com diff inválido ou arquivo protegido & Proposta recusada antes da compilação e checkout original intacto. \\
+Proposta que preserva a operação e passa nos testes de autorização & Resultados de segurança e funcionalidade aprovados. Aderência registrada em separado. \\
+Proposta que bloqueia um usuário autorizado ou mantém acesso indevido & Reprovação registrada no critério correspondente. \\
+Contexto insuficiente ou falha no ambiente & Incerteza, abstenção ou erro de infraestrutura identificado no relatório, conforme o caso. \\
 \bottomrule
 \end{tabular}
-\sourceTab{Elaborado pelos autores.}
+\par\smallskip{\footnotesize Fonte elaborada pelos autores.}
 \end{table}
 
-\section{Testes de Caixa Branca (ponto de vista do sistema)}
+\section{Testes de caixa branca}
 
-Cada bloco é testado isoladamente com \textit{pytest}. O LLM é substituído por um simulador determinístico que devolve sequências de ações predefinidas, para que os testes sejam reprodutíveis e sem custo.
+A normalização será testada com regras mapeadas, regiões ambíguas e caminhos externos. A análise com Roslyn será testada com controladores, grupos de Minimal APIs, políticas padrão e de \textit{fallback}, metadados \texttt{AllowAnonymous} e verificações por recurso. Os testes verificarão a resolução dos símbolos e a sinalização de relações que permanecem indeterminadas.
 
-\begin{itemize}
-    \item \textbf{B1:} relatórios válidos, duplicados, sem CWE e malformados; classificação correta de CWEs em classes.
-    \item \textbf{B2:} criação e remoção de \textit{worktrees}; \textit{hash} do repositório original igual antes e depois; contêiner sem acesso à rede.
-    \item \textbf{B3:} \textit{chunking} por classe e método em arquivos C\# e Java de exemplo; tabela de símbolos com declarações e usos esperados; índice incremental idêntico ao reconstruído do zero após criar, alterar e remover arquivos; precisão@k e revocação@k sobre casos anotados, comparando \textit{embedding} e BM25.
-    \item \textbf{B4/B5:} carga e validação das fichas; busca na memória por classe e arquivo; invalidação por mudança de \textit{hash}.
-    \item \textbf{B6:} com o simulador: execução de cada ferramenta; respeito aos limites de ciclos, ações e custo; retorno das falhas do laudo ao histórico; recusa de edições em testes existentes.
-    \item \textbf{B7:} \textit{patches} preparados para cada resultado esperado: correção válida (todas passam); \textit{patch} que não compila (falha em V1); \textit{patch} que quebra um teste (V2); \textit{patch} que só suprime a regra (falha em V7); \textit{patch} que engana a regra do Semgrep mas não corrige (passa em V3 e falha em V5).
-    \item \textbf{Integração:} execução de ponta a ponta B1 a B8 sobre um caso do eShop com o LLM real.
-\end{itemize}
+O recuperador será testado com endpoints de operações semelhantes sujeitos a regras diferentes. Os testes verificarão a ordenação, as referências de origem e o limite de contexto. Os testes de geração verificarão o conteúdo enviado nas condições A, B e C, a ausência dos arquivos protegidos na entrada e o tratamento de respostas inválidas. O validador será testado com alterações fora do escopo, falha de compilação, regressões funcionais, falhas de autorização e interrupções durante a execução. Ao final de cada execução, os testes verificarão o descarte da cópia de trabalho e a integridade do checkout original.
 
-\section{Desenho Experimental e Métricas}
+\section{Critérios de avaliação}
+\label{sec:criterios}
 
-Cada caso do conjunto (Seção~\ref{sec:casos}) é executado nas configurações A, B e C (Tabela~\ref{tab:grupos}), três vezes cada, para medir a variação do modelo. A avaliação usa os testes de exploração de referência da equipe, que o agente não vê.
+\begin{enumerate}
+    \item \textbf{Segurança.} Os testes verificam a matriz esperada de acesso. Uma operação negada não deve produzir alteração de estado ou exposição de dados. Perfis e recursos de teste são definidos por caso.
+    \item \textbf{Funcionalidade.} O código deve compilar, as regressões funcionais devem passar e as identidades autorizadas devem conservar o comportamento esperado, incluindo os efeitos da operação.
+    \item \textbf{Aderência.} O \textit{diff} deve reutilizar a política, o requisito ou o serviço aplicável ao caso, no nível apropriado, com evidência no repositório. A revisão examinará regras inventadas, verificações duplicadas, alterações fora do escopo e divergência em relação à regra de negócio documentada.
+\end{enumerate}
 
-\begin{itemize}
-    \item \textbf{Correção completa (métrica principal):} compila, mantém os testes existentes, o teste de exploração de referência passa a bloquear o ataque, o Semgrep não reporta o achado e as restrições de V7 são respeitadas. A mesma decomposição em compilação, segurança e funcionalidade é usada por \citeonline{almaamari2026whyfail}, o que permite comparar os resultados do subconjunto Java;
-    \item \textbf{Taxa por nível:} proporção de \textit{patches} que passam em cada verificação V1 a V7, para localizar onde as configurações falham;
-    \item \textbf{Falsa correção:} \textit{patches} que passam em V3 (alerta sumiu) mas falham no teste de exploração de referência;
-    \item \textbf{Concordância do laudo:} quantas correções marcadas como ``verificado'' pelo agente também passam no teste de referência;
-    \item \textbf{Compatibilidade com o projeto:} nos casos do eShop, testes de arquitetura (NetArchTest) e uma rubrica de 0 a 2 em três itens (usa APIs e padrões já existentes, segue convenções de erro e validação, mantém o escopo mínimo), atribuída por dois avaliadores, com concordância medida pelo Kappa de Cohen;
-    \item \textbf{Esforço:} iterações, ações, \textit{tokens}, custo e tempo por etapa (indexação completa e incremental, investigação, geração, verificação);
-    \item \textbf{Recuperação:} precisão@k e revocação@k do índice nos casos anotados.
-\end{itemize}
+Os testes de integração do ASP.NET Core poderão usar \texttt{WebApplicationFactory} para iniciar a aplicação em um servidor de teste \cite{aspnettesting}. Antes do experimento, o avaliador verificará que o conjunto de testes distingue o comportamento inicial do comportamento esperado e que a correção de referência preserva a operação autorizada. Os testes e a referência serão mantidos fora do contexto de geração. A revisão de aderência usará uma rubrica definida antes das execuções e omitirá a condição experimental do avaliador, quando possível.
 
-Como as configurações são aplicadas aos mesmos casos, a comparação é pareada: teste exato de McNemar para as métricas binárias e teste de Wilcoxon para a rubrica. Com o número de casos previsto, as conclusões são apresentadas com a ressalva de baixo poder estatístico. Métricas de semelhança textual com a correção humana não são usadas como critério de sucesso, pois superestimam o desempenho \cite{han2026rethinking}.
+\section{Desenho experimental e métricas}
 
-\section{Critérios de Aceite}
+Cada caso elegível será executado nas três condições da Tabela~\ref{tab:condicoes}, sempre a partir do mesmo commit. Modelo, versão, parâmetros, instruções comuns, limite de saída e procedimento de validação serão fixados. Será solicitada uma proposta por condição, sem devolver ao modelo resultados dos testes. O orçamento de recuperação será calibrado no piloto e fixado antes de qualquer avaliação ampliada. Para B e C, o arquivo completo deve caber na entrada com a capacidade reservada para a recuperação em C. Casos que excederem esse limite serão registrados antes da comparação.
 
-\begin{longtable}{p{0.24\textwidth} p{0.69\textwidth}}
-\caption{Critérios de aceite da solução.}
-\label{tab:aceite} \\
+\begin{table}[H]
+\centering
+\caption{Condições de geração.}
+\label{tab:condicoes}
+\small
+\begin{tabular}{@{}p{4.1cm}p{10.2cm}@{}}
 \toprule
-\textbf{Aspecto} & \textbf{Critério de aceite} \\
+\textbf{Condição} & \textbf{Contexto de código enviado com o alerta} \\
 \midrule
-\endfirsthead
-\toprule
-\textbf{Aspecto} & \textbf{Critério de aceite} \\
-\midrule
-\endhead
-Segurança da execução & Nenhum código gerado é executado fora do contêiner; a \textit{branch} principal nunca é alterada sem \texttt{revisar --aceitar}. \\
-\addlinespace
-Ingestão e triagem & Todos os alertas de relatórios válidos são normalizados e classificados; os não tratáveis são listados. \\
-\addlinespace
-Índice & Índice incremental idêntico ao reconstruído; relatório de precisão@k e revocação@k disponível. \\
-\addlinespace
-Agente & Respeita os limites configurados em todos os casos; toda proposta inclui \textit{diff}, plano e evidências. \\
-\addlinespace
-Verificação & Os \textit{patches} preparados dos testes de caixa branca de B7 são classificados corretamente em 100\% dos casos. \\
-\addlinespace
-Conjunto de casos & Cada caso admitido compila no contêiner, reproduz o alerta e, quando aplicável, tem teste de exploração que falha na versão vulnerável e passa na de referência. \\
-\addlinespace
-Experimento & Todos os casos executados nas três configurações com configuração idêntica; tabelas geradas automaticamente. \\
-\addlinespace
-Reprodutibilidade & Modelo, versões, instruções, imagens Docker, regras e \textit{commits} dos casos registrados; o experimento é reexecutável a partir de um arquivo de configuração. \\
+A --- Mínimo & Método ou manipulador do endpoint afetado. \\
+B --- Arquivo & Arquivo completo que contém o endpoint. \\
+C --- RAG & Mesmo arquivo completo de B e evidências de autorização recuperadas do repositório. \\
 \bottomrule
-\end{longtable}
+\end{tabular}
+\par\smallskip{\footnotesize Fonte elaborada pelos autores.}
+\end{table}
 
-Não se fixa uma meta de taxa de correção: o objetivo do experimento é medir a diferença entre as configurações, e uma meta anterior aos dados seria arbitrária.
+A métrica principal será a fração de casos elegíveis em que a primeira proposta passa nos critérios de segurança, funcionalidade e aderência. A métrica de controle \textit{pass@1} será a fração que passa nos critérios de segurança e funcionalidade, independentemente da aderência. Abstenções, propostas inválidas e falhas do patch contam como insucessos. Uma falha de infraestrutura poderá motivar nova execução com a mesma configuração. Se persistir e impedir a comparação, o caso será informado separadamente como incompleto, com motivo e contagem. O denominador das taxas será o número de casos com as três condições avaliáveis.
+
+Na condição C, será registrada a precisão dos trechos recuperados, medida pela proporção de trechos relevantes entre os retornados, e a cobertura das evidências essenciais anotadas antes da geração. Ausência de contexto será registrada separadamente. O relatório também informará tempo de recuperação, geração e validação, uso de tokens e custo quando disponível. A análise apresentará contagens, taxas e diferenças pareadas entre condições, com destaque para C em relação a B. Os resultados do piloto servirão para verificar o desenho, incluindo a existência de casos que de fato dependam de evidências fora do arquivo. As conclusões serão limitadas aos casos e ao modelo avaliados.

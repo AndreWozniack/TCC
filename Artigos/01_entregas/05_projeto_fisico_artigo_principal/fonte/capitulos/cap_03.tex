@@ -2,9 +2,9 @@
 \chapter{Cronograma do Projeto}
 \label{cap:cronograma}
 
-O cronograma foi revisado após a defesa do Plano de Projeto e a mudança de ênfase, de detecção com \textit{Machine Learning} para remediação com um agente de LLM. As Etapas 1 a 3 foram cumpridas: Formulário e Proposta, Plano de Projeto (entregue em 25/09/2026) e sua defesa (28/09/2026). A Etapa 4 (este Projeto Físico) encerra-se com a entrega em 12/11/2026. A partir da Etapa 6, a implementação segue a ordem de menor risco: primeiro o ambiente, as fichas do especialista e o conjunto de casos, junto com a verificação (B7), que é necessária para avaliar qualquer configuração; depois as configurações A e B; por último o agente completo (C). Assim, há resultados comparáveis mesmo que o agente atrase.
+As três primeiras etapas abrangeram o formulário e a proposta, a entrega do Plano de Projeto em 25/09/2026 e a defesa em 28/09/2026. O cronograma da Figura~\ref{fig:gantt} mantém os marcos acadêmicos e reorganiza o desenvolvimento para começar pela análise de autorização e por um caso piloto executável. As barras verdes indicam atividades concluídas no cronograma anterior. As barras azuis indicam atividades planejadas nesta revisão.
 
-Na Figura~\ref{fig:gantt}, barras verdes indicam etapas cumpridas e barras azuis, etapas planejadas.
+A validação será preparada junto ao primeiro caso, antes das execuções sem RAG. Em seguida, serão implementadas a recuperação contextual e a comparação das três condições. A ampliação após o piloto dependerá da reprodução dos casos, do custo das execuções e da disponibilidade de evidências para avaliar a aderência.
 
 \begin{figure}[htbp]
 \centering
@@ -29,27 +29,25 @@ Na Figura~\ref{fig:gantt}, barras verdes indicam etapas cumpridas e barras azuis
 \ganttbar[bar/.append style={fill=green!50}]{Defesa do Plano de Projeto}{2026-09-26}{2026-09-28} \\
 \ganttgroup{Etapa 4 -- Projeto Físico}{2026-10-03}{2026-11-12} \\
 \ganttbar[bar/.append style={fill=green!50}]{Revisão do foco com o orientador}{2026-10-03}{2026-10-20} \\
-\ganttbar[bar/.append style={fill=green!50}]{Definição de escopo, arquitetura e métricas}{2026-10-21}{2026-11-05} \\
+\ganttbar[bar/.append style={fill=green!50}]{Definição inicial de arquitetura e métricas}{2026-10-21}{2026-11-05} \\
 \ganttbar{Redação e revisão do Projeto Físico}{2026-11-05}{2026-11-11} \\
 \ganttmilestone{Entrega do Projeto Físico}{2026-11-12} \\
 \ganttgroup{Etapa 5 -- Defesa do Projeto Físico}{2026-11-13}{2026-11-19} \\
 \ganttbar{Slides e ensaios}{2026-11-13}{2026-11-18} \\
 \ganttmilestone{Defesa do Projeto Físico}{2026-11-19} \\
 \ganttgroup{Etapa 6 -- Efetuação do Protótipo}{2026-11-21}{2027-04-29} \\
-\ganttbar{B1, B2 e ambiente Docker (.NET e Java)}{2026-11-21}{2026-12-10} \\
-\ganttbar{Conjunto C\#: Juliet e casos no eShop}{2026-11-21}{2027-01-31} \\
-\ganttbar{Fichas do especialista (B4)}{2026-12-11}{2027-01-10} \\
-\ganttbar{B7: verificação e laudo}{2027-01-11}{2027-02-10} \\
-\ganttbar{B3: índice incremental e prova de conceito}{2027-01-11}{2027-02-10} \\
-\ganttbar{Configurações A e B; subconjunto Vul4J}{2027-02-11}{2027-02-28} \\
-\ganttbar{B6 agente e B5 memória (configuração C)}{2027-03-01}{2027-04-05} \\
-\ganttbar{B8, B9 e testes (caixa preta/branca)}{2027-04-06}{2027-04-25} \\
+\ganttbar{Contratos e entrada SARIF/manifesto}{2026-11-21}{2026-12-10} \\
+\ganttbar{Análise de autorização com Roslyn}{2026-12-11}{2027-01-10} \\
+\ganttbar{Primeiro caso e ambiente de validação}{2027-01-11}{2027-02-10} \\
+\ganttbar{Geração e medição sem RAG (A e B)}{2027-02-11}{2027-02-28} \\
+\ganttbar{Recuperação contextual (C)}{2027-03-01}{2027-03-21} \\
+\ganttbar{Relatórios e avaliação do piloto A/B/C}{2027-03-22}{2027-04-25} \\
 \ganttbar{Documentação do protótipo}{2027-04-26}{2027-04-29} \\
 \ganttmilestone{Entrega do Protótipo}{2027-04-30} \\
 \ganttgroup{Etapa 7 -- Defesa do Protótipo}{2027-05-01}{2027-05-05} \\
 \ganttmilestone{Defesa do Protótipo}{2027-05-05} \\
 \ganttgroup{Etapa 8 -- Finalização}{2027-05-06}{2027-06-09} \\
-\ganttbar{Casos reais C\#, experimento completo e análise}{2027-05-06}{2027-06-02} \\
+\ganttbar{Ampliação viável e análise experimental}{2027-05-06}{2027-06-02} \\
 \ganttbar{Relatório Final e vídeo}{2027-06-03}{2027-06-09} \\
 \ganttmilestone{Entrega do Projeto Final}{2027-06-10} \\
 \ganttgroup{Etapa 9 -- Defesa Final}{2027-06-11}{2027-06-15} \\
@@ -59,5 +57,5 @@ Na Figura~\ref{fig:gantt}, barras verdes indicam etapas cumpridas e barras azuis
 \caption{Cronograma revisado do projeto -- Gráfico de Gantt.}
 \label{fig:gantt}
 \par\vspace{0.4em}
-\begin{minipage}{\textwidth}\centering\footnotesize\textbf{Fonte:} Elaborado pelos autores.\end{minipage}
+\begin{minipage}{\textwidth}\centering\footnotesize Fonte elaborada pelos autores.\end{minipage}
 \end{figure}

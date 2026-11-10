@@ -2,12 +2,11 @@
 \chapter{Análise de Riscos}
 \label{cap:riscos}
 
-A análise do Plano de Projeto foi revisada. Riscos ligados à geração de grafos (CPG), ao treinamento de classificadores e ao desbalanceamento de dados de treinamento deixaram de existir com a mudança de foco. Surgiram riscos ligados ao comportamento do agente, à construção do conjunto de casos em C\#, à cobertura do Semgrep para C\# e à execução de código gerado. Probabilidade (P) e impacto (I) seguem a escala baixa, média e alta; o grau de exposição combina os dois (baixo, moderado, alto, crítico).
+O recorte em autorização concentra o risco experimental na disponibilidade de casos reproduzíveis, na qualidade das evidências recuperadas e na confiabilidade da validação. Os riscos anteriores associados ao treinamento de classificadores e à geração de grafos deixam de compor o projeto. A Tabela~\ref{tab:riscos} apresenta probabilidade (P), impacto (I) e grau de exposição. Os riscos serão revistos após o primeiro caso e após o piloto.
 
-\footnotesize
-\begin{longtable}{@{}p{3.0cm}p{0.9cm}p{0.9cm}p{1.3cm}p{3.3cm}p{3.2cm}@{}}
-\caption{Análise de riscos revisada.}
-\label{tab:riscos} \\
+{\small\SingleSpacing\setlength{\tabcolsep}{3pt}
+\begin{longtable}{@{}>{\raggedright\arraybackslash}p{3.0cm}lll>{\raggedright\arraybackslash}p{3.8cm}>{\raggedright\arraybackslash}p{3.8cm}@{}}
+\caption{Riscos do Projeto Físico revisado.}\label{tab:riscos}\\
 \toprule
 \textbf{Risco} & \textbf{P} & \textbf{I} & \textbf{Expos.} & \textbf{Redução} & \textbf{Contingência} \\
 \midrule
@@ -16,52 +15,30 @@ A análise do Plano de Projeto foi revisada. Riscos ligados à geração de graf
 \textbf{Risco} & \textbf{P} & \textbf{I} & \textbf{Expos.} & \textbf{Redução} & \textbf{Contingência} \\
 \midrule
 \endhead
-Prazo insuficiente para agente, conjunto de casos e experimento &
-Alta & Alto & Crítico &
-Ordem por menor risco: conjunto de casos e configuração A primeiro, agente depois &
-Reduzir o número de casos antes de cortar blocos \\
-Construção do conjunto C\# mais lenta que o previsto (casos que compilam, testes de exploração) &
-Alta & Alto & Crítico &
-Começar pelo eShop e pelo Juliet; modelo de teste de exploração por classe &
-Reduzir casos reais; priorizar casos inseridos \\
-Semgrep comunitário detecta poucas classes em C\# &
-Média & Alto & Alto &
-Verificar a cobertura das regras no início da Etapa 6 &
-Restringir as classes às detectadas; registrar como limitação \\
-Agente ``engana'' a verificação (altera testes, suprime regra, contorna o padrão) &
-Média & Alto & Alto &
-Restrições verificadas em V7; segunda análise (V4); teste de exploração de referência oculto &
-Contar como falha; reforçar as restrições \\
-Custo da API ou ciclos longos do agente &
-Média & Médio & Moderado &
-Limites de ciclos, ações e custo; estimativa de custo por caso antes do experimento &
-Reduzir repetições ou usar modelo menor nas configurações A e B \\
-Não determinismo do LLM &
-Alta & Médio & Alto &
-Três execuções por caso; registro de modelo, versão e parâmetros &
-Reportar a variação entre execuções \\
-Contaminação: casos públicos vistos no treinamento do modelo &
-Média & Médio & Moderado &
-Casos inseridos pela equipe como controle; resultados por origem &
-Declarar como ameaça à validade \\
-\textit{Embedding} com desempenho fraco em C\# &
-Média & Baixo & Baixo &
-Prova de conceito com precisão@k no início &
-Usar só BM25 e tabela de símbolos \\
-Execução de código gerado causar dano ou vazar dados &
-Baixa & Alto & Moderado &
-Contêiner sem rede, limites de recursos, \textit{worktree} descartável &
-Interromper e recriar o ambiente \\
-Diferença de experiência em C\# na equipe &
-Alta & Médio & Alto &
-Divisão de tarefas: núcleo .NET e casos C\# com André; índice, agente em Python, Java e análise com Ricardo &
-Revisão de código cruzada; pareamento nas partes .NET \\
-Uso de dados corporativos sem autorização &
-Baixa & Alto & Moderado &
-Somente repositórios e conjuntos públicos &
-Descartar o material \\
+Cobertura insuficiente do SAST & Alta & Alto & Crítica &
+Medir a cobertura por classe no piloto. &
+Usar manifestos e apresentar as origens dos casos separadamente. \\
+Regra ambígua ou evidência no próprio arquivo & Média & Alto & Alta &
+Anotar a regra esperada e a localização das evidências antes das execuções. &
+Excluir casos sem regra verificável e relatar separadamente os casos autocontidos. \\
+Política recuperada inadequada à operação & Média & Alto & Alta &
+Priorizar relações semânticas e equivalência da operação. &
+Registrar evidência insuficiente e permitir abstenção. \\
+Validação insuficiente & Média & Alto & Alta &
+Manter testes externos à geração e verificar a matriz de acesso e os efeitos de estado. &
+Recusar mudanças em arquivos protegidos e revisar a cobertura dos testes. \\
+Atraso no piloto & Alta & Alto & Crítica &
+Executar primeiro um caso completo e medir esforço e custo. &
+Concluir a comparação do piloto e reduzir a expansão. \\
+Instabilidade ou custo do modelo & Média & Médio & Moderada &
+Fixar modelo e parâmetros, registrar uso e medir custo por condição. &
+Reduzir a expansão mantendo as três condições e a configuração. \\
+Dados sensíveis ou execução insegura & Baixa & Alto & Moderada &
+Revisar os arquivos enviados e isolar build e testes sem rede nem credenciais. &
+Interromper a execução, descartar a cópia isolada e registrar o incidente. \\
+Correções públicas vistas no treino & Média & Médio & Moderada &
+Registrar a origem e manter casos de avaliação preparados pela equipe. &
+Apresentar resultados por origem e discutir a possibilidade de contaminação. \\
 \bottomrule
 \end{longtable}
-\normalsize
-
-Os riscos de exposição crítica ou alta são revistos ao final de cada fase do cronograma (Figura~\ref{fig:gantt}). Os riscos de segurança da execução e de uso de dados corporativos são mitigados por projeto, pelos requisitos do bloco B2 e pelo escopo.
+}
