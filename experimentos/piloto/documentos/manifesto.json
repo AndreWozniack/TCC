@@ -1,0 +1,6 @@
+{
+  "id": "piloto-documentos-01",
+  "cwe": "CWE-863",
+  "file": "DocumentsController.cs",
+  "startLine": 17
+}

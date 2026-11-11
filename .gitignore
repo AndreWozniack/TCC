@@ -29,3 +29,7 @@ tmp/
 *.nav
 *.snm
 *.vrb
+
+# Compilação do protótipo .NET
+**/bin/
+**/obj/

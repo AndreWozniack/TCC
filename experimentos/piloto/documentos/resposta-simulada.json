@@ -1,0 +1,7 @@
+{
+  "diff": "diff --git a/DocumentsController.cs b/DocumentsController.cs\nindex 31d55d5..e7a527e 100644\n--- a/DocumentsController.cs\n+++ b/DocumentsController.cs\n@@ -14,8 +14,10 @@ public sealed class DocumentsController(DocumentStore store, IAuthorizationServi\n     }\n \n     [HttpPut]\n-    public IActionResult Update([FromBody] string content)\n+    public async Task<IActionResult> Update([FromBody] string content)\n     {\n+        var result = await authorization.AuthorizeAsync(User, store.Current, \"DocumentOwner\");\n+        if (!result.Succeeded) return Forbid();\n         store.Current = store.Current with { Content = content };\n         return NoContent();\n     }\n",
+  "explanation": "Reutiliza a política DocumentOwner existente.",
+  "references": [
+    "Program.cs"
+  ]
+}
