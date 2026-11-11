@@ -1,19 +1,19 @@
 # Fdb version 4
-["bibtex main"] 1793994740.11752 "main.aux" "main.bbl" "main" 1793994743.51985 0
-  "./referencias.bib" 1793993701.33085 23964 8815fe98a7ce103b457b3c124d08d1bd ""
+["bibtex main"] 1794351194.92468 "main.aux" "main.bbl" "main" 1794351198.14515 0
+  "./referencias.bib" 1794350180.03248 3303 42733aab6f600b345fc9b45272c1274b ""
   "/usr/local/texlive/2026/texmf-dist/bibtex/bib/abntex2/abntex2-options.bib" 1357081713 5396 4eb260dac60f150ae608d45252853090 ""
   "/usr/local/texlive/2026/texmf-dist/bibtex/bst/abntex2/abntex2-alf.bst" 1543183680 60064 0819ac8568f9a482510a46e3a8a6f605 ""
-  "main.aux" 1793994742.43731 20541 029bd7fecf9a67463768d9cb73f621de "xelatex"
+  "main.aux" 1794351197.18433 9444 f89593d7a8ad57da290bff5d8cab3ddd "xelatex"
   (generated)
   "main.bbl"
   "main.blg"
   (rewritten before read)
-["xdvipdfmx"] 1793994742.98624 "main.xdv" "main.pdf" "main" 1793994743.52213 0
-  "main.xdv" 1793994742.44006 701344 8df526b123044ef791ad0382790ee453 "xelatex"
+["xdvipdfmx"] 1794351197.66835 "main.xdv" "main.pdf" "main" 1794351198.14756 0
+  "main.xdv" 1794351197.18654 371996 f704971ed52a4a58c542d79ebc84314b "xelatex"
   (generated)
   "main.pdf"
   (rewritten before read)
-["xelatex"] 1793994740.26332 "main.tex" "main.xdv" "main" 1793994743.51994 0
+["xelatex"] 1794351195.06909 "main.tex" "main.xdv" "main" 1794351198.14526 0
   "/usr/local/texlive/2026/texmf-dist/fonts/map/fontname/texfonts.map" 1577235249 3524 cb3e574dea2d1052e39280babc910dc8 ""
   "/usr/local/texlive/2026/texmf-dist/fonts/tfm/adobe/times/ptmb7t.tfm" 1136768653 2172 fd0c924230362ff848a33632ed45dc23 ""
   "/usr/local/texlive/2026/texmf-dist/fonts/tfm/adobe/times/ptmr8t.tfm" 1136768653 6672 e3ab9e37e925f3045c9005e6d1473d56 ""
@@ -247,19 +247,19 @@
   "/usr/local/texlive/2026/texmf-dist/web2c/texmf.cnf" 1770478701 43630 e9fa012910491fe5ae08a72c3c2997a7 ""
   "/usr/local/texlive/2026/texmf-var/web2c/xetex/xelatex.fmt" 1788294741 5948570 68ed3eed453e8482302253f07879ef5e ""
   "/usr/local/texlive/2026/texmf.cnf" 1774209515 577 648cd9f92f9c0eac486f4c71c85cfbbe ""
-  "capitulos/cap_01.tex" 1793994684.87239 12381 fbccd5742a28328a64bb7ea62b40f16d ""
-  "capitulos/cap_02.tex" 1793994702.68609 26371 f8004233d2d566586599ca0a9d50e715 ""
-  "capitulos/cap_03.tex" 1793994707.9347 3976 dc997e00bc75361bfde71f1502ccc406 ""
-  "capitulos/cap_04.tex" 1793993659.20742 7411 d24a750a1c623f3e799bef4b755afae6 ""
-  "capitulos/cap_05.tex" 1793993633.71345 3603 18bc37d2ad4806db3718dc111122fc25 ""
-  "capitulos/cap_06.tex" 1793994707.93489 2712 5db943931a0fe10b2618f524481f9fb6 ""
+  "capitulos/cap_01.tex" 1794349533.00081 5093 fc8f1f668c69b45928be7488e0304d7b ""
+  "capitulos/cap_02.tex" 1794350180.03139 8725 dd2857d861d4e48d2ce6b4db36fd92b7 ""
+  "capitulos/cap_03.tex" 1794349751.1948 3772 0762cce2fd02dcb723a37a55d4f3684f ""
+  "capitulos/cap_04.tex" 1794349611.71204 6683 02fa41d5d2fa4c528176306717df2dbf ""
+  "capitulos/cap_05.tex" 1794350180.03206 2759 ca776f28c858f35ff619b767f5e81613 ""
+  "capitulos/cap_06.tex" 1794349611.71745 1031 6aec9971f716c2731e3e90cfe06350e0 ""
   "customizacoes.tex" 1793987241.58501 16587 f83b3339f127d51d5e6deb0009cdeca1 ""
-  "dados_academicos.tex" 1793994702.68391 584 3fd1ca7a19ab76e43c787a861616975c ""
-  "main.aux" 1793994742.43731 20541 029bd7fecf9a67463768d9cb73f621de "xelatex"
-  "main.bbl" 1793994740.25813 12149 83e9c0a9f9cacfe3d250cfb7fac75e28 "bibtex main"
-  "main.tex" 1793987241.58544 1358 fa21c4eada0e10f65f0ba8efe668c55f ""
-  "main.toc" 1793994742.43996 4363 feda1c76d84a62945b30c1479b56b107 "xelatex"
-  "pretextual.tex" 1793994702.68474 2207 d3ae06041cb81b5f7444dfa2d3966375 ""
+  "dados_academicos.tex" 1794349429.82605 580 a5edae643b50a40a57d873c1652f3616 ""
+  "main.aux" 1794351197.18433 9444 f89593d7a8ad57da290bff5d8cab3ddd "xelatex"
+  "main.bbl" 1794351195.06477 3762 f4b7f6876cc79ca4b898740da99c7acc "bibtex main"
+  "main.tex" 1794350123.31017 1452 75c7eca805261ad8be68551ccd3d0339 ""
+  "main.toc" 1794351197.18649 3038 716e91a640ccd0e855212c18d08cc7d3 "xelatex"
+  "pretextual.tex" 1794350123.30951 2044 9a3a7b604ae695ac334088f3021bcc5b ""
   (generated)
   "main.aux"
   "main.log"
