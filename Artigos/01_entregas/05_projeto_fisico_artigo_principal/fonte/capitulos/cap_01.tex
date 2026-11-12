@@ -14,12 +14,6 @@ O recorte adota a CWE-285 como categoria de referência e utiliza CWE-862 e CWE-
 
 A geração aumentada por recuperação (\textit{Retrieval-Augmented Generation}, RAG) acrescenta informações recuperadas à entrada do modelo de linguagem \cite{lewis2020rag}. Neste trabalho, essas informações são trechos de código e relações entre símbolos do repositório avaliado. O PatchAgent integra localização, geração e validação de correções \cite{yu2025patchagent}. O GitHub também oferece sugestões de correção em seu fluxo de alertas de análise de código \cite{githubautofix}. Esses trabalhos estabelecem precedentes para a remediação assistida. A questão deste projeto é medir o efeito da recuperação orientada ao modelo de autorização do ASP.NET Core, mantendo fixos o modelo de linguagem e o procedimento de avaliação.
 
-\section{Pergunta de pesquisa e hipótese}
-
-\begin{quote}
-O contexto recuperado de políticas, requisitos, \textit{handlers} e implementações equivalentes melhora a proporção de correções seguras, funcionais e aderentes ao modelo de autorização de APIs ASP.NET Core, em comparação com a geração sem recuperação?
-\end{quote}
-
 A hipótese é que acrescentar contexto de autorização ao arquivo completo aumenta a proporção de correções que atendem simultaneamente aos três critérios, sem reduzir a proporção de correções seguras e funcionais. O contraste principal será entre o arquivo completo e o arquivo acrescido de contexto recuperado. A condição com apenas o método afetado permitirá observar quanto do ganho pode ser atribuído à leitura do arquivo.
 
 \section{Objetivos}
