@@ -1,32 +1,7 @@
-using System.Diagnostics;
-
 namespace AuthFix;
-
-public record ValidationResult(string Status, string Build, string Security, string Functionality, string Architecture, string Log);
 
 public static class PatchValidator
 {
-    private static (int ExitCode, string Output) Run(string executable, string workingDirectory, params string[] arguments)
-    {
-        var info = new ProcessStartInfo(executable)
-        {
-            WorkingDirectory = workingDirectory,
-            RedirectStandardOutput = true,
-            RedirectStandardError = true
-        };
-        foreach (var argument in arguments) info.ArgumentList.Add(argument);
-        using var process = Process.Start(info) ?? throw new InvalidOperationException($"Falha ao iniciar {executable}.");
-        var stdout = process.StandardOutput.ReadToEndAsync();
-        var stderr = process.StandardError.ReadToEndAsync();
-        if (!process.WaitForExit(180_000))
-        {
-            process.Kill(entireProcessTree: true);
-            process.WaitForExit();
-            throw new TimeoutException($"Tempo esgotado: {executable}.");
-        }
-        return (process.ExitCode, stdout.GetAwaiter().GetResult() + stderr.GetAwaiter().GetResult());
-    }
-
     public static ValidationResult Validate(string repository, string revision, string allowedFile, string evaluatorDirectory, string diff)
     {
         const string pending = "não executada";
@@ -38,26 +13,28 @@ public static class PatchValidator
         var created = false;
         try
         {
-            var resolved = Run("git", repository, "rev-parse", "--verify", "--end-of-options", revision + "^{commit}");
-            if (resolved.ExitCode != 0) throw new InvalidOperationException(resolved.Output);
-            var add = Run("git", repository, "-c", "core.hooksPath=/dev/null", "worktree", "add", "--detach", worktree, resolved.Output.Trim());
-            if (add.ExitCode != 0) throw new InvalidOperationException(add.Output);
+            var resolved = ProcessRunner.Run("git", repository, "rev-parse", "--verify", "--end-of-options", revision + "^{commit}");
+            if (resolved.ExitCode != 0)
+                throw new InvalidOperationException(resolved.Output);
+            var add = ProcessRunner.Run("git", repository, "-c", "core.hooksPath=/dev/null", "worktree", "add", "--detach", worktree, resolved.Output.Trim());
+            if (add.ExitCode != 0)
+                throw new InvalidOperationException(add.Output);
             created = true;
             File.WriteAllText(patch, diff);
-            var apply = Run("git", worktree, "apply", "--check", "--", patch);
+            var apply = ProcessRunner.Run("git", worktree, "apply", "--check", "--", patch);
             if (apply.ExitCode != 0)
                 return new("patch inválido", pending, pending, pending, "revisão humana pendente", apply.Output);
-            apply = Run("git", worktree, "apply", "--", patch);
+            apply = ProcessRunner.Run("git", worktree, "apply", "--", patch);
             if (apply.ExitCode != 0)
                 return new("patch inválido", pending, pending, pending, "revisão humana pendente", apply.Output);
-            var changed = Run("git", worktree, "diff", "--name-only", "-z");
+            var changed = ProcessRunner.Run("git", worktree, "diff", "--name-only", "-z");
             var names = changed.Output.Split('\0', StringSplitOptions.RemoveEmptyEntries);
             if (changed.ExitCode != 0 || names.Length != 1 || names[0] != allowedFile)
                 return new("arquivos não permitidos", pending, pending, pending, "revisão humana pendente", changed.Output);
             var changedPath = Path.Combine(worktree, allowedFile);
             if (!File.Exists(changedPath) || File.GetAttributes(changedPath).HasFlag(FileAttributes.ReparsePoint))
                 return new("arquivo inválido", pending, pending, pending, "revisão humana pendente", "");
-            var docker = Run("docker", repository, "run", "--rm", "--name", name, "--network", "none",
+            var docker = ProcessRunner.Run("docker", repository, "run", "--rm", "--name", name, "--network", "none",
                 "--memory", "1g", "--cpus", "2", "--pids-limit", "256", "--cap-drop", "ALL",
                 "--security-opt", "no-new-privileges",
                 "--mount", $"type=bind,src={worktree},dst=/work",
@@ -78,10 +55,10 @@ public static class PatchValidator
         }
         finally
         {
-            try { Run("docker", repository, "rm", "-f", name); } catch (Exception) { }
+            try { ProcessRunner.Run("docker", repository, "rm", "-f", name); } catch (Exception) { }
             if (created)
             {
-                try { Run("git", repository, "worktree", "remove", "--force", worktree); } catch (Exception) { }
+                try { ProcessRunner.Run("git", repository, "worktree", "remove", "--force", worktree); } catch (Exception) { }
             }
             if (File.Exists(patch)) File.Delete(patch);
         }

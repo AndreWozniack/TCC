@@ -2,8 +2,6 @@ using System.Text.Json;
 
 namespace AuthFix;
 
-public record Alert(string Id, string Cwe, string File, int StartLine);
-
 public static class AlertReader
 {
     public static Alert Read(string json, string repository, IReadOnlyDictionary<string, string>? rules = null)

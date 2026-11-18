@@ -17,7 +17,7 @@ if (args[0] != "scan")
 try
 {
     var options = ScanOptions.Parse(args[1..]);
-    var repository = Pipeline.Git(Directory.GetCurrentDirectory(), "rev-parse", "--show-toplevel").Trim();
+    var repository = GitRepository.Execute(Directory.GetCurrentDirectory(), "rev-parse", "--show-toplevel").Trim();
     var output = Path.GetFullPath(options.Output, repository);
     Directory.CreateDirectory(output);
     var json = new JsonSerializerOptions { PropertyNameCaseInsensitive = true, WriteIndented = true };
@@ -52,7 +52,7 @@ try
 
     string? commit = null;
     if (File.Exists(Path.Combine(evaluator, "teste.sh")))
-        commit = Pipeline.ResolveCleanCommit(repository, "HEAD");
+        commit = GitRepository.ResolveCleanCommit(repository, "HEAD");
     else
         Console.WriteLine($"Sem {Path.GetRelativePath(repository, evaluator)}/teste.sh: a validação não será executada.");
 
@@ -61,6 +61,7 @@ try
         throw new ArgumentException($"Proposta não encontrada: {options.Response}. Enquanto o LLM não estiver integrado, a geração usa uma resposta simulada.");
     var response = JsonSerializer.Deserialize<MockResponse>(File.ReadAllText(responsePath), json)
         ?? throw new ArgumentException("Resposta simulada vazia.");
+    IFixGenerator generator = new MockGenerator(response);
 
     var failures = 0;
     for (var i = 0; i < alerts.Count; i++)
@@ -68,7 +69,7 @@ try
         var alert = alerts[i];
         var prefix = alerts.Count == 1 ? "" : $"{i + 1}-";
         Step($"2. Correção de {alert.File}:{alert.StartLine} (condição {options.Condition})");
-        var report = Pipeline.Run(repository, alert, options.Condition, response, commit, commit is null ? null : evaluator);
+        var report = Pipeline.Run(repository, alert, options.Condition, generator, commit, commit is null ? null : evaluator);
 
         if (report.Input.Evidence.Count > 0)
         {
@@ -87,11 +88,7 @@ try
         Console.WriteLine($"Funcionalidade: {report.Results?.Functionality ?? "não executada"}");
         Console.WriteLine($"Aderência:      {report.Results?.Architecture ?? "revisão humana pendente"}");
 
-        var reportPath = Path.Combine(output, prefix + "relatorio.json");
-        File.WriteAllText(reportPath, JsonSerializer.Serialize(report, json), Encoding.UTF8);
-        File.WriteAllText(Path.ChangeExtension(reportPath, ".md"), Pipeline.Markdown(report), Encoding.UTF8);
-        var patch = Path.Combine(output, prefix + "correcao.patch");
-        File.WriteAllText(patch, report.Proposal.Diff, Encoding.UTF8);
+        var patch = ReportWriter.WriteArtifacts(output, prefix, report);
 
         var approved = report.Results is { Security: "aprovada", Functionality: "aprovada" };
         if (!approved) failures++;
@@ -101,7 +98,7 @@ try
                 Console.WriteLine("\nCorreção não aplicada: a validação não aprovou segurança e funcionalidade.");
             else
             {
-                Pipeline.Git(repository, "apply", "--", patch);
+                GitRepository.Execute(repository, "apply", "--", patch);
                 Console.WriteLine($"\nCorreção aplicada em {alert.File}. Revise com: git diff");
             }
         }

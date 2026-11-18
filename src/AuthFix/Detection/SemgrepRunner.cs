@@ -1,4 +1,3 @@
-using System.Diagnostics;
 using System.Text.Json.Nodes;
 
 namespace AuthFix;
@@ -29,24 +28,19 @@ public static class SemgrepRunner
                 stream.CopyTo(file);
             }
             var output = Path.GetFullPath(outputDirectory);
-            var info = new ProcessStartInfo("docker") { RedirectStandardOutput = true, RedirectStandardError = true };
-            foreach (var argument in new[]
-            {
+            var result = ProcessRunner.Run(
+                "docker",
+                repository,
                 "run", "--rm",
                 "--mount", $"type=bind,src={repository},dst=/src,readonly",
                 "--mount", $"type=bind,src={rules},dst=/regras,readonly",
                 "--mount", $"type=bind,src={output},dst=/saida",
                 "-w", "/src", Image,
-                "semgrep", "scan", "--metrics=off", "--quiet", "--config", "/regras", "--sarif-output=/saida/semgrep.sarif"
-            }) info.ArgumentList.Add(argument);
-            using var process = Process.Start(info) ?? throw new InvalidOperationException("Docker indisponível.");
-            var stdout = process.StandardOutput.ReadToEndAsync();
-            var stderr = process.StandardError.ReadToEnd();
-            process.WaitForExit();
-            stdout.GetAwaiter().GetResult();
+                "semgrep", "scan", "--metrics=off", "--quiet", "--config", "/regras", "--sarif-output=/saida/semgrep.sarif");
+
             var sarif = Path.Combine(output, "semgrep.sarif");
             if (!File.Exists(sarif))
-                throw new InvalidOperationException("O Semgrep não gerou SARIF. Verifique se o Docker está em execução.\n" + stderr.Trim());
+                throw new InvalidOperationException("O Semgrep não gerou SARIF. Verifique se o Docker está em execução.\n" + result.Stderr.Trim());
             return Normalize(File.ReadAllText(sarif));
         }
         finally
