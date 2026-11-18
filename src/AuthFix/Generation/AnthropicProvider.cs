@@ -5,7 +5,7 @@ namespace AuthFix;
 
 public sealed class AnthropicProvider : ILlmProvider
 {
-    public const string DefaultModel = "claude-sonnet-4-5";
+    public const AnthropicModel DefaultModel = AnthropicModel.ClaudeHaiku5_5;
     private const string Endpoint = "https://api.anthropic.com/v1/messages";
     private static readonly HttpClient SharedClient = new() { Timeout = TimeSpan.FromSeconds(60) };
 
@@ -26,19 +26,21 @@ public sealed class AnthropicProvider : ILlmProvider
         """);
 
     private readonly string _apiKey;
-    private readonly string _model;
+    private readonly AnthropicModel _model;
     private readonly HttpClient _httpClient;
 
-    public AnthropicProvider(string apiKey, string model = DefaultModel, HttpClient? httpClient = null)
+    public AnthropicProvider(string apiKey, AnthropicModel model = DefaultModel, HttpClient? httpClient = null)
     {
         if (string.IsNullOrWhiteSpace(apiKey))
             throw new ArgumentException("Chave da API Anthropic ausente.");
         _apiKey = apiKey;
-        _model = string.IsNullOrWhiteSpace(model) ? DefaultModel : model;
+        _model = model;
         _httpClient = httpClient ?? SharedClient;
     }
 
-    public string Name => $"anthropic:{_model}";
+    public AnthropicModel Model => _model;
+
+    public string Name => $"anthropic:{_model.ToApiId()}";
 
     public string Complete(string systemPrompt, string userPrompt)
     {
@@ -48,9 +50,8 @@ public sealed class AnthropicProvider : ILlmProvider
 
         var payload = new
         {
-            model = _model,
-            max_tokens = 4096,
-            temperature = 0,
+            model = _model.ToApiId(),
+            max_tokens = 16000,
             system = systemPrompt,
             messages = new[]
             {

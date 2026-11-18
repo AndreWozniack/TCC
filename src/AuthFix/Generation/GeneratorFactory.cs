@@ -23,9 +23,8 @@ public static class GeneratorFactory
         var resolvedKey = apiKey ?? ResolveApiKey(repository);
         if (!options.ForceMock && !string.IsNullOrWhiteSpace(resolvedKey))
         {
-            var model = options.Model
-                ?? ResolveEnvValue(repository, "ANTHROPIC_MODEL")
-                ?? AnthropicProvider.DefaultModel;
+            var rawModel = options.Model ?? ResolveEnvValue(repository, "ANTHROPIC_MODEL");
+            var model = AnthropicModelExtensions.Parse(rawModel);
             var provider = new AnthropicProvider(resolvedKey, model);
             return new LlmGenerator(provider, file => GitRepository.ReadSafeText(repository, file), fallback);
         }
