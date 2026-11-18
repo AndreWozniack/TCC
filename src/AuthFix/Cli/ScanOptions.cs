@@ -7,7 +7,9 @@ public sealed record ScanOptions(
     string Response = "resposta-simulada.json",
     string Evaluator = "avaliacao",
     string Output = ".authfix",
-    bool Apply = false)
+    bool Apply = false,
+    bool ForceMock = false,
+    string? Model = null)
 {
     public const string Usage = """
         Uso: authfix scan [opções]
@@ -15,14 +17,15 @@ public sealed record ScanOptions(
         Executa na raiz do repositório Git do projeto ASP.NET Core:
           1. Semgrep (Docker) com as regras de autorização do AuthFix;
           2. localização do endpoint (Roslyn) e recuperação de contexto;
-          3. proposta de correção (resposta simulada até a integração do LLM);
+          3. proposta de correção via LLM (Anthropic Claude, com fallback para resposta simulada);
           4. validação do patch em contêiner sem rede, com <avaliacao>/teste.sh.
 
         Opções:
           --condicao A|B|C   contexto enviado ao gerador (padrão: C)
+          --modelo NOME      modelo do LLM (padrão: claude-sonnet-4-5 ou ANTHROPIC_MODEL)
           --alerta ARQ       usa um SARIF existente em vez de rodar o Semgrep
           --regras ARQ       mapa JSON regra -> CWE para o SARIF informado
-          --resposta ARQ     proposta simulada (padrão: resposta-simulada.json)
+          --resposta ARQ     força o uso da proposta simulada (padrão de fallback: resposta-simulada.json)
           --avaliacao DIR    pasta com teste.sh (padrão: avaliacao)
           --saida DIR        relatórios e patch (padrão: .authfix)
           --aplicar          aplica a correção se segurança e funcionalidade forem aprovadas
@@ -38,9 +41,10 @@ public sealed record ScanOptions(
             options = args[i] switch
             {
                 "--condicao" => options with { Condition = Value().ToUpperInvariant() },
+                "--modelo" => options with { Model = Value() },
                 "--alerta" => options with { Alert = Value() },
                 "--regras" => options with { Rules = Value() },
-                "--resposta" => options with { Response = Value() },
+                "--resposta" => options with { Response = Value(), ForceMock = true },
                 "--avaliacao" => options with { Evaluator = Value() },
                 "--saida" => options with { Output = Value() },
                 "--aplicar" => options with { Apply = true },

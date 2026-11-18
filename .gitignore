@@ -36,3 +36,5 @@ tmp/
 
 # Pacote do dotnet tool
 nupkg/
+.env
+**/.env

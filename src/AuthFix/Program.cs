@@ -20,7 +20,6 @@ try
     var repository = GitRepository.Execute(Directory.GetCurrentDirectory(), "rev-parse", "--show-toplevel").Trim();
     var output = Path.GetFullPath(options.Output, repository);
     Directory.CreateDirectory(output);
-    var json = new JsonSerializerOptions { PropertyNameCaseInsensitive = true, WriteIndented = true };
 
     Title($"AuthFix · {repository}");
     var evaluator = Path.GetFullPath(options.Evaluator, repository);
@@ -56,12 +55,7 @@ try
     else
         Console.WriteLine($"Sem {Path.GetRelativePath(repository, evaluator)}/teste.sh: a validação não será executada.");
 
-    var responsePath = Path.GetFullPath(options.Response, repository);
-    if (!File.Exists(responsePath))
-        throw new ArgumentException($"Proposta não encontrada: {options.Response}. Enquanto o LLM não estiver integrado, a geração usa uma resposta simulada.");
-    var response = JsonSerializer.Deserialize<MockResponse>(File.ReadAllText(responsePath), json)
-        ?? throw new ArgumentException("Resposta simulada vazia.");
-    IFixGenerator generator = new MockGenerator(response);
+    var generator = GeneratorFactory.Create(repository, options);
 
     var failures = 0;
     for (var i = 0; i < alerts.Count; i++)
