@@ -1,0 +1,37 @@
+rules:
+  - id: aspnet-controller-sem-autorizacao
+    languages: [csharp]
+    severity: ERROR
+    message: >-
+      A action $M responde a requisições HTTP sem [Authorize] nem [AllowAnonymous],
+      e o controlador não exige autorização. Qualquer cliente pode chamá-la (CWE-862).
+    metadata:
+      cwe: ["CWE-862: Missing Authorization"]
+      owasp: ["A01:2021 - Broken Access Control"]
+      category: security
+    patterns:
+      - pattern-either:
+          - pattern: |
+              [$HTTP(...)]
+              $RET $M(...) { ... }
+          - pattern: |
+              [$HTTP]
+              $RET $M(...) { ... }
+      - metavariable-regex:
+          metavariable: $HTTP
+          regex: ^Http(Get|Post|Put|Patch|Delete)$
+      - pattern-not: |
+          [Authorize]
+          $RET $M(...) { ... }
+      - pattern-not: |
+          [Authorize(...)]
+          $RET $M(...) { ... }
+      - pattern-not: |
+          [AllowAnonymous]
+          $RET $M(...) { ... }
+      - pattern-not-inside: |
+          [Authorize]
+          class $C { ... }
+      - pattern-not-inside: |
+          [Authorize(...)]
+          class $C { ... }

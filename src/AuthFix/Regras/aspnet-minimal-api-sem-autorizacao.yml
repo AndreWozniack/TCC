@@ -1,0 +1,20 @@
+rules:
+  - id: aspnet-minimal-api-sem-autorizacao
+    languages: [csharp]
+    severity: ERROR
+    message: >-
+      O endpoint $ROUTE é mapeado sem RequireAuthorization() e sem AllowAnonymous().
+      Qualquer cliente pode chamá-lo (CWE-862).
+    metadata:
+      cwe: ["CWE-862: Missing Authorization"]
+      owasp: ["A01:2021 - Broken Access Control"]
+      category: security
+    patterns:
+      - pattern-either:
+          - pattern: $APP.MapGet($ROUTE, ...)
+          - pattern: $APP.MapPost($ROUTE, ...)
+          - pattern: $APP.MapPut($ROUTE, ...)
+          - pattern: $APP.MapPatch($ROUTE, ...)
+          - pattern: $APP.MapDelete($ROUTE, ...)
+      - pattern-not-inside: $X.RequireAuthorization(...)
+      - pattern-not-inside: $X.AllowAnonymous()

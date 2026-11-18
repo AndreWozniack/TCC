@@ -1,7 +1,0 @@
-{
-  "diff": "diff --git a/Controllers/InformacoesController.cs b/Controllers/InformacoesController.cs\nindex c5972b6..85324f3 100644\n--- a/Controllers/InformacoesController.cs\n+++ b/Controllers/InformacoesController.cs\n@@ -28,7 +28,7 @@ public class InformacoesController : ControllerBase\n         return Ok(\"Status reservado ao administrador.\");\n     }\n \n-    // Falha proposital para a demonstração: falta a política SomenteAdmin.\n+    [Authorize(Policy = \"SomenteAdmin\")]\n     [HttpGet(\"admin-info\")]\n     public IActionResult InfoAdmin()\n     {\n",
-  "explanation": "O método InfoAdmin (rota GET /api/admin-info) não tinha nenhum atributo de autorização, então qualquer cliente, inclusive anônimo, lia a informação administrativa (CWE-862). A correção reutiliza a policy SomenteAdmin já registrada em Program.cs (RequireRole(\"Admin\")), no mesmo padrão do endpoint StatusAdmin: [Authorize(Policy = \"SomenteAdmin\")]. Anônimo passa a receber 401, perfil User recebe 403 e perfil Admin continua com 200.",
-  "references": [
-    "Program.cs"
-  ]
-}

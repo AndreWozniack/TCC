@@ -10,41 +10,55 @@ public static class AlertReader
     {
         using var document = JsonDocument.Parse(json);
         var root = document.RootElement;
-        string id;
-        string cwe;
-        string file;
-        int line;
+        if (!root.TryGetProperty("version", out _))
+            return Validate(
+                root.GetProperty("id").GetString() ?? "",
+                root.GetProperty("cwe").GetString() ?? "",
+                root.GetProperty("file").GetString() ?? "",
+                root.GetProperty("startLine").GetInt32(),
+                repository);
+        var results = SarifResults(root);
+        if (results.Length != 1)
+            throw new ArgumentException("Informe exatamente um resultado SARIF.");
+        return FromSarifResult(results[0], repository, rules);
+    }
 
-        if (root.TryGetProperty("version", out var version))
-        {
-            if (version.GetString() != "2.1.0")
-                throw new ArgumentException("A versão SARIF deve ser 2.1.0.");
-            var results = root.GetProperty("runs").EnumerateArray()
-                .SelectMany(run => run.GetProperty("results").EnumerateArray()).ToArray();
-            if (results.Length != 1)
-                throw new ArgumentException("Informe exatamente um resultado SARIF.");
-            var result = results[0];
-            id = result.GetProperty("ruleId").GetString() ?? throw new ArgumentException("Regra ausente.");
-            if (rules is null || !rules.TryGetValue(id, out cwe!))
-                throw new ArgumentException("Regra SARIF sem mapeamento de CWE.");
-            var locations = result.GetProperty("locations");
-            if (locations.GetArrayLength() != 1)
-                throw new ArgumentException("O alerta deve indicar uma localização.");
-            var physical = locations[0].GetProperty("physicalLocation");
-            var artifact = physical.GetProperty("artifactLocation");
-            if (artifact.TryGetProperty("uriBaseId", out _))
-                throw new ArgumentException("URI base SARIF não suportada.");
-            file = Uri.UnescapeDataString(artifact.GetProperty("uri").GetString() ?? "");
-            line = physical.GetProperty("region").GetProperty("startLine").GetInt32();
-        }
-        else
-        {
-            id = root.GetProperty("id").GetString() ?? "";
-            cwe = root.GetProperty("cwe").GetString() ?? "";
-            file = root.GetProperty("file").GetString() ?? "";
-            line = root.GetProperty("startLine").GetInt32();
-        }
+    public static IReadOnlyList<Alert> ReadAll(string json, string repository, IReadOnlyDictionary<string, string>? rules = null)
+    {
+        using var document = JsonDocument.Parse(json);
+        var root = document.RootElement;
+        if (!root.TryGetProperty("version", out _))
+            return [Read(json, repository, rules)];
+        return SarifResults(root).Select(result => FromSarifResult(result, repository, rules)).ToArray();
+    }
 
+    private static JsonElement[] SarifResults(JsonElement root)
+    {
+        if (root.GetProperty("version").GetString() != "2.1.0")
+            throw new ArgumentException("A versão SARIF deve ser 2.1.0.");
+        return root.GetProperty("runs").EnumerateArray()
+            .SelectMany(run => run.GetProperty("results").EnumerateArray()).ToArray();
+    }
+
+    private static Alert FromSarifResult(JsonElement result, string repository, IReadOnlyDictionary<string, string>? rules)
+    {
+        var id = result.GetProperty("ruleId").GetString() ?? throw new ArgumentException("Regra ausente.");
+        if (rules is null || !rules.TryGetValue(id, out var cwe))
+            throw new ArgumentException($"Regra SARIF sem mapeamento de CWE: {id}.");
+        var locations = result.GetProperty("locations");
+        if (locations.GetArrayLength() != 1)
+            throw new ArgumentException("O alerta deve indicar uma localização.");
+        var physical = locations[0].GetProperty("physicalLocation");
+        var artifact = physical.GetProperty("artifactLocation");
+        if (artifact.TryGetProperty("uriBaseId", out _))
+            throw new ArgumentException("URI base SARIF não suportada.");
+        var file = Uri.UnescapeDataString(artifact.GetProperty("uri").GetString() ?? "");
+        var line = physical.GetProperty("region").GetProperty("startLine").GetInt32();
+        return Validate(id, cwe, file, line, repository);
+    }
+
+    private static Alert Validate(string id, string cwe, string file, int line, string repository)
+    {
         if (string.IsNullOrWhiteSpace(id) || cwe is not ("CWE-862" or "CWE-863") || line < 1)
             throw new ArgumentException("Identificador, CWE ou linha inválida.");
         if (string.IsNullOrWhiteSpace(file) || Path.IsPathRooted(file) || Uri.TryCreate(file, UriKind.Absolute, out _))

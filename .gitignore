@@ -33,3 +33,6 @@ tmp/
 # Compilação do protótipo .NET
 **/bin/
 **/obj/
+
+# Pacote do dotnet tool
+nupkg/

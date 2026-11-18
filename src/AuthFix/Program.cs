@@ -1,137 +1,121 @@
-using System.Diagnostics;
 using System.Text;
 using System.Text.Json;
 using AuthFix;
 
-if (args.Length < 5)
+Console.OutputEncoding = Encoding.UTF8;
+if (args.Length == 0 || args[0] is "-h" or "--help" or "ajuda")
 {
-    Console.Error.WriteLine("Uso: AuthFix <repositório> <alerta.json> <A|B|C> <resposta-simulada.json> <relatório.json> [--rules regras.json] [--validate commit pasta-avaliacao]");
+    Console.WriteLine(ScanOptions.Usage);
+    return args.Length == 0 ? 2 : 0;
+}
+if (args[0] != "scan")
+{
+    Console.Error.WriteLine($"Comando desconhecido: {args[0]}\n\n{ScanOptions.Usage}");
     return 2;
 }
 
 try
 {
-    if (!string.Equals(Path.GetExtension(args[4]), ".json", StringComparison.OrdinalIgnoreCase))
-        throw new ArgumentException("O relatório deve ter extensão .json.");
-    var repository = Path.GetFullPath(args[0]);
-    Dictionary<string, string>? rules = null;
-    string? revision = null;
-    string? evaluator = null;
-    for (var i = 5; i < args.Length; i++)
-    {
-        if (args[i] == "--rules" && i + 1 < args.Length)
-            rules = JsonSerializer.Deserialize<Dictionary<string, string>>(File.ReadAllText(args[++i]));
-        else if (args[i] == "--validate" && i + 2 < args.Length)
-        {
-            revision = args[++i];
-            evaluator = args[++i];
-        }
-        else throw new ArgumentException("Opção inválida ou incompleta.");
-    }
-    if (revision is not null)
-    {
-        var resolve = new ProcessStartInfo("git") { WorkingDirectory = repository, RedirectStandardOutput = true, RedirectStandardError = true };
-        foreach (var argument in new[] { "rev-parse", "--verify", "--end-of-options", revision + "^{commit}" }) resolve.ArgumentList.Add(argument);
-        using var resolver = Process.Start(resolve) ?? throw new InvalidOperationException("Git indisponível.");
-        var commit = resolver.StandardOutput.ReadToEnd().Trim();
-        var resolveError = resolver.StandardError.ReadToEnd();
-        resolver.WaitForExit();
-        if (resolver.ExitCode != 0)
-            throw new ArgumentException("Commit inválido: " + resolveError);
-        var verify = new ProcessStartInfo("git") { WorkingDirectory = repository };
-        foreach (var argument in new[] { "diff", "--quiet", "--no-ext-diff", commit, "--" }) verify.ArgumentList.Add(argument);
-        using var check = Process.Start(verify) ?? throw new InvalidOperationException("Git indisponível.");
-        check.WaitForExit();
-        if (check.ExitCode != 0)
-            throw new ArgumentException("O checkout deve corresponder ao commit usado na validação.");
-        revision = commit;
-    }
-    var alert = AlertReader.Read(File.ReadAllText(args[1]), repository, rules);
-    var current = repository;
-    foreach (var part in alert.File.Split(Path.DirectorySeparatorChar))
-    {
-        current = Path.Combine(current, part);
-        if (File.GetAttributes(current).HasFlag(FileAttributes.ReparsePoint))
-            throw new ArgumentException("Caminhos com links simbólicos não são suportados.");
-    }
+    var options = ScanOptions.Parse(args[1..]);
+    var repository = Pipeline.Git(Directory.GetCurrentDirectory(), "rev-parse", "--show-toplevel").Trim();
+    var output = Path.GetFullPath(options.Output, repository);
+    Directory.CreateDirectory(output);
+    var json = new JsonSerializerOptions { PropertyNameCaseInsensitive = true, WriteIndented = true };
 
-    var source = File.ReadAllText(current);
-    var method = AuthorizationAnalyzer.FindEndpoint(source, alert.StartLine);
-    IReadOnlyList<Evidence> evidence = Array.Empty<Evidence>();
-    if (args[2] == "C")
+    Title($"AuthFix · {repository}");
+    var evaluator = Path.GetFullPath(options.Evaluator, repository);
+    string sarif;
+    IReadOnlyDictionary<string, string> rules;
+    if (options.Alert is null)
     {
-        var start = new ProcessStartInfo("git")
-        {
-            WorkingDirectory = repository,
-            RedirectStandardOutput = true,
-            RedirectStandardError = true
-        };
-        start.ArgumentList.Add("ls-files");
-        start.ArgumentList.Add("-z");
-        using var git = Process.Start(start) ?? throw new InvalidOperationException("Git indisponível.");
-        var paths = git.StandardOutput.ReadToEnd().Split('\0', StringSplitOptions.RemoveEmptyEntries);
-        var error = git.StandardError.ReadToEnd();
-        git.WaitForExit();
-        if (git.ExitCode != 0)
-            throw new InvalidOperationException(error);
-        var files = new Dictionary<string, string>();
-        foreach (var path in paths.Where(path => path.EndsWith(".cs", StringComparison.OrdinalIgnoreCase)))
-        {
-            if (string.Equals(path, alert.File.Replace(Path.DirectorySeparatorChar, '/'), StringComparison.Ordinal))
-                continue;
-            if (path.Split('/').Any(part => (part.Contains("test", StringComparison.OrdinalIgnoreCase) || part.Equals("avaliacao", StringComparison.OrdinalIgnoreCase))))
-                continue;
-            var full = Path.Combine(repository, path);
-            var components = path.Split('/');
-            var parent = repository;
-            var hasLink = false;
-            foreach (var component in components)
-            {
-                parent = Path.Combine(parent, component);
-                if (!File.Exists(parent) && !Directory.Exists(parent)) { hasLink = true; break; }
-                if (File.GetAttributes(parent).HasFlag(FileAttributes.ReparsePoint)) { hasLink = true; break; }
-            }
-            if (!hasLink) files[path] = File.ReadAllText(full);
-        }
-        evidence = ContextRetriever.Find(files);
+        Step("1. Análise estática (Semgrep em contêiner, regras do AuthFix)");
+        sarif = SemgrepRunner.Scan(repository, output);
+        rules = SemgrepRunner.Rules;
     }
+    else
+    {
+        Step($"1. Alerta informado: {options.Alert}");
+        sarif = File.ReadAllText(Path.GetFullPath(options.Alert));
+        rules = options.Rules is null ? SemgrepRunner.Rules
+            : JsonSerializer.Deserialize<Dictionary<string, string>>(File.ReadAllText(Path.GetFullPath(options.Rules)))
+              ?? throw new ArgumentException("Mapa de regras vazio.");
+    }
+    File.WriteAllText(Path.Combine(output, "alerta.sarif"), sarif, Encoding.UTF8);
+    var alerts = AlertReader.ReadAll(sarif, repository, rules);
+    if (alerts.Count == 0)
+    {
+        Console.WriteLine("Nenhuma falha de autorização encontrada.");
+        return 0;
+    }
+    foreach (var alert in alerts)
+        Console.WriteLine($"  {alert.Id} ({alert.Cwe})  {alert.File}:{alert.StartLine}");
 
-    var input = Experiment.BuildInput(alert, method, source, evidence, args[2]);
-    var options = new JsonSerializerOptions { PropertyNameCaseInsensitive = true, WriteIndented = true };
-    var response = JsonSerializer.Deserialize<MockResponse>(File.ReadAllText(args[3]), options)
+    string? commit = null;
+    if (File.Exists(Path.Combine(evaluator, "teste.sh")))
+        commit = Pipeline.ResolveCleanCommit(repository, "HEAD");
+    else
+        Console.WriteLine($"Sem {Path.GetRelativePath(repository, evaluator)}/teste.sh: a validação não será executada.");
+
+    var responsePath = Path.GetFullPath(options.Response, repository);
+    if (!File.Exists(responsePath))
+        throw new ArgumentException($"Proposta não encontrada: {options.Response}. Enquanto o LLM não estiver integrado, a geração usa uma resposta simulada.");
+    var response = JsonSerializer.Deserialize<MockResponse>(File.ReadAllText(responsePath), json)
         ?? throw new ArgumentException("Resposta simulada vazia.");
-    var report = MockGenerator.Generate(input, response);
-    if (revision is not null && evaluator is not null)
+
+    var failures = 0;
+    for (var i = 0; i < alerts.Count; i++)
     {
-        var result = PatchValidator.Validate(repository, revision, alert.File, evaluator, response.Diff);
-        report = report with { Validation = result.Status, Results = result };
+        var alert = alerts[i];
+        var prefix = alerts.Count == 1 ? "" : $"{i + 1}-";
+        Step($"2. Correção de {alert.File}:{alert.StartLine} (condição {options.Condition})");
+        var report = Pipeline.Run(repository, alert, options.Condition, response, commit, commit is null ? null : evaluator);
+
+        if (report.Input.Evidence.Count > 0)
+        {
+            Console.WriteLine("Contexto recuperado:");
+            foreach (var evidence in report.Input.Evidence)
+                Console.WriteLine($"  - {evidence.File}:{evidence.Line} {evidence.Symbol} — {evidence.Reason}");
+        }
+        Console.WriteLine($"Gerador: {report.Provider}");
+        Console.WriteLine($"\nJustificativa: {report.Proposal.Explanation}\n");
+        Console.WriteLine(report.Proposal.Diff.TrimEnd());
+
+        Step("3. Validação (contêiner sem rede)");
+        Console.WriteLine($"Validação:      {report.Validation}");
+        Console.WriteLine($"Compilação:     {report.Results?.Build ?? "não executada"}");
+        Console.WriteLine($"Segurança:      {report.Results?.Security ?? "não executada"}");
+        Console.WriteLine($"Funcionalidade: {report.Results?.Functionality ?? "não executada"}");
+        Console.WriteLine($"Aderência:      {report.Results?.Architecture ?? "revisão humana pendente"}");
+
+        var reportPath = Path.Combine(output, prefix + "relatorio.json");
+        File.WriteAllText(reportPath, JsonSerializer.Serialize(report, json), Encoding.UTF8);
+        File.WriteAllText(Path.ChangeExtension(reportPath, ".md"), Pipeline.Markdown(report), Encoding.UTF8);
+        var patch = Path.Combine(output, prefix + "correcao.patch");
+        File.WriteAllText(patch, report.Proposal.Diff, Encoding.UTF8);
+
+        var approved = report.Results is { Security: "aprovada", Functionality: "aprovada" };
+        if (!approved) failures++;
+        if (options.Apply)
+        {
+            if (!approved)
+                Console.WriteLine("\nCorreção não aplicada: a validação não aprovou segurança e funcionalidade.");
+            else
+            {
+                Pipeline.Git(repository, "apply", "--", patch);
+                Console.WriteLine($"\nCorreção aplicada em {alert.File}. Revise com: git diff");
+            }
+        }
+        else if (approved)
+            Console.WriteLine($"\nPara aplicar: authfix scan --aplicar   (ou: git apply {Path.GetRelativePath(repository, patch)})");
     }
-    File.WriteAllText(args[4], JsonSerializer.Serialize(report, options), Encoding.UTF8);
-    var markdown = new StringBuilder()
-        .AppendLine("# Relatório da execução simulada")
-        .AppendLine()
-        .AppendLine($"Condição: {report.Input.Condition}")
-        .AppendLine($"Alerta: {report.Input.Alert.Id} ({report.Input.Alert.Cwe})")
-        .AppendLine($"Local: {report.Input.Alert.File}:{report.Input.Alert.StartLine}")
-        .AppendLine($"Validação: {report.Validation}")
-        .AppendLine($"Compilação: {report.Results?.Build ?? "não executada"}")
-        .AppendLine($"Segurança: {report.Results?.Security ?? "não executada"}")
-        .AppendLine($"Funcionalidade: {report.Results?.Functionality ?? "não executada"}")
-        .AppendLine($"Aderência: {report.Results?.Architecture ?? "revisão humana pendente"}")
-        .AppendLine()
-        .AppendLine("## Justificativa")
-        .AppendLine(report.Proposal.Explanation)
-        .AppendLine()
-        .AppendLine("## Diff")
-        .AppendLine("```diff")
-        .AppendLine(report.Proposal.Diff)
-        .AppendLine("```");
-    File.WriteAllText(Path.ChangeExtension(args[4], ".md"), markdown.ToString(), Encoding.UTF8);
-    Console.WriteLine($"Relatório gerado: {args[4]}");
-    return 0;
+    Console.WriteLine($"\nRelatórios em {Path.GetRelativePath(repository, output)}/");
+    return failures == 0 ? 0 : 3;
 }
 catch (Exception ex) when (ex is IOException or UnauthorizedAccessException or ArgumentException or JsonException or KeyNotFoundException or InvalidOperationException or System.ComponentModel.Win32Exception)
 {
-    Console.Error.WriteLine(ex.Message);
+    Console.Error.WriteLine("Erro: " + ex.Message);
     return 1;
 }
+
+static void Title(string text) => Console.WriteLine($"\u001b[1m{text}\u001b[0m");
+static void Step(string text) => Console.WriteLine($"\n\u001b[1;36m==== {text} ====\u001b[0m");
