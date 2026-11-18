@@ -1,0 +1,262 @@
+ROTEIRO DA DEMONSTRAÇÃO — AuthFix
+==================================
+
+Ideia em uma frase:
+  Uma API tem um endpoint de administrador sem proteção. O Semgrep detecta,
+  o AuthFix localiza o problema, reaproveita a regra de autorização que já
+  existe no projeto, valida a correção num contêiner isolado, e a falha some.
+
+
+------------------------------------------------------------
+ANTES DE COMEÇAR (fazer 15 min antes)
+------------------------------------------------------------
+
+[ ] Docker Desktop aberto e rodando.
+[ ] Abrir DOIS terminais, os dois nesta pasta:
+
+      cd ~/Documents/TCC/experimentos/demo-api
+
+[ ] Garantir que está tudo no estado vulnerável:
+
+      sh demo.sh reset
+
+[ ] Garantir que nenhuma API antiga está rodando (se der "address already in use"):
+
+      lsof -nP -iTCP:5080 -sTCP:LISTEN
+      kill <PID que aparecer>
+
+[ ] Aumentar a fonte dos terminais (Cmd +) para a banca enxergar.
+
+
+------------------------------------------------------------
+PASSO 1 — Apresentar a API (Terminal 1)
+------------------------------------------------------------
+
+Subir a API:
+
+      dotnet run --urls http://localhost:5080
+
+O que falar:
+  "Esta é uma API simples em ASP.NET. Tem uma rota pública, uma de usuário
+   e duas de administrador. A autenticação é simulada pelo cabeçalho
+   X-Demo-Perfil (User ou Admin)."
+
+Se quiser mostrar o código: Controllers/InformacoesController.cs
+  - /api/oi            -> [AllowAnonymous]                    público
+  - /api/user          -> [Authorize]                         usuário logado
+  - /api/admin-status  -> [Authorize(Policy="SomenteAdmin")]  protegido
+  - /api/admin-info    -> NADA                                <- A FALHA
+
+
+------------------------------------------------------------
+PASSO 2 — Mostrar o problema (Terminal 2)
+------------------------------------------------------------
+
+      curl -i -H 'X-Demo-Perfil: User' http://localhost:5080/api/admin-status
+
+  Esperado: 403 Forbidden  (esta está protegida, correto)
+
+      curl -i -H 'X-Demo-Perfil: User' http://localhost:5080/api/admin-info
+
+  Esperado: 200 OK  (usuário comum lendo informação de admin!)
+
+      curl -i http://localhost:5080/api/admin-info
+
+  Esperado: 200 OK  (até SEM login nenhum!)
+
+O que falar:
+  "As duas rotas são de administrador, mas na segunda o desenvolvedor
+   esqueceu a policy. Qualquer pessoa, até anônima, lê a informação.
+   Isso é a CWE-862, Missing Authorization — parte do Broken Access Control,
+   primeiro lugar no OWASP Top 10."
+
+
+------------------------------------------------------------
+PASSO 3 — Rodar a demonstração (Terminal 2)
+------------------------------------------------------------
+
+      sh demo.sh
+
+O script para entre as etapas. Aperte ENTER para avançar.
+
+
+  ETAPA 1 — Semgrep analisa o código
+  ----------------------------------
+  Aparece: 1 finding em Controllers/InformacoesController.cs:32
+
+  O que falar:
+    "O Semgrep roda num contêiner, com o código montado só para leitura,
+     usando uma regra que escrevi para endpoint de admin sem policy.
+     Ele gera o alerta em SARIF, o formato padrão de resultados de
+     análise estática. Esse arquivo é a entrada do AuthFix."
+
+  (Opcional, em outro terminal, para mostrar o SARIF:)
+      jq '.runs[0].results[0] | {regra: .ruleId, mensagem: .message.text, local: .locations[0].physicalLocation}' saida/alerta.sarif
+
+  ENTER
+
+
+  ETAPA 2 — AuthFix
+  -----------------
+  Aparece:
+    Contexto recuperado: Program.cs:7 — Referência a AddAuthorization
+    Compilação: aprovada
+    Segurança: aprovada
+    Funcionalidade: aprovada
+    Aderência: revisão humana pendente
+    + justificativa + diff
+
+  O que falar (na ordem):
+    1. "O AuthFix lê o alerta e, com o Roslyn — o compilador do C# usado
+        como biblioteca — localiza exatamente o método InfoAdmin."
+    2. "Na condição C ele recupera contexto do projeto: encontrou em
+        Program.cs a policy SomenteAdmin já registrada. A correção
+        reaproveita essa policy em vez de inventar uma nova."
+    3. "A geração da correção está simulada com uma resposta fixa
+        (resposta-simulada.json). Aqui eu demonstro o pipeline; plugar
+        o LLM real é o próximo passo e o ponto de encaixe já existe."
+    4. "O mais importante: antes de confiar no patch, o AuthFix aplica
+        numa cópia isolada do repositório e roda testes num contêiner
+        SEM REDE. Compilou, a falha fechou (anônimo 401, usuário 403)
+        e o admin continua funcionando (200)."
+    5. "A aderência ao padrão do projeto fica para revisão humana."
+
+  ENTER
+
+
+  ETAPA 3 — Aplicar a correção
+  ----------------------------
+  Aparece o diff: entra [Authorize(Policy = "SomenteAdmin")] antes do InfoAdmin.
+
+  AGORA, NO TERMINAL 1:
+    Ctrl+C   (para a API)
+    dotnet run --urls http://localhost:5080   (sobe de novo, já corrigida)
+
+  No Terminal 2 — abra uma aba nova ou espere a API subir — repita:
+
+      curl -i http://localhost:5080/api/admin-info
+  Esperado: 401 Unauthorized
+
+      curl -i -H 'X-Demo-Perfil: User' http://localhost:5080/api/admin-info
+  Esperado: 403 Forbidden
+
+      curl -i -H 'X-Demo-Perfil: Admin' http://localhost:5080/api/admin-info
+  Esperado: 200 OK
+
+  O que falar:
+    "Anônimo bloqueado, usuário comum bloqueado, administrador funcionando."
+
+  Volte ao terminal do demo.sh e aperte ENTER
+
+
+  ETAPA 4 — Semgrep de novo
+  -------------------------
+  Aparece: Findings: 0
+
+  O que falar:
+    "A mesma análise agora não encontra nada. Ciclo fechado:
+     detectou, corrigiu, validou."
+
+
+------------------------------------------------------------
+FECHAMENTO — como seria no mundo real
+------------------------------------------------------------
+
+  "Na demo eu rodo por script para mostrar cada etapa. No mundo real isso
+   roda no pipeline de CI, como o GitHub Actions: a cada Pull Request o
+   Semgrep analisa, o alerta aparece na aba Security do GitHub, o AuthFix
+   gera e valida a correção e abre um PR para revisão. Nenhuma correção
+   entra sem aprovação humana."
+
+
+------------------------------------------------------------
+PERGUNTAS PROVÁVEIS
+------------------------------------------------------------
+
+P: Quem escreveu a correção?
+R: Nesta demo, a correção está numa resposta simulada, escrita à mão.
+   O objetivo é mostrar que o AuthFix verifica se a correção funciona antes
+   de confiar nela, venha de um LLM ou de qualquer outra fonte. A integração
+   com o LLM é o próximo passo.
+
+P: O que é o Roslyn?
+R: O compilador oficial do C#, usado como biblioteca. Ele entende a estrutura
+   do código (árvore sintática), então acha o método exato e as regras de
+   autorização sem depender de busca por texto.
+
+P: Tem RAG?
+R: A recuperação de contexto hoje é estrutural, feita pelo Roslyn, sem
+   embeddings. Para código faz sentido: o que se busca são as políticas
+   de autorização que já existem no projeto.
+
+P: O que é SARIF?
+R: Formato padrão (OASIS), em JSON, para resultados de análise estática.
+   Como o AuthFix lê SARIF, não fica preso ao Semgrep.
+
+P: Dá para usar SonarQube?
+R: Sim. O SonarQube importa SARIF para visualização. Como fonte de alertas,
+   seria preciso um adaptador que converta os alertas dele, que hoje
+   não existe no protótipo. Escolhi o Semgrep por permitir regras
+   específicas de autorização em ASP.NET e gerar SARIF direto.
+
+P: O que são as condições A, B e C?
+R: O quanto de contexto vai para o gerador:
+     A = só o método com o alerta
+     B = o arquivo inteiro
+     C = o arquivo + trechos de autorização recuperados do projeto
+   A hipótese é que C gera correções mais aderentes ao padrão do projeto.
+
+P: Por que contêiner sem rede na validação?
+R: O patch e o projeto podem ser não confiáveis. Sem rede e com recursos
+   limitados, o teste não vaza dados nem baixa nada.
+
+
+------------------------------------------------------------
+SE ALGO DER ERRADO
+------------------------------------------------------------
+
+"address already in use"
+    -> já tem uma API rodando. Ctrl+C no outro terminal, ou:
+       lsof -nP -iTCP:5080 -sTCP:LISTEN
+       kill <PID>
+
+Docker não responde / erro no Semgrep
+    -> abrir o Docker Desktop, esperar ficar verde, rodar de novo.
+
+Quero recomeçar do zero
+    -> sh demo.sh reset
+       (desfaz a correção e limpa a pasta saida/)
+
+Plano B (se tudo travar):
+    -> mostrar saida/relatorio.md de um ensaio anterior. Por isso,
+       ensaie hoje e NÃO rode reset depois do último ensaio, só antes
+       de apresentar. Ou guarde uma cópia:
+       cp -r saida ~/Desktop/saida-ensaio
+
+
+------------------------------------------------------------
+ARQUIVOS (onde está cada coisa)
+------------------------------------------------------------
+
+~/Documents/TCC/experimentos/demo-api/
+  Controllers/InformacoesController.cs   API (falha na linha 32)
+  Program.cs                             registro da policy SomenteAdmin
+  Seguranca/AutenticacaoDemo.cs          login simulado pelo cabeçalho
+  semgrep/regra-demo.yml                 regra do Semgrep
+  semgrep/regras.json                    regra -> CWE-862
+  resposta-simulada.json                 "resposta do LLM" (simulada)
+  avaliacao/teste.sh                     testes rodados no contêiner
+  demo.sh                                o script da demonstração
+  saida/                                 SARIF e relatórios gerados
+
+~/Documents/TCC/src/AuthFix/
+  Program.cs                 fluxo principal
+  AlertReader.cs             lê o SARIF
+  AuthorizationAnalyzer.cs   acha o método com Roslyn
+  ContextRetriever.cs        recupera contexto de autorização
+  Experiment.cs              monta as condições A/B/C
+  MockGenerator.cs           usa a resposta simulada (lugar do LLM)
+  PatchValidator.cs          aplica o patch e testa no contêiner
+
+
+Respira. Você já rodou isso e funcionou. Boa defesa!

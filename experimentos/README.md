@@ -18,6 +18,17 @@ sh experimentos/piloto/documentos/executar.sh /tmp/resultados-authfix
 
 O script cria um repositório temporário com o caso, fixa um commit local e executa A, B e C com a mesma resposta pré-escrita. Gera JSON e Markdown para cada condição e registra o commit criado. Os resultados demonstram a infraestrutura e a validação do patch de exemplo. Eles não medem o desempenho de um modelo de linguagem.
 
+## API de demonstração
+
+`experimentos/demo-api` contém a API usada na apresentação: um endpoint administrativo sem a policy `SomenteAdmin` (CWE-862). O Semgrep gera o alerta em SARIF, o AuthFix recupera a policy registrada em `Program.cs`, valida a resposta simulada no contêiner e a correção é aplicada na API. O passo a passo e as falas estão em `ROTEIRO.txt`.
+
+```sh
+sh experimentos/demo-api/demo.sh
+sh experimentos/demo-api/demo.sh reset
+```
+
+Além dos requisitos acima, a demonstração usa `jq` e a imagem `semgrep/semgrep`. Como no piloto, o script copia a API para um repositório Git temporário antes de chamar o AuthFix, porque o validador monta a raiz do repositório em `/work`.
+
 ## Execução manual
 
 ```sh
