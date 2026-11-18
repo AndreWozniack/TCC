@@ -107,14 +107,17 @@ public class LlmGeneratorTests
     }
 
     [Theory]
+    [InlineData(null, AnthropicModel.ClaudeHaiku5_5)]
+    [InlineData("", AnthropicModel.ClaudeHaiku5_5)]
     [InlineData("claude-fable-5-2", AnthropicModel.ClaudeFable5_2)]
     [InlineData("claude-opus-5-5", AnthropicModel.ClaudeOpus5_5)]
     [InlineData("claude-sonnet-5-5", AnthropicModel.ClaudeSonnet5_5)]
     [InlineData("claude-haiku-5-5", AnthropicModel.ClaudeHaiku5_5)]
     [InlineData("claude-sonnet-4-5", AnthropicModel.ClaudeSonnet4_5)]
-    [InlineData("ClaudeSonnet5_5", AnthropicModel.ClaudeSonnet5_5)]
-    public void ParsesAnthropicModelEnumAndApiId(string input, AnthropicModel expected)
+    [InlineData("ClaudeHaiku5_5", AnthropicModel.ClaudeHaiku5_5)]
+    public void ParsesAnthropicModelEnumAndApiId(string? input, AnthropicModel expected)
     {
+        Assert.Equal(AnthropicModel.ClaudeHaiku5_5, AnthropicProvider.DefaultModel);
         var parsed = AnthropicModelExtensions.Parse(input);
         Assert.Equal(expected, parsed);
         Assert.False(string.IsNullOrWhiteSpace(parsed.ToApiId()));

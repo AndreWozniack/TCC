@@ -22,7 +22,7 @@ public sealed record ScanOptions(
 
         Opções:
           --condicao A|B|C   contexto enviado ao gerador (padrão: C)
-          --modelo NOME      modelo do LLM (padrão: claude-sonnet-4-5 ou ANTHROPIC_MODEL)
+          --modelo NOME      modelo do LLM (padrão: claude-haiku-5-5 ou ANTHROPIC_MODEL)
           --alerta ARQ       usa um SARIF existente em vez de rodar o Semgrep
           --regras ARQ       mapa JSON regra -> CWE para o SARIF informado
           --resposta ARQ     força o uso da proposta simulada (padrão de fallback: resposta-simulada.json)

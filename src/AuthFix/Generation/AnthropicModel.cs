@@ -56,7 +56,7 @@ public static class AnthropicModelExtensions
     public static AnthropicModel Parse(string? value)
     {
         if (string.IsNullOrWhiteSpace(value))
-            return AnthropicModel.ClaudeSonnet5_5;
+            return AnthropicModel.ClaudeHaiku5_5;
 
         var trimmed = value.Trim();
         if (Enum.TryParse<AnthropicModel>(trimmed, ignoreCase: true, out var parsedEnum))
